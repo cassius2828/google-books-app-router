@@ -1,6 +1,15 @@
-import SignIn from "@/app/_components/SignIn";
+import { signIn } from "@/auth";
 
-const page = () => {
-  return <SignIn />;
+const SignIn = () => {
+  return (
+    <form
+      action={async () => {
+        "use server";
+        await signIn("google");
+      }}
+    >
+      <button type="submit">Signin with Google</button>
+    </form>
+  );
 };
-export default page;
+export default SignIn;
