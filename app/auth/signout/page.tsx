@@ -1,4 +1,4 @@
-import { signOut } from "@/auth";
+import { signOut } from "@/app/_lib/auth";
 
 const SignOut = () => {
   return (
