@@ -4,7 +4,10 @@ import Header from "./_components/Header";
 import Footer from "./_components/Footer";
 
 export const metadata: Metadata = {
-  title: "LibrisList",
+  title: {
+    template: "%s | LibrisList",
+    default: "LibrisList",
+  },
   description:
     "LibrisList is your digital bookshelf: search millions of books via Google Books API, save favorites, track reading progress, jot notes—all with secure login.",
 };
