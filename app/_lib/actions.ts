@@ -28,7 +28,7 @@ export const addBookToListAction = async (book: Book) => {
     if (error) {
       console.error(error);
       throw new Error(
-        `Unable to add ${book.volumeInfo.title || " book"} to reading list`
+        `Unable to add ${book.volumeInfo.title || " book"} to reading list\n ${error.message}`
       );
     }
     return data;
