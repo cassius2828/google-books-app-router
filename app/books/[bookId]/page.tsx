@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
 import { addBookToListAction } from "@/app/_lib/actions";
+import Loader from "@/app/loading";
 
 export default function BookDetails() {
   const { bookId } = useParams();
@@ -35,11 +36,12 @@ export default function BookDetails() {
     load();
   }, [bookId]);
 
+useEffect(() => {
+  console.log(book)
+},[book])
   if (!book) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        Loading...
-      </div>
+    <Loader/>
     );
   }
 
@@ -62,6 +64,7 @@ const handleAddBookToMyList = async () => {
   const data = await addBookToListAction(book)
   console.log(data, ' <-- data')
 }
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
