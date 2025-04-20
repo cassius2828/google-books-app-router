@@ -14,13 +14,13 @@ export default function BookDetails() {
   const { bookId } = useParams();
   const [book, setBook] = useState<Book | null>(null);
 
-  const handleAddToMyList = async (params:type) => {
-    try {
-      const response = await axios.post(`/api/books/${bookId}`)
-    } catch (err) {
-      console.error(err);
-    }
-  }
+  // const handleAddToMyList = async (params:type) => {
+  //   try {
+  //     const response = await axios.post(`/api/books/${bookId}`)
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // }
 
   useEffect(() => {
     if (!bookId) return;
