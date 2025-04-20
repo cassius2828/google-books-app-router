@@ -1,5 +1,6 @@
 // pages/search.tsx
-
+import BooksGallery from "@/app/_components/Books/BooksGallery";
+import SearchInput from "../_components/SearchInput";
 export const metadata = {
   title: "Search Books",
   description: `Search books with LibrisList`,
@@ -13,15 +14,12 @@ export default function SearchPage() {
           Find Your Next Read
         </h1>
         <div className="w-full max-w-xl">
-          <input
-            type="text"
-            placeholder="Search books..."
-            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
-          />
+      <SearchInput/>
           <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition">
             Search
           </button>
         </div>
+        <BooksGallery />
       </main>
     </>
   );
