@@ -1,6 +1,7 @@
 // pages/search.tsx
 import BooksGallery from "@/app/_components/Books/BooksGallery";
 import SearchInput from "../_components/SearchInput";
+import { Suspense } from "react";
 export const metadata = {
   title: "Search Books",
   description: `Search books with LibrisList`,
@@ -14,7 +15,9 @@ export default function SearchPage() {
           Find Your Next Read
         </h1>
         <div className="w-full max-w-xl">
-      <SearchInput/>
+          <Suspense fallback={<div>Loading search…</div>}>
+            <SearchInput />
+          </Suspense>
           <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition">
             Search
           </button>
