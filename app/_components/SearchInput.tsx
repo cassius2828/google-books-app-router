@@ -6,7 +6,7 @@ import { useDebounce } from "use-debounce";
 
 const SearchInput = () => {
   const [query, setQuery] = useState<string>("");
-  const [value] = useDebounce(query, 1000);
+  const [value] = useDebounce(query, 600);
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
