@@ -21,7 +21,6 @@ const BooksGallery = () => {
           `/api/books?q=${encodeURIComponent(query)}`
         );
         const data = response.data;
-        console.log(data);
         if (data) {
           setBooks(data);
         } else {
@@ -31,7 +30,6 @@ const BooksGallery = () => {
     };
     fetchBooks();
   }, [query]);
-  console.log(query);
   return (
     <div className="mt-20 w-full">
       <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 justify-items-center max-w-7xl mx-auto">
