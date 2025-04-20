@@ -34,7 +34,7 @@ const BooksGallery = () => {
   console.log(query);
   return (
     <div className="mt-20 w-full">
-      <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 justify-items-center">
+      <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 justify-items-center max-w-7xl mx-auto">
         {books?.map((book: Book) => {
           const {
             title,
@@ -57,6 +57,7 @@ const BooksGallery = () => {
               pageCount={pageCount}
               thumbnail={
                 book.volumeInfo.imageLinks?.thumbnail ||
+                book.volumeInfo.imageLinks?.smallThumbnail ||
                 process.env.NEXT_PUBLIC_IMG_NOT_FOUND ||
                 ""
               }

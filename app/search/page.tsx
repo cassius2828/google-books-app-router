@@ -3,6 +3,7 @@ import BooksGallery from "@/app/_components/Books/BooksGallery";
 import SearchInput from "../_components/SearchInput";
 import { Suspense } from "react";
 import BooksGalleryProviderWrapper from "../_components/Books/BooksGalleryProviderWrapper";
+import Loader from "../loading";
 
 export const metadata = {
   title: "Search Books",
@@ -28,7 +29,9 @@ export default function SearchPage() {
         -- must wrap them while in a client component, it would not allow us directly in a server component
         */}
         <BooksGalleryProviderWrapper>
-          <BooksGallery />
+          <Suspense fallback={<Loader />}>
+            <BooksGallery />
+          </Suspense>
         </BooksGalleryProviderWrapper>
       </main>
     </>
