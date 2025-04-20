@@ -2,11 +2,14 @@
 import BooksGallery from "@/app/_components/Books/BooksGallery";
 import SearchInput from "../_components/SearchInput";
 import { Suspense } from "react";
+import BooksGalleryProviderWrapper from "../_components/Books/BooksGalleryProviderWrapper";
+import Loader from "../loading";
+
 export const metadata = {
   title: "Search Books",
   description: `Search books with LibrisList`,
 };
-// const BASE_VOL_URL = `https://www.googleapis.com/books/v1/volumes?q=`
+
 export default function SearchPage() {
   return (
     <>
@@ -22,7 +25,14 @@ export default function SearchPage() {
             Search
           </button>
         </div>
-        <BooksGallery />
+        {/* wraps with client component so we can use the provider to wrap the books gallery
+        -- must wrap them while in a client component, it would not allow us directly in a server component
+        */}
+        <BooksGalleryProviderWrapper>
+          <Suspense fallback={<Loader />}>
+            <BooksGallery />
+          </Suspense>
+        </BooksGalleryProviderWrapper>
       </main>
     </>
   );

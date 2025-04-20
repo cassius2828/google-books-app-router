@@ -1,23 +1,28 @@
-import { BookCardProps } from "@/app/_lib/types";
+import { GalleryBookCardProps } from "@/app/_lib/types";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function BookCard({
+  id,
   title,
   authors,
   description,
   categories,
-  avg_rating,
-  thumbnail_url,
-}: BookCardProps) {
+  thumbnail,
+  pageCount,
+  previewLink,
+  publishedDate,
+}: GalleryBookCardProps) {
   return (
-    <div className="max-w-sm bg-white rounded-lg shadow-md overflow-hidden">
-      <Image
-        src={thumbnail_url}
-        alt={title}
-        width={200}
-        height={300}
-        className="w-full h-48 object-cover"
-      />
+    <div className="max-w-80 bg-white rounded-lg shadow-md overflow-hidden">
+      <div className="relative aspect-square">
+        <Image
+          src={thumbnail}
+          alt={title}
+          fill
+          className="w-full object-cover object-top"
+        />
+      </div>
       <div className="p-4">
         <h2 className="text-xl font-semibold text-gray-900 mb-2">{title}</h2>
         <p className="text-sm text-gray-700 mb-2">By {authors.join(", ")}</p>
@@ -36,7 +41,25 @@ export default function BookCard({
             </span>
           ))}
         </div>
-        <p className="text-sm text-gray-800">Rating: {avg_rating.toFixed(1)}</p>
+        <p className="text-sm text-gray-800">Page Count: {pageCount}</p>
+        <p className="text-sm text-gray-800">
+          Published Date: {new Date(publishedDate).toLocaleDateString()}
+        </p>
+      </div>
+      <div className="flex justify-center gap-4">
+        <Link
+          className="bg-blue-600 text-gray-50 px-3 py-1 rounded-md"
+          href={`/books/${id}`}
+        >
+          Book Details
+        </Link>
+
+        <Link
+          className="bg-blue-600 text-gray-50 px-3 py-1 rounded-md"
+          href={previewLink}
+        >
+          Preview link
+        </Link>
       </div>
     </div>
   );

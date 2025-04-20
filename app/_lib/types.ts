@@ -1,7 +1,39 @@
+import { Dispatch, SetStateAction } from "react";
+
 // types.ts
 export type Book = {
   id: string;
-  title:string;
+  volumeInfo: {
+    title: string;
+    authors: string[];
+    publisher: string;
+    publishedDate: string;
+    description: string;
+    pageCount: number;
+    categories: string[];
+    previewLink: string;
+    imageLinks: {
+      smallThumbnail: string;
+      thumbnail: string;
+    };
+  };
+};
+
+export type GalleryBookCardProps = {
+  id: string;
+  authors: string[];
+  categories: string[];
+  description: string;
+  pageCount: number;
+  previewLink: string;
+  publishedDate: string;
+  thumbnail: string;
+  title: string;
+};
+
+export type DatabaseBook = {
+  id: string;
+  title: string;
   authors: string[];
   publisher: string;
   published_date: string;
@@ -10,16 +42,13 @@ export type Book = {
   categories: string[];
   language: string;
   avg_rating: number;
-  prev_link: string;
+  preview_link: string;
   thumbnail_url: string;
   created_at: Date;
 };
 
-export type BookCardProps = {
-  title: string;
-  authors: string[];
-  description: string;
-  categories: string[];
-  avg_rating: number;
-  thumbnail_url: string;
-};
+  // 1. Define your context shape
+  export type BookContextType = {
+    books: Book[];
+    setBooks: Dispatch<SetStateAction<Book[]>>;
+  };
