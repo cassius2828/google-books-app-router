@@ -10,6 +10,7 @@ import axios from "axios";
 import Link from "next/link";
 import { addBookToListAction } from "@/app/_lib/actions";
 import Loader from "@/app/loading";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function BookDetails() {
   const { bookId } = useParams();
@@ -58,7 +59,16 @@ export default function BookDetails() {
   const formattedDescription = convert(description);
 
   const handleAddBookToMyList = () => {
-    startTransition(async () => await addBookToListAction(book));
+    try {
+      startTransition(async () => await addBookToListAction(book));
+      toast.success("Book added to your reading list");
+    } catch (err: any) {
+      if (err.message.includes("already has this book in their reading list")) {
+        toast("Book already in your list", { icon: "📖" });
+      } else {
+        toast.error(err.message);
+      }
+    }
   };
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
@@ -117,6 +127,7 @@ export default function BookDetails() {
             >
               {isPending ? "Adding book..." : "Add To My List"}
             </button>
+            <Toaster />
           </div>
         </div>
       </div>

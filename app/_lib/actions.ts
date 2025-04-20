@@ -14,7 +14,19 @@ export const addBookToListAction = async (book: Book) => {
     const publicUserID = await getPublicUserID(session?.user?.email);
     // add book to db
     const bookFromDB = await postAddBookToDB(book);
-    const { data, error } = await supabase
+    const { data: existingEntry, error: selectErr } = await supabase
+      .from("reading_list")
+      .select()
+      .eq("book_id", bookFromDB.id)
+      .eq("user_id", publicUserID)
+      .maybeSingle();
+
+    if (selectErr) throw new Error(selectErr.message);
+
+    if (existingEntry)
+      throw new Error("This user already has this book in their reading list");
+
+    const { data, error: insertError } = await supabase
       .from("reading_list")
       .insert([
         {
@@ -25,10 +37,12 @@ export const addBookToListAction = async (book: Book) => {
       ])
       .select()
       .single();
-    if (error) {
-      console.error(error);
+    if (insertError) {
+      console.error(insertError);
       throw new Error(
-        `Unable to add ${book.volumeInfo.title || " book"} to reading list\n ${error.message}`
+        `Unable to add ${book.volumeInfo.title || " book"} to reading list\n ${
+          insertError.message
+        }`
       );
     }
     return data;
