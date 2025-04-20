@@ -1,57 +1,70 @@
+"use client";
+import { useSearchParams } from "next/navigation";
 import BookCard from "./BookCard";
 // somewhere in your code (e.g. data/tempBooks.ts)
+import { useBooksContext } from "@/app/_context/BooksContext";
 import { Book } from "@/app/_lib/types";
+import axios from "axios";
+import { useEffect } from "react";
 
-export const books: Book[] = [
-  {
-    id: "WrGHpVXI3D0C",
-    title: "Social Standoff",
-    authors: ["Jane Austen"],
-    publisher: "T. Egerton, Whitehall",
-    published_date: "1813-01-28",
-    description: "A classic novel of manners, love, and social standing.",
-    page_count: 432,
-    categories: ["Fiction", "Classics", "Romance"],
-    language: "en",
-    avg_rating: 4.3,
-    prev_link: "https://www.example.com/pride-and-prejudice",
-    thumbnail_url:
-      "https://books.google.com/books/content?id=xyz&printsec=frontcover&img=1&zoom=1",
-    created_at: new Date("2025-04-19T12:00:00Z"),
-  },
-  {
-    id: "WrGHpVXI4532fgv",
-    title: "The Last Dystopia",
-    authors: ["George Orwell"],
-    publisher: "Secker & Warburg",
-    published_date: "1949-06-08",
-    description:
-      "A dystopian social science fiction novel and cautionary tale.",
-    page_count: 328,
-    categories: ["Fiction", "Dystopia", "Political Fiction"],
-    language: "en",
-    avg_rating: 4.2,
-    prev_link: "https://www.example.com/1984",
-    thumbnail_url:
-      "https://books.google.com/books/content?id=abc&printsec=frontcover&img=1&zoom=1",
-    created_at: new Date("2025-04-19T12:00:00Z"),
-  },
-];
 const BooksGallery = () => {
+  const { books, setBooks } = useBooksContext();
+
+  const searchParams = useSearchParams();
+  const params = new URLSearchParams(searchParams);
+  const query = params.get("q");
+
+  useEffect(() => {
+    const fetchBooks = async () => {
+      if (query) {
+        const response = await axios.get(
+          `/api/books?q=${encodeURIComponent(query)}`
+        );
+        const data = response.data;
+        console.log(data);
+        if (data) {
+          setBooks(data);
+        } else {
+          setBooks([]);
+        }
+      }
+    };
+    fetchBooks();
+  }, [query]);
+  console.log(query);
   return (
     <div className="mt-20 w-full">
       <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 justify-items-center">
-        {books.map((book: Book) => (
-          <BookCard
-            title={book.title}
-            authors={book.authors}
-            description={book.description}
-            categories={book.categories}
-            avg_rating={book.avg_rating}
-            thumbnail_url={book.thumbnail_url}
-            key={book.id}
-          />
-        ))}
+        {books?.map((book: Book) => {
+          const {
+            title,
+            authors,
+            description,
+            categories,
+            pageCount,
+            previewLink,
+            publishedDate,
+          } = book.volumeInfo;
+          // const { thumbnail } = book?.volumeInfo?.imageLinks;
+          return (
+            <BookCard
+              key={book.id}
+              id={book.id}
+              title={title || "N/A"}
+              authors={authors || ["N/A"]}
+              description={description || "N/A"}
+              categories={categories || ["N/A"]}
+              pageCount={pageCount}
+              thumbnail={
+                book.volumeInfo.imageLinks?.thumbnail ||
+                process.env.NEXT_PUBLIC_IMG_NOT_FOUND ||
+                ""
+              }
+              previewLink={previewLink || ""}
+              publishedDate={publishedDate || "N/A"}
+            />
+          );
+        })}
       </ul>
     </div>
   );

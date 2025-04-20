@@ -1,18 +1,21 @@
-import { BookCardProps } from "@/app/_lib/types";
+import { GalleryBookCardProps } from "@/app/_lib/types";
 import Image from "next/image";
 
 export default function BookCard({
+  id,
   title,
   authors,
   description,
   categories,
-  avg_rating,
-  thumbnail_url,
-}: BookCardProps) {
+  thumbnail,
+  pageCount,
+  previewLink,
+  publishedDate,
+}: GalleryBookCardProps) {
   return (
     <div className="max-w-sm bg-white rounded-lg shadow-md overflow-hidden">
       <Image
-        src={thumbnail_url}
+        src={thumbnail}
         alt={title}
         width={200}
         height={300}
@@ -36,7 +39,7 @@ export default function BookCard({
             </span>
           ))}
         </div>
-        <p className="text-sm text-gray-800">Rating: {avg_rating.toFixed(1)}</p>
+        <p className="text-sm text-gray-800">Page Count: {pageCount}</p>
       </div>
     </div>
   );
