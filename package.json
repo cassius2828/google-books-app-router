@@ -12,6 +12,7 @@
     "@auth/supabase-adapter": "^1.8.0",
     "@supabase/supabase-js": "^2.49.4",
     "axios": "^1.8.4",
+    "html-to-text": "^9.0.5",
     "jsonwebtoken": "^9.0.2",
     "next": "15.3.0",
     "next-auth": "^5.0.0-beta.25",
