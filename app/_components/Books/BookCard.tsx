@@ -42,6 +42,9 @@ export default function BookCard({
           ))}
         </div>
         <p className="text-sm text-gray-800">Page Count: {pageCount}</p>
+        <p className="text-sm text-gray-800">
+          Published Date: {new Date(publishedDate).toLocaleDateString()}
+        </p>
       </div>
       <div className="flex justify-center gap-4">
         <Link
