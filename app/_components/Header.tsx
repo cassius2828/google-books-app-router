@@ -4,10 +4,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { auth } from "../_lib/auth";
 import { signInWithGoogle, singOutAction } from "../_lib/actions";
+import { getPublicUserID } from "../_lib/service";
 
 export default async function Header() {
   const session = await auth();
-
+  let publicUserID;
+  if (session?.user?.email) {
+    publicUserID = await getPublicUserID(session?.user?.email);
+  }
   return (
     <header className="bg-white shadow-md">
       <div className="container mx-auto flex items-center justify-between px-6 py-4">
@@ -19,12 +23,22 @@ export default async function Header() {
           <Link href="/search" className="text-gray-600 hover:text-gray-900">
             Search
           </Link>
-          <Link
-            href="/reading-list"
-            className="text-gray-600 hover:text-gray-900"
-          >
-            My Reads
-          </Link>
+          {publicUserID ? (
+            <Link
+              href={`/reading-list/${publicUserID}`}
+              className="text-gray-600 hover:text-gray-900"
+            >
+              My Reads
+            </Link>
+          ) : (
+            <Link
+              href={`/reading-list`}
+              className="text-gray-600 hover:text-gray-900"
+            >
+              Reading LIst
+            </Link>
+          )}
+
           <Link href="/notes" className="text-gray-600 hover:text-gray-900">
             Notes
           </Link>
