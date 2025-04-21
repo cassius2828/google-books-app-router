@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect } from "react";
+import SignInButton from "./_components/SignInButton";
 
 export default function Error({
   error,
@@ -11,7 +12,7 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error(error);
+    console.error(error.message);
   }, [error]);
 
   return (
@@ -21,12 +22,16 @@ export default function Error({
           Oops! Something went wrong.
         </h1>
         <p className="text-gray-700 mb-6">{error.message}</p>
-        <button
-          onClick={() => reset()}
-          className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition"
-        >
-          Try Again
-        </button>
+        <div className="flex justify-center gap-4 items-center">
+          <button
+            onClick={() => reset()}
+            className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition"
+          >
+            Try Again
+          </button>
+          {/* allows user to easily sign in if desired */}
+          {error.message.includes("No signed in user") && <SignInButton />}
+        </div>
       </div>
     </div>
   );

@@ -82,7 +82,7 @@ export default function BookDetails() {
         <div className="flex flex-col">
           <h1 className="text-3xl font-bold mb-4">{title}</h1>
           <p className="text-gray-700 mb-2">
-            <span className="font-semibold">Authors:</span> {authors.join(", ")}
+            <span className="font-semibold">Authors:</span> {authors?.join(", ")}
           </p>
           <p className="text-gray-700 mb-2">
             <span className="font-semibold">Publisher:</span> {publisher}
@@ -97,7 +97,7 @@ export default function BookDetails() {
           <div className="mb-4">
             <span className="font-semibold text-gray-800">Categories:</span>
             <div className="flex flex-wrap gap-2 mt-1">
-              {categories.map((cat) => (
+              {categories?.map((cat) => (
                 <span
                   key={cat}
                   className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded"
