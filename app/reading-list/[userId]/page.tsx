@@ -51,7 +51,7 @@ export default function ReadingListTable({ items }: ReadingListTableProps) {
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           <Suspense fallback={<Loader />}>
-            {items?.map((item) => (
+            {readingList?.map((item) => (
               <tr key={item.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <Image

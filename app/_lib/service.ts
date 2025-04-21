@@ -1,6 +1,6 @@
 import { supabase } from "@/supabase/supabase";
 import axios from "axios";
-import { Book } from "./types";
+import { Book, ReadingListDBItem, ReadingListItem } from "./types";
 import { convert } from "html-to-text";
 import { PostgrestError } from "@supabase/supabase-js";
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
@@ -118,9 +118,31 @@ export const getUserReadingList = async (userId: string) => {
     if (error) {
       return { data: [], error };
     }
-    return data;
+
+    return await getBooksFromReadingList(data);
   } catch (err) {
     console.error(err);
     return { data: [] };
+  }
+};
+
+export const getBooksFromReadingList = async (
+  readingList: ReadingListDBItem[]
+) => {
+  try {
+    const bookPromises = readingList.map(async (entry) => {
+      const { data, error } = await supabase
+        .from("books")
+        .select()
+        .eq("id", entry.book_id)
+        .maybeSingle();
+      if (!error) return data;
+    });
+    const compiledReadingList = await Promise.all(bookPromises);
+    if (!compiledReadingList.length) return [];
+    else return compiledReadingList;
+  } catch (err) {
+    console.error(err);
+    return [];
   }
 };

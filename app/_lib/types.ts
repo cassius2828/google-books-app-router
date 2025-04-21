@@ -47,16 +47,25 @@ export type DatabaseBook = {
   created_at: Date;
 };
 
-  export type BookContextType = {
-    books: Book[];
-    setBooks: Dispatch<SetStateAction<Book[]>>;
-  };
+export type BookContextType = {
+  books: Book[];
+  setBooks: Dispatch<SetStateAction<Book[]>>;
+};
 
-  export interface ReadingListItem {
-    id: string;
-    title: string;
-    thumbnail: string;
-    description: string;
-    authors: string[];
-    status: "to_read" | "reading" | "completed" | string;
-  }
+export interface ReadingListItem {
+  id: string;
+  title: string;
+  thumbnail: string;
+  description: string;
+  authors: string[];
+  status: "to_read" | "reading" | "completed";
+}
+
+export type ReadingListDBItem = {
+  id: string;
+  user_id: string;
+  book_id: string;
+  status: "to_read" | "reading" | "completed";
+  updated_at: Date;
+  created_at: Date;
+};
