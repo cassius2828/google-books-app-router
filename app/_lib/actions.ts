@@ -27,7 +27,12 @@ export const addBookToListAction = async (book: Book) => {
     if (selectErr) throw new Error(selectErr.message);
 
     // handle duplicate entry
-    if (existingEntry) return { existingEntry };
+    if (existingEntry) {
+      const label = bookFromDB.title || 'This book';
+      return {
+        existingEntry: `"${label}" is already in your list`
+      };
+    }
 
     // insert and select new entry in reading list
     const { data, error: insertError } = await supabase
