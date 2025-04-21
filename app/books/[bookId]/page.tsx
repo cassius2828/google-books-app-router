@@ -54,7 +54,9 @@ export default function BookDetails() {
     try {
       startTransition(async () => {
         const result = await addBookToListAction(book);
-        if (result.existingEntry) {
+        if (result.noUserError) {
+          toast(result.noUserError, { icon: "🚫👤" });
+        } else if (result.existingEntry) {
           toast("Book already in your list", { icon: "📖" });
         } else {
           toast.success("Book added to your reading list");
@@ -82,7 +84,8 @@ export default function BookDetails() {
         <div className="flex flex-col">
           <h1 className="text-3xl font-bold mb-4">{title}</h1>
           <p className="text-gray-700 mb-2">
-            <span className="font-semibold">Authors:</span> {authors?.join(", ")}
+            <span className="font-semibold">Authors:</span>{" "}
+            {authors?.join(", ")}
           </p>
           <p className="text-gray-700 mb-2">
             <span className="font-semibold">Publisher:</span> {publisher}

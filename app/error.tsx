@@ -2,8 +2,6 @@
 "use client";
 
 import { useEffect } from "react";
-import SignInButton from "./_components/SignInButton";
-import { determineErrorMessageByName } from "./_lib/errors";
 
 export default function Error({
   error,
@@ -12,12 +10,8 @@ export default function Error({
   error: Error;
   reset: () => void;
 }) {
-
-const message = determineErrorMessageByName(error.name)
-
   useEffect(() => {
     console.error(error.message);
-    console.error(message, ' <-- message var');
     console.error(error.name);
   }, [error]);
 
@@ -27,7 +21,7 @@ const message = determineErrorMessageByName(error.name)
         <h1 className="text-2xl font-bold text-red-600 mb-4">
           Oops! Something went wrong.
         </h1>
-        <p className="text-gray-700 mb-6">{message || error.name}</p>
+        <p className="text-gray-700 mb-6">Unexpected Error Occurred</p>
         <div className="flex justify-center gap-4 items-center">
           <button
             onClick={() => reset()}
@@ -35,8 +29,6 @@ const message = determineErrorMessageByName(error.name)
           >
             Try Again
           </button>
-          {/* allows user to easily sign in if desired */}
-          {error.name === 'NoUserError' && <SignInButton />}
         </div>
       </div>
     </div>
