@@ -1,15 +1,10 @@
 import { getUserReadingList } from "@/app/_lib/service";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(
-  request: NextRequest,
-  {
-    params,
-  }: {
-    params: { userId: string };
-  }
-) {
-  const { userId } = params;
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+
+  const userId = searchParams.get("userId")?.trim() ?? "";
 
   try {
     if (userId) {

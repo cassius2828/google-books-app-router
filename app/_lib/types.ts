@@ -53,11 +53,14 @@ export type BookContextType = {
 };
 
 export interface ReadingListItem {
-  id: string;
-  title: string;
-  thumbnail: string;
-  description: string;
-  authors: string[];
+  books: {
+    id: string;
+    google_book_id: string;
+    title: string;
+    thumbnail: string;
+    description: string;
+    authors: string[];
+  };
   status: "to_read" | "reading" | "completed";
 }
 
@@ -69,3 +72,33 @@ export type ReadingListDBItem = {
   updated_at: Date;
   created_at: Date;
 };
+
+
+// types.ts
+
+/** 
+ * The raw “books” row you get back from the DB 
+ */
+export interface BookRecord {
+  id: string;
+  google_book_id: string;
+  title: string;
+  authors: string[];
+  publisher: string;
+  published_date: string;
+  description: string;
+  page_count: number;
+  categories: string[];
+  thumbnail: string;
+  preview_link: string;
+  created_at: string;    // ISO timestamp from Postgres
+}
+
+/**
+ * One row of the joined reading_list ⇄ books query
+ */
+export interface ReadingListDBRow {
+  status: "to_read" | "reading" | "completed"
+  books: BookRecord;     // nested under the `books` key by PostgREST
+}
+
