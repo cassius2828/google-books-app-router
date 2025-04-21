@@ -4,24 +4,19 @@ import { convert } from "html-to-text";
 import { Book } from "@/app/_lib/types";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 
 import axios from "axios";
 import Link from "next/link";
 import { addBookToListAction } from "@/app/_lib/actions";
 import Loader from "@/app/loading";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function BookDetails() {
   const { bookId } = useParams();
   const [book, setBook] = useState<Book | null>(null);
 
-  // const handleAddToMyList = async (params:type) => {
-  //   try {
-  //     const response = await axios.post(`/api/books/${bookId}`)
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // }
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     if (!bookId) return;
@@ -36,13 +31,8 @@ export default function BookDetails() {
     load();
   }, [bookId]);
 
-useEffect(() => {
-  console.log(book)
-},[book])
   if (!book) {
-    return (
-    <Loader/>
-    );
+    return <Loader />;
   }
 
   const {
@@ -60,12 +50,25 @@ useEffect(() => {
   } = book;
   const formattedDescription = convert(description);
 
-const handleAddBookToMyList = async () => {
-  const data = await addBookToListAction(book)
-  console.log(data, ' <-- data')
-}
-
-
+  const handleAddBookToMyList = () => {
+    try {
+      startTransition(async () => {
+        const result = await addBookToListAction(book);
+        if (result.existingEntry) {
+          toast("Book already in your list", { icon: "📖" });
+        } else {
+          toast.success("Book added to your reading list");
+        }
+      });
+    } catch (err) {
+      // guide for type safety with errors
+      // https://kentcdodds.com/blog/get-a-catch-block-error-message-with-typescript
+      let message;
+      if (err instanceof Error) message = err.message;
+      else message = String(err);
+      toast.error(message);
+    }
+  };
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
       <div className="max-w-4xl w-full bg-white shadow-md rounded-lg p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -117,12 +120,13 @@ const handleAddBookToMyList = async () => {
               Preview Book
             </Link>
             <button
+              disabled={isPending}
               onClick={handleAddBookToMyList}
-         
               className="mt-auto inline-block bg-blue-600 text-white font-medium rounded-lg px-6 py-3 hover:bg-blue-700 transition text-center"
             >
-              Add To My List
+              {isPending ? "Adding book..." : "Add To My List"}
             </button>
+            <Toaster />
           </div>
         </div>
       </div>
