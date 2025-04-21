@@ -54,8 +54,12 @@ export default function BookDetails() {
     try {
       startTransition(async () => {
         const result = await addBookToListAction(book);
-        if (result.existingEntry) {
-          toast("Book already in your list", { icon: "📖" });
+        if (result.noUserError) {
+          toast.error(result.noUserError, { icon: "🚫👤" });
+        } else if (result.existingEntry) {
+          toast.error(result.existingEntry, { icon: "📖📖" });
+        } else if (result.insertError) {
+          toast.error(result.insertError, { icon: "🚫➕📖" });
         } else {
           toast.success("Book added to your reading list");
         }
@@ -64,7 +68,7 @@ export default function BookDetails() {
       // guide for type safety with errors
       // https://kentcdodds.com/blog/get-a-catch-block-error-message-with-typescript
       let message;
-      if (err instanceof Error) message = err.message;
+      if (err instanceof Error) message = err.name;
       else message = String(err);
       toast.error(message);
     }
@@ -82,7 +86,8 @@ export default function BookDetails() {
         <div className="flex flex-col">
           <h1 className="text-3xl font-bold mb-4">{title}</h1>
           <p className="text-gray-700 mb-2">
-            <span className="font-semibold">Authors:</span> {authors?.join(", ")}
+            <span className="font-semibold">Authors:</span>{" "}
+            {authors?.join(", ")}
           </p>
           <p className="text-gray-700 mb-2">
             <span className="font-semibold">Publisher:</span> {publisher}

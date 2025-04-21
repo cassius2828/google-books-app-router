@@ -39,7 +39,9 @@ export const getPublicUserID = async (email: string) => {
 
   if (error) {
     console.error("Error fetching public user ID:", error);
-    // handle error…
+    throw new Error(
+      `Could not get a user_id by the email provided. \nEmail: ${email}`
+    );
   } else {
     return publicUser.id;
   }
@@ -82,12 +84,13 @@ export const postAddBookToDB = async (book: Book) => {
         categories,
         preview_link: previewLink,
         thumbnail: imageLinks.thumbnail || imageLinks.smallThumbnail,
-        google_book_id: book.id
+        google_book_id: book.id,
       },
     ])
     .select()
     .single();
-  if (error) throw new Error(`Unable to add book to database: ${error.message}`);
+  if (error)
+    throw new Error(`Unable to add book to database: ${error.message}`);
   return data;
 };
 
