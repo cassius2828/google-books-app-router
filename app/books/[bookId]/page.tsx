@@ -64,7 +64,7 @@ export default function BookDetails() {
       // guide for type safety with errors
       // https://kentcdodds.com/blog/get-a-catch-block-error-message-with-typescript
       let message;
-      if (err instanceof Error) message = err.message;
+      if (err instanceof Error) message = err.name;
       else message = String(err);
       toast.error(message);
     }

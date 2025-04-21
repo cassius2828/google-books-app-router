@@ -3,6 +3,8 @@ import { supabase } from "@/supabase/supabase";
 import { auth, signIn, signOut } from "./auth";
 import { Book } from "./types";
 import { getPublicUserID, postAddBookToDB } from "./service";
+import { NoUserError } from "./errors";
+
 
 export const signInWithGoogle = async () => await signIn("google");
 export const singOutAction = async () => await signOut();
@@ -23,7 +25,7 @@ export const addBookToListAction = async (book: Book) => {
 
     if (selectErr) throw new Error(selectErr.message);
 
-    if (existingEntry) return {existingEntry}
+    if (existingEntry) return { existingEntry };
 
     const { data, error: insertError } = await supabase
       .from("reading_list")
@@ -46,8 +48,6 @@ export const addBookToListAction = async (book: Book) => {
     }
     return data;
   } else {
-    throw new Error(
-      "No signed in user email was found. Please sign in to add a book to your reading list."
-    );
+    throw new NoUserError();
   }
 };
