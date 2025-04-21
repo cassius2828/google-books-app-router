@@ -47,8 +47,16 @@ export type DatabaseBook = {
   created_at: Date;
 };
 
-  // 1. Define your context shape
   export type BookContextType = {
     books: Book[];
     setBooks: Dispatch<SetStateAction<Book[]>>;
   };
+
+  export interface ReadingListItem {
+    id: string;
+    title: string;
+    thumbnail: string;
+    description: string;
+    authors: string[];
+    status: "to_read" | "reading" | "completed" | string;
+  }
