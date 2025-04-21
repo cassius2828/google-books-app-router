@@ -16,14 +16,6 @@ export default function BookDetails() {
   const { bookId } = useParams();
   const [book, setBook] = useState<Book | null>(null);
 
-  // const handleAddToMyList = async (params:type) => {
-  //   try {
-  //     const response = await axios.post(`/api/books/${bookId}`)
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // }
-
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
@@ -62,15 +54,19 @@ export default function BookDetails() {
     try {
       startTransition(async () => {
         const result = await addBookToListAction(book);
-        console.log(result, ' <-- result')
         if (result.existingEntry) {
           toast("Book already in your list", { icon: "📖" });
         } else {
           toast.success("Book added to your reading list");
         }
       });
-    } catch (err: any) {
-      toast.error(err.message);
+    } catch (err) {
+      // guide for type safety with errors
+      // https://kentcdodds.com/blog/get-a-catch-block-error-message-with-typescript
+      let message;
+      if (err instanceof Error) message = err.message;
+      else message = String(err);
+      toast.error(message);
     }
   };
   return (
