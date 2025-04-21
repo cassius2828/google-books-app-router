@@ -23,8 +23,7 @@ export const addBookToListAction = async (book: Book) => {
 
     if (selectErr) throw new Error(selectErr.message);
 
-    if (existingEntry)
-      throw new Error("This user already has this book in their reading list");
+    if (existingEntry) return {existingEntry}
 
     const { data, error: insertError } = await supabase
       .from("reading_list")

@@ -60,14 +60,17 @@ export default function BookDetails() {
 
   const handleAddBookToMyList = () => {
     try {
-      startTransition(async () => await addBookToListAction(book));
-      toast.success("Book added to your reading list");
+      startTransition(async () => {
+        const result = await addBookToListAction(book);
+        console.log(result, ' <-- result')
+        if (result.existingEntry) {
+          toast("Book already in your list", { icon: "📖" });
+        } else {
+          toast.success("Book added to your reading list");
+        }
+      });
     } catch (err: any) {
-      if (err.message.includes("already has this book in their reading list")) {
-        toast("Book already in your list", { icon: "📖" });
-      } else {
-        toast.error(err.message);
-      }
+      toast.error(err.message);
     }
   };
   return (
