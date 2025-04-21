@@ -1,17 +1,13 @@
 import ReadingListTableBody from "@/app/_components/ReadingListTableBody";
 import { getUserReadingList } from "@/app/_lib/service";
-import {
-  ReadingListDBRow
-} from "@/app/_lib/types";
+import { ReadingListDBRow } from "@/app/_lib/types";
 import Loader from "@/app/loading";
 import { Suspense } from "react";
 
-export default async function ReadingListPage({
-  params,
-}: {
-  params: { userId: string };
-}) {
-  const { userId } = await params;
+type Params = Promise<{ userId: string }>;
+export default async function ReadingListPage(props: { params: Params }) {
+  const { userId } = await props.params;
+
   const readingList:
     | ReadingListDBRow[]
     | { data: []; error: unknown }
