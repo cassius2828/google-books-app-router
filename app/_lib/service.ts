@@ -1,7 +1,10 @@
 import { supabase } from "@/supabase/supabase";
 import axios from "axios";
-import { Book } from "./types";
 import { convert } from "html-to-text";
+import {
+  Book,
+  ReadingListDBRow
+} from "./types";
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 const BASE_VOL_URL = `https://www.googleapis.com/books/v1/volumes?q=`;
 const BASE_VOL_URL_BY_ID = `https://www.googleapis.com/books/v1/volumes/`;
@@ -102,4 +105,28 @@ export const getBookFromDB = async (bookId: string) => {
     .maybeSingle();
   if (error) throw new Error("could not get book from database");
   else return data;
+};
+
+export const getUserReadingList = async (
+  userId: string
+): Promise<
+  ReadingListDBRow[] | { data: []; error: unknown } | { data: [] }
+> => {
+  if (!userId) {
+    return [];
+  }
+  try {
+    const { data, error } = await supabase
+      .from("reading_list")
+      .select<string, ReadingListDBRow>(`status, books(*)`)
+      .eq("user_id", userId);
+    if (error) {
+      return { data: [], error };
+    }
+
+    return data;
+  } catch (err) {
+    console.error(err);
+    return { data: [] };
+  }
 };

@@ -10,7 +10,7 @@ declare module "next-auth" {
 }
 
 const authConfig = {
-  debug: true,
+  debug: false,
   secret: process.env.NEXTAUTH_SECRET,
   providers: [Google],
   adapter: SupabaseAdapter({
