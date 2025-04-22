@@ -139,7 +139,8 @@ export const getBookFromDB = async (bookId: string) => {
 };
 
 export const getUserReadingList = async (
-  userId: string
+  userId: string,
+  statusFilter?: string
 ): Promise<
   ReadingListDBRow[] | { data: []; error: unknown } | { data: [] }
 > => {
@@ -147,15 +148,28 @@ export const getUserReadingList = async (
     return [];
   }
   try {
-    const { data, error } = await supabase
-      .from("reading_list")
-      .select<string, ReadingListDBRow>(`status, books(*), notes(*)`)
-      .eq("user_id", userId);
-    if (error) {
-      return { data: [], error };
-    }
+    if (statusFilter && statusFilter !== "all") {
+      const { data, error } = await supabase
+        .from("reading_list")
+        .select<string, ReadingListDBRow>(`status, books(*), notes(*)`)
+        .eq("user_id", userId)
+        .eq("status", statusFilter);
+      if (error) {
+        return { data: [], error };
+      }
 
-    return data;
+      return data;
+    } else {
+      const { data, error } = await supabase
+        .from("reading_list")
+        .select<string, ReadingListDBRow>(`status, books(*), notes(*)`)
+        .eq("user_id", userId);
+      if (error) {
+        return { data: [], error };
+      }
+
+      return data;
+    }
   } catch (err) {
     console.error(err);
     return { data: [] };
@@ -193,4 +207,3 @@ export const getNote = async (readingListId: string) => {
   }
   return data?.content;
 };
-

@@ -1,7 +1,6 @@
 import Image from "next/image";
-import { ReadingListDBRow } from "../_lib/types";
-import Loader from "../loading";
 import Link from "next/link";
+import { ReadingListDBRow } from "../_lib/types";
 
 const ReadingListTableBody = async ({
   readingList,
@@ -20,7 +19,6 @@ const ReadingListTableBody = async ({
       </tbody>
     );
   }
-  if (!readingList.length) return <Loader />;
 
   return (
     <tbody className="bg-white divide-y divide-gray-200">
