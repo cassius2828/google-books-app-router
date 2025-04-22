@@ -4,6 +4,7 @@ import { auth, signIn, signOut } from "./auth";
 import { getPublicUserID, postAddBookToDB } from "./service";
 import { Book } from "./types";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 export const signInWithGoogle = async () => await signIn("google");
 export const singOutAction = async () => await signOut();
@@ -94,49 +95,40 @@ export const removeBookFromListAction = async (bookId: string) => {
 // export const getUserReadingListAction = async (params:type) => {
 
 // }
-export const addNotesToBook = async (
-  formData: FormData,
-
-) => {
+export const addNotesToBook = async (formData: FormData) => {
   const session = await auth();
   if (!session) throw new Error("Must be signed in to add notes to a book");
-  const userId = session?.user?.id;
   const content = formData.get("content");
-  const readingListId = formData.get('readingListId');
-  
+  const readingListId = formData.get("readingListId");
+console.log(formData, ' \n\n <-- form data on server\n\n')
   const { data: existingNote, error: existingError } = await supabase
     .from("notes")
     .select()
     .eq("reading_list_id", readingListId)
-    .eq("user_id", userId)
     .maybeSingle();
 
   if (existingError) {
-    return {
-      statusCode: 500,
-      error: `unexpected error when looking for existing user`,
-    };
+    throw new Error(`unexpected error when looking for existing user. Error: ${existingError.message}`);
   }
 
   if (existingNote) {
     existingNote.update([{ content }]).select();
   } else {
-    const { data: newNote, error: newNoteError } = await supabase
-      .from("notes")
-      .insert([
-        {
-          reading_list_id: readingListId,
-          content,
-        },
-      ]);
+    const { error: newNoteError } = await supabase.from("notes").insert([
+      {
+        reading_list_id: readingListId,
+        content,
+      },
+    ]);
 
+    // can return this value since we have a handle function that does not return a value in the
+    // action handler on the client
     if (newNoteError) {
       return {
         statusCode: 500,
-        error: `Unable to create new note record`,
+        newNoteError: `Unable to create new note`,
       };
     }
-
-    return newNote;
   }
+  revalidatePath("/books/*");
 };

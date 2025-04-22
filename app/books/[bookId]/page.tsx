@@ -20,7 +20,8 @@ export default function BookDetails() {
   const { bookId } = useParams();
 
   const [book, setBook] = useState<Book | null>(null);
-  const [readingListId, setReadingListId] = useState<string>('');
+  const [note, setNote] = useState<string>("");
+  const [readingListId, setReadingListId] = useState<string>("");
   const [isPending, startTransition] = useTransition();
   useEffect(() => {
     if (!bookId) return;
@@ -34,7 +35,12 @@ export default function BookDetails() {
           `/api/books/is-book-in-list/${bookData?.volumeInfo?.id}`
         );
         setReadingListId(exists.id);
-        console.log(exists, ' <-- should be reading list id')
+        console.log(exists, " <-- should be reading list id");
+        const { data: noteData } = await axios.get(
+          `/api/notes/${exists.id}`
+        );
+        console.log(noteData, " <-- note data from notes table db");
+        setNote(noteData);
       } catch (err) {
         console.error(err);
       }
@@ -109,12 +115,14 @@ export default function BookDetails() {
     }
   };
 
-  const handleAddNotesToBook = async () => {
-  startTransition(() => {
-    const result = await addNotesToBook()
-  })
-    console.log('adding notes to book in reading list')
-  }
+  const handleAddNotesToBook = (formData: FormData) => {
+    startTransition(async () => {
+      const result = await addNotesToBook(formData);
+      if (result?.newNoteError) {
+        toast.error(result.newNoteError);
+      } else toast.success("saved note!");
+    });
+  };
   const coverSrc =
     imageLinks.cover_image ??
     imageLinks.extraLarge ??
@@ -197,19 +205,24 @@ export default function BookDetails() {
           </div>
         </div>
       </div>
-      <form action={addNotesToBook} className="bg-white p-6 pb-4 rounded-lg shadow-md mb-6 w-full md:w-[40rem]">
-        
-        <input type="hidden" name="readingListId" value={'happy'} />
+      <form
+        action={handleAddNotesToBook}
+        className="bg-white p-6 pb-4 rounded-lg shadow-md mb-6 w-full md:w-[40rem]"
+      >
+        <input type="hidden" name="readingListId" value={readingListId} />
         <label
-          htmlFor="notes"
+          htmlFor="content"
           className="block text-sm font-bold text-gray-700 mb-2"
         >
           Notes
         </label>
         <textarea
-          name="notes"
-          id="notes"
+          name="content"
+          id="content"
           rows={12}
+          defaultValue={note}
+          onChange={(e) => setNote(e.target.value)}
+          value={note}
           placeholder="Write your notes here..."
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
         />

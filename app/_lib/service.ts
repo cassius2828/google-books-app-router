@@ -180,3 +180,16 @@ export const getIsBookInUsersList = async (
 
   return data ?? null;
 };
+
+export const getNote = async (readingListId: string) => {
+  const { data, error } = await supabase
+    .from("notes")
+    .select("content")
+    .eq("reading_list_id", readingListId)
+    .maybeSingle();
+  if (error) {
+    console.error(error);
+    throw error;
+  }
+  return data?.content;
+};
