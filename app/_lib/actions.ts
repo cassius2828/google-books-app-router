@@ -1,10 +1,10 @@
 "use server";
 import { supabase } from "@/supabase/supabase";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { auth, signIn, signOut } from "./auth";
 import { getPublicUserID, postAddBookToDB } from "./service";
 import { Book } from "./types";
-import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
 
 export const signInWithGoogle = async () => await signIn("google");
 export const singOutAction = async () => await signOut();
@@ -111,7 +111,15 @@ export const addNotesToBook = async (formData: FormData) => {
   }
 
   if (existingNote) {
-    existingNote.update([{ content }]).select();
+    // 2️⃣ update the existing note
+    const { error: updateError } = await supabase
+      .from("notes")
+      .update({ content })
+      .eq("id", existingNote.id);
+
+    if (updateError) {
+      throw new Error("Unable to update note");
+    }
   } else {
     const { error: newNoteError } = await supabase.from("notes").insert([
       {
@@ -130,4 +138,26 @@ export const addNotesToBook = async (formData: FormData) => {
     }
   }
   revalidatePath("/books/*");
+};
+
+export const putChangeBookStatusAction = async (status: string, id: string) => {
+  const session = await auth();
+  console.log(status, " \n\n <-- status \n\n");
+  const { error } = await supabase
+    .from("reading_list")
+    .update([
+      {
+        status,
+      },
+    ])
+    .eq("id", id);
+
+  if (error) {
+    return {
+      statusCode: 500,
+      error: `Unable to update status for this book`,
+    };
+  }
+
+  revalidatePath(`/reading-list/${session?.user?.id}`);
 };

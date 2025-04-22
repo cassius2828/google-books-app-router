@@ -1,6 +1,6 @@
 // components/BookDetails.tsx
 "use client";
-import { Book } from "@/app/_lib/types";
+import { Book, ReadingListStatusAndId } from "@/app/_lib/types";
 import { convert } from "html-to-text";
 import Image from "next/image";
 import { useParams } from "next/navigation";
@@ -9,6 +9,7 @@ import { useEffect, useState, useTransition } from "react";
 import {
   addBookToListAction,
   addNotesToBook,
+  putChangeBookStatusAction,
   removeBookFromListAction,
 } from "@/app/_lib/actions";
 import Loader from "@/app/loading";
@@ -21,8 +22,14 @@ export default function BookDetails() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [book, setBook] = useState<Book | null>(null);
   const [note, setNote] = useState<string>("");
-  const [readingListId, setReadingListId] = useState<string>("");
-  const [isPending, startTransition] = useTransition();
+  const [readingListObj, setReadingListObj] = useState<ReadingListStatusAndId>({
+    id: "",
+    status: "to_read",
+  });
+
+  const [isPendingAddBook, startTransitionAddBook] = useTransition();
+  const [isPendingRemoveBook, startTransitionRemoveBook] = useTransition();
+  const [isPendingNotes, startTransitionNotes] = useTransition();
   useEffect(() => {
     if (!bookId) return;
     async function load() {
@@ -34,7 +41,7 @@ export default function BookDetails() {
         const { data: exists } = await axios.get(
           `/api/books/is-book-in-list/${bookData?.volumeInfo?.id}`
         );
-        setReadingListId(exists.id);
+        setReadingListObj(exists);
         const { data: noteData } = await axios.get(`/api/notes/${exists.id}`);
         setNote(noteData);
       } catch (err) {
@@ -68,7 +75,7 @@ export default function BookDetails() {
 
   const handleRemoveBookFromMyList = () => {
     try {
-      startTransition(async () => {
+      startTransitionRemoveBook(async () => {
         if (bookId) {
           const result = await removeBookFromListAction(String(bookId));
           if (result.error) {
@@ -91,7 +98,7 @@ export default function BookDetails() {
 
   const handleAddBookToMyList = () => {
     try {
-      startTransition(async () => {
+      startTransitionAddBook(async () => {
         const result = await addBookToListAction(book);
         if (result.noUserError) {
           toast.error(result.noUserError, { icon: "🚫👤" });
@@ -114,13 +121,23 @@ export default function BookDetails() {
   };
 
   const handleAddNotesToBook = (formData: FormData) => {
-    startTransition(async () => {
+    startTransitionNotes(async () => {
       const result = await addNotesToBook(formData);
       if (result?.newNoteError) {
         toast.error(result.newNoteError);
       } else toast.success("saved note!");
     });
   };
+  const handleChangeBookStatus = async (status: string) => {
+    const result = await putChangeBookStatusAction(status, readingListObj.id);
+    if (result?.error) {
+      toast.error(result.error);
+    } else {
+      toast.success("updated book status!");
+      setReadingListObj((prev) => ({ ...prev, status }));
+    }
+  };
+
   const coverSrc =
     imageLinks.cover_image ??
     imageLinks.extraLarge ??
@@ -131,7 +148,7 @@ export default function BookDetails() {
     imageLinks.smallThumbnail ??
     process.env.NEXT_PUBLIC_IMG_NOT_FOUND!;
   return (
-    <div className="min-h-screen flex flex-col md:flex-row gap-12 items-center justify-center bg-gray-50 p-6">
+    <div className="min-h-screen flex flex-col lg:flex-row gap-12 items-center justify-center bg-gray-50 p-6">
       <div className="max-w-4xl w-full bg-white shadow-md rounded-lg p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
         <Image
           src={coverSrc}
@@ -172,6 +189,18 @@ export default function BookDetails() {
           <p className="text-gray-800 mb-4 line-clamp-6">
             {formattedDescription}
           </p>
+          <select
+            value={readingListObj.status}
+            onChange={(e) => {
+              const { value } = e.target;
+              handleChangeBookStatus(value);
+            }}
+            className="px-2 py-1 mb-4 w-32 text-xs font-semibold rounded-md bg-blue-100 text-blue-800 capitalize focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="to_read">To Read</option>
+            <option value="reading">Reading</option>
+            <option value="completed">Completed</option>
+          </select>
           <div className="flex gap-4 justify-content-between">
             <Link
               href={previewLink}
@@ -181,21 +210,21 @@ export default function BookDetails() {
             >
               Preview Book
             </Link>
-            {readingListId ? (
+            {readingListObj.id ? (
               <button
                 onClick={handleRemoveBookFromMyList}
-                disabled={isPending}
+                disabled={isPendingRemoveBook}
                 className="mt-auto inline-block bg-red-600 text-white font-medium rounded-lg px-6 py-3 hover:bg-red-700 transition text-center"
               >
-                {isPending ? "Removing book..." : "Remove From List"}
+                {isPendingRemoveBook ? "Removing book..." : "Remove From List"}
               </button>
             ) : (
               <button
-                disabled={isPending}
+                disabled={isPendingAddBook}
                 onClick={handleAddBookToMyList}
                 className="mt-auto inline-block bg-blue-600 text-white font-medium rounded-lg px-6 py-3 hover:bg-blue-700 transition text-center"
               >
-                {isPending ? "Adding book..." : "Add To My List"}
+                {isPendingAddBook ? "Adding book..." : "Add To My List"}
               </button>
             )}
 
@@ -203,12 +232,12 @@ export default function BookDetails() {
           </div>
         </div>
       </div>
-      {readingListId && (
+      {readingListObj.id && (
         <form
           action={handleAddNotesToBook}
           className="bg-white p-6 pb-4 rounded-lg shadow-md mb-6 w-full md:w-[40rem]"
         >
-          <input type="hidden" name="readingListId" value={readingListId} />
+          <input type="hidden" name="readingListId" value={readingListObj.id} />
           <label
             htmlFor="content"
             className="block text-sm font-bold text-gray-700 mb-2"
@@ -219,7 +248,6 @@ export default function BookDetails() {
             name="content"
             id="content"
             rows={12}
-            defaultValue={note}
             onChange={(e) => setNote(e.target.value)}
             value={note}
             placeholder="Write your notes here..."
@@ -227,11 +255,17 @@ export default function BookDetails() {
           />
           <div className="flex justify-end gap-4 mt-2">
             {/* add logic where if no notes are written then btn is disabled */}
-            <button className="mt-auto inline-block bg-red-600 text-white font-medium rounded-lg px-3 py-2 hover:bg-red-700 transition text-center">
+            <button
+            type="button"
+              onClick={(e) => {
+                e.preventDefault();setNote("")
+              } }
+              className="mt-auto inline-block bg-red-600 text-white font-medium rounded-lg px-3 py-2 hover:bg-red-700 transition text-center"
+            >
               Clear
             </button>
             <button className="mt-auto inline-block bg-blue-600 text-white font-medium rounded-lg px-3 py-2 hover:bg-blue-700 transition text-center">
-              Save
+              {isPendingNotes ? "Saving..." : "Save"}
             </button>
           </div>
         </form>

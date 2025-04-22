@@ -14,7 +14,7 @@ export default async function ReadingListPage(props: { params: Params }) {
     | { data: [] } = await getUserReadingList(userId);
 
   return (
-    <div className="overflow-x-auto max-w-[70rem] mx-auto mt-12">
+    <div className="overflow-x-auto max-w-[80rem] mx-auto mt-12">
       <table className="min-w-full bg-white divide-y divide-gray-200 ">
         <thead className="bg-gray-50">
           <tr>

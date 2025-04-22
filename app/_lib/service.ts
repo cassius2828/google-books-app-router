@@ -168,7 +168,7 @@ export const getIsBookInUsersList = async (
 ): Promise<{ id: string } | null> => {
   const { data, error } = await supabase
     .from("reading_list")
-    .select("id")
+    .select()
     .eq("user_id", userId)
     .eq("book_id", bookId)
     .maybeSingle();
@@ -193,3 +193,4 @@ export const getNote = async (readingListId: string) => {
   }
   return data?.content;
 };
+
