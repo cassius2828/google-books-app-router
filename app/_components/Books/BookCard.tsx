@@ -56,7 +56,7 @@ export default function BookCard({
           Published Date: {new Date(publishedDate).toLocaleDateString()}
         </p>
       </div>
-      <div className="flex justify-center gap-4">
+      <div className="flex justify-center gap-4 pb-4 ">
         <Link
           className="bg-blue-600 text-gray-50 px-3 py-1 rounded-md"
           href={`/books/${id}`}

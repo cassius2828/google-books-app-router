@@ -6,7 +6,13 @@ import { useBooksContext } from "@/app/_context/BooksContext";
 import { Book } from "@/app/_lib/types";
 import axios from "axios";
 import { useEffect, useState } from "react";
-
+import Masonry from "react-masonry-css";
+const breakpointColumnsObj = {
+  default: 4,
+  1100: 3,
+  700: 2,
+  500: 1
+};
 const BooksGallery = () => {
   const { books, setBooks } = useBooksContext();
   const [paginationIndex, setPaginiationIndex] = useState<number>(1);
@@ -47,7 +53,11 @@ const BooksGallery = () => {
   }, []);
   return (
     <div className="mt-20 w-full">
-      <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 justify-items-center max-w-7xl mx-auto">
+      <Masonry
+        breakpointCols={breakpointColumnsObj}
+        className="my-masonry-grid"
+        columnClassName="my-masonry-grid_column"
+      >
         {displayBooks?.map((book: Book) => {
           const {
             title,
@@ -59,7 +69,6 @@ const BooksGallery = () => {
             publishedDate,
             imageLinks,
           } = book.volumeInfo;
-          // const { thumbnail } = book?.volumeInfo?.imageLinks;
           return (
             <BookCard
               key={book.id}
@@ -75,7 +84,8 @@ const BooksGallery = () => {
             />
           );
         })}
-      </ul>
+      </Masonry>
+
       <div className="w-full flex justify-center">
         {!!displayBooks.length && (
           <button
