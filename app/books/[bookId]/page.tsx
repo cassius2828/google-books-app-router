@@ -190,18 +190,21 @@ export default function BookDetails() {
           <p className="text-gray-800 mb-4 line-clamp-6">
             {formattedDescription}
           </p>
-          <select
-            value={readingListObj.status}
-            onChange={(e) => {
-              const { value } = e.target;
-              handleChangeBookStatus(value);
-            }}
-            className="px-2 py-1 mb-4 w-32 text-xs font-semibold rounded-md bg-blue-100 text-blue-800 capitalize focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="to_read">To Read</option>
-            <option value="reading">Reading</option>
-            <option value="completed">Completed</option>
-          </select>
+          {readingListObj.id && (
+            <select
+              value={readingListObj.status}
+              onChange={(e) => {
+                const { value } = e.target;
+                handleChangeBookStatus(value);
+              }}
+              className="px-2 py-1 mb-4 w-32 text-xs font-semibold rounded-md bg-blue-100 text-blue-800 capitalize focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="to_read">To Read</option>
+              <option value="reading">Reading</option>
+              <option value="completed">Completed</option>
+            </select>
+          )}
+
           <div className="flex gap-4 justify-content-between">
             <Link
               href={previewLink}
