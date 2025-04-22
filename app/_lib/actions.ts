@@ -3,6 +3,7 @@ import { supabase } from "@/supabase/supabase";
 import { auth, signIn, signOut } from "./auth";
 import { getPublicUserID, postAddBookToDB } from "./service";
 import { Book } from "./types";
+import { redirect } from "next/navigation";
 
 export const signInWithGoogle = async () => await signIn("google");
 export const singOutAction = async () => await signOut();
@@ -30,9 +31,9 @@ export const addBookToListAction = async (book: Book) => {
 
     // handle duplicate entry
     if (existingEntry) {
-      const label = bookFromDB.title || 'This book';
+      const label = bookFromDB.title || "This book";
       return {
-        existingEntry: `"${label}" is already in your list`
+        existingEntry: `"${label}" is already in your list`,
       };
     }
 
@@ -68,6 +69,28 @@ export const addBookToListAction = async (book: Book) => {
   }
 };
 
+export const removeBookFromListAction = async (bookId: string) => {
+  const session = await auth();
+  const userId = session?.user?.id;
+  if (!session?.user?.id)
+    return {
+      statusCode: 403,
+      error: "User not authorized to perform this action",
+    };
+
+  const { error } = await supabase
+    .from("reading_list")
+    .delete()
+    .eq("user_id", userId)
+    .eq("book_id", bookId);
+
+  if (error) {
+    console.error(error);
+    console.log(bookId);
+    return { error: "Unable to remove book from users list", status: 500 };
+  } else redirect(`/reading-list/${userId}`);
+};
+
 // export const getUserReadingListAction = async (params:type) => {
-  
+
 // }

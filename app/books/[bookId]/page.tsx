@@ -1,18 +1,19 @@
 // components/BookDetails.tsx
 "use client";
-import { convert } from "html-to-text";
 import { Book } from "@/app/_lib/types";
+import { convert } from "html-to-text";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 
+import {
+  addBookToListAction,
+  removeBookFromListAction,
+} from "@/app/_lib/actions";
+import Loader from "@/app/loading";
 import axios from "axios";
 import Link from "next/link";
-import { addBookToListAction } from "@/app/_lib/actions";
-import Loader from "@/app/loading";
 import toast, { Toaster } from "react-hot-toast";
-import { auth } from "@/app/_lib/auth";
-import { getIsBookInUsersList, getPublicUserID } from "@/app/_lib/service";
 
 export default function BookDetails() {
   const { bookId } = useParams();
@@ -58,6 +59,29 @@ export default function BookDetails() {
     },
   } = book;
   const formattedDescription = convert(description);
+
+  const handleRemoveBookFromMyList = () => {
+    try {
+      startTransition(async () => {
+        if (bookId) {
+          const result = await removeBookFromListAction(String(bookId));
+          if (result.error) {
+            toast.error(result.error, { icon: "🤕" });
+          } else {
+            toast.success(`Removed ${title} from your reading list`);
+          }
+        }
+        toast.error("Cannot remove book since no book id was found");
+      });
+    } catch (err) {
+      // guide for type safety with errors
+      // https://kentcdodds.com/blog/get-a-catch-block-error-message-with-typescript
+      let message;
+      if (err instanceof Error) message = err.name;
+      else message = String(err);
+      toast.error(message);
+    }
+  };
 
   const handleAddBookToMyList = () => {
     try {
@@ -144,11 +168,11 @@ export default function BookDetails() {
             </Link>
             {isBookInUserList ? (
               <button
+                onClick={handleRemoveBookFromMyList}
                 disabled={isPending}
-                onClick={() => console.log("remove book fn")}
-                className="mt-auto inline-block bg-blue-600 text-white font-medium rounded-lg px-6 py-3 hover:bg-blue-700 transition text-center"
+                className="mt-auto inline-block bg-red-600 text-white font-medium rounded-lg px-6 py-3 hover:bg-blue-700 transition text-center"
               >
-                {isPending ? "Removing book..." : "Remove Book From List"}
+                {isPending ? "Removing book..." : "Remove From List"}
               </button>
             ) : (
               <button
