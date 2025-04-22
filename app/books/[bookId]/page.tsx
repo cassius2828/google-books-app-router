@@ -3,7 +3,7 @@
 import { Book, ReadingListStatusAndId } from "@/app/_lib/types";
 import { convert } from "html-to-text";
 import Image from "next/image";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 
 import {
@@ -19,6 +19,7 @@ import toast, { Toaster } from "react-hot-toast";
 
 export default function BookDetails() {
   const { bookId } = useParams();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [book, setBook] = useState<Book | null>(null);
   const [note, setNote] = useState<string>("");
@@ -148,7 +149,7 @@ export default function BookDetails() {
     imageLinks.smallThumbnail ??
     process.env.NEXT_PUBLIC_IMG_NOT_FOUND!;
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row gap-12 items-center justify-center bg-gray-50 p-6">
+    <div className="min-h-screen flex flex-col lg:flex-row gap-12 items-center justify-center bg-gray-50 p-6 relative">
       <div className="max-w-4xl w-full bg-white shadow-md rounded-lg p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
         <Image
           src={coverSrc}
@@ -256,10 +257,11 @@ export default function BookDetails() {
           <div className="flex justify-end gap-4 mt-2">
             {/* add logic where if no notes are written then btn is disabled */}
             <button
-            type="button"
+              type="button"
               onClick={(e) => {
-                e.preventDefault();setNote("")
-              } }
+                e.preventDefault();
+                setNote("");
+              }}
               className="mt-auto inline-block bg-red-600 text-white font-medium rounded-lg px-3 py-2 hover:bg-red-700 transition text-center"
             >
               Clear
@@ -270,6 +272,12 @@ export default function BookDetails() {
           </div>
         </form>
       )}
+      <button
+        onClick={() => router.back()}
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 border border-gray-700 rounded-md px-3 py-2 mt-12  transition-colors duration-200 hover:bg-gray-700 hover:text-gray-50"
+      >
+        back
+      </button>
     </div>
   );
 }

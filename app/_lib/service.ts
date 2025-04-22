@@ -9,9 +9,10 @@ const BASE_VOL_URL_BY_ID = `https://www.googleapis.com/books/v1/volumes/`;
 export const getBooksByTitle = async (query: string) => {
   try {
     const response = await axios.get(
-      `${BASE_VOL_URL}${query}&key=${GOOGLE_API_KEY}`
+      `${BASE_VOL_URL}${query}&key=${GOOGLE_API_KEY}&maxResults=40`
     );
-    return response.data.items;
+    console.log(response.data , ' <-- \n data \n\n')
+    return response.data;
   } catch (err) {
     console.error(err);
     throw err;
