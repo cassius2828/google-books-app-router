@@ -106,5 +106,6 @@ interface ImageLinks {
 export interface ReadingListStatusAndId {
   id: string;
   user_id: string;
+  book_id: string;
   status: string;
 }

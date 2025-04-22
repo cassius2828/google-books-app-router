@@ -26,6 +26,7 @@ export default function BookDetails() {
   const [readingListObj, setReadingListObj] = useState<ReadingListStatusAndId>({
     id: "",
     user_id: "",
+    book_id: "",
     status: "to_read",
   });
 
@@ -81,15 +82,20 @@ export default function BookDetails() {
   const handleRemoveBookFromMyList = () => {
     try {
       startTransitionRemoveBook(async () => {
-        if (bookId) {
-          const result = await removeBookFromListAction(String(bookId));
+        if (readingListObj.book_id) {
+          const result = await removeBookFromListAction(
+            String(readingListObj.book_id)
+          );
           if (result.error) {
             toast.error(result.error, { icon: "🤕" });
+            return;
           } else {
             toast.success(`Removed ${title} from your reading list`);
+            return;
           }
         }
         toast.error("Cannot remove book since no book id was found");
+        return;
       });
     } catch (err) {
       // guide for type safety with errors

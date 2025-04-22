@@ -11,7 +11,6 @@ export const getBooksByTitle = async (query: string) => {
     const response = await axios.get(
       `${BASE_VOL_URL}${query}&key=${GOOGLE_API_KEY}&maxResults=40`
     );
-    console.log(response.data, " <-- \n data \n\n");
     return response.data;
   } catch (err) {
     console.error(err);
@@ -205,5 +204,5 @@ export const getNote = async (readingListId: string) => {
     console.error(error);
     throw error;
   }
-  return data?.content;
+  return data?.content || "";
 };
