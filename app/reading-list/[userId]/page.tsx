@@ -20,8 +20,7 @@ export default async function ReadingListPage(props: {
     | ReadingListDBRow[]
     | { data: []; error: unknown }
     | { data: [] } = await getUserReadingList(userId, status);
-    
-console.log(readingList, ' \n <-- reading list \n\n')
+
   return (
     <div className="flex flex-col items-center">
       <Filter />
