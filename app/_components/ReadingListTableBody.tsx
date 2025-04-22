@@ -49,7 +49,7 @@ const ReadingListTableBody = async ({
                 {books?.authors.join(", ")}
               </div>
             </td>
-            <td className="px-6 py-4 text-sm text-gray-500 line-clamp-2">
+            <td className="hidden lg:block px-6 py-4 text-sm text-gray-500 line-clamp-2">
               {books?.description.length > 200
                 ? books.description.slice(0, 200) + "..."
                 : books.description}
