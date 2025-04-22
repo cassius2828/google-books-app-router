@@ -1,10 +1,7 @@
 import { supabase } from "@/supabase/supabase";
 import axios from "axios";
 import { convert } from "html-to-text";
-import {
-  Book,
-  ReadingListDBRow
-} from "./types";
+import { Book, ReadingListDBRow } from "./types";
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 const BASE_VOL_URL = `https://www.googleapis.com/books/v1/volumes?q=`;
 const BASE_VOL_URL_BY_ID = `https://www.googleapis.com/books/v1/volumes/`;
@@ -23,9 +20,39 @@ export const getBooksByTitle = async (query: string) => {
 
 export const getBookById = async (id: string) => {
   try {
+    // look in DB for book first
+    const existingBook = await getBookFromDB(id);
+    // using google id to find the book
+    console.log(id, "\n\n\n <-- id to find book \n\n\n");
+    console.log(existingBook, "\n\n\n <-- existing book \n\n\n");
+    if (existingBook) {
+      return {
+        volumeInfo: {
+          title: existingBook.title,
+          authors: existingBook.authors,
+          publisher: existingBook.publisher,
+          publishedDate: existingBook.published_date,
+          description: existingBook.description,
+          pageCount: existingBook.page_count,
+          categories: existingBook.categories,
+          previewLink: existingBook.preview_link,
+          google_book_id: existingBook.google_book_id,
+          imageLinks: {
+            thumbnail: existingBook.thumbnail,
+            smallThumbnail: "",
+            cover_image: existingBook.cover_image
+          },
+        },
+      };
+    }
+
+    // fetch book from google if not in db
     const response = await axios.get(
       `${BASE_VOL_URL_BY_ID}${id}?key=${GOOGLE_API_KEY}`
     );
+
+    console.log(response.data, "\n\n\n <-- new book \n\n\n");
+
     return response.data;
   } catch (err) {
     console.error(err);
@@ -70,8 +97,10 @@ export const postAddBookToDB = async (book: Book) => {
   } = book;
   const formattedDescription = convert(description);
 
-  const existingBook = await getBookFromDB(book.id);
-  if (existingBook) return existingBook;
+  if (book.volumeInfo.google_book_id) {
+    const existingBook = await getBookFromDB(book.volumeInfo.google_book_id);
+    if (existingBook) return existingBook;
+  }
 
   // insert book if it does not exist in our db
   const { data, error } = await supabase
@@ -86,7 +115,8 @@ export const postAddBookToDB = async (book: Book) => {
         page_count: pageCount,
         categories,
         preview_link: previewLink,
-        thumbnail: imageLinks.thumbnail || imageLinks.smallThumbnail,
+        cover_image: imageLinks.extraLarge || imageLinks.large || imageLinks.medium || imageLinks.small,
+        thumbnail:  imageLinks.thumbnail || imageLinks.smallThumbnail,
         google_book_id: book.id,
       },
     ])

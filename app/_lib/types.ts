@@ -12,9 +12,15 @@ export type Book = {
     pageCount: number;
     categories: string[];
     previewLink: string;
+    google_book_id?: string;
     imageLinks: {
-      smallThumbnail: string;
-      thumbnail: string;
+      cover_image?: string;
+      extraLarge?: string;
+      large?: string;
+      medium?: string;
+      small?: string;
+      thumbnail?: string;
+      smallThumbnail?: string;
     };
   };
 };
@@ -27,24 +33,8 @@ export type GalleryBookCardProps = {
   pageCount: number;
   previewLink: string;
   publishedDate: string;
-  thumbnail: string;
+  imageLinks: ImageLinks;
   title: string;
-};
-
-export type DatabaseBook = {
-  id: string;
-  title: string;
-  authors: string[];
-  publisher: string;
-  published_date: string;
-  description: string;
-  page_count: number;
-  categories: string[];
-  language: string;
-  avg_rating: number;
-  preview_link: string;
-  thumbnail_url: string;
-  created_at: Date;
 };
 
 export type BookContextType = {
@@ -58,6 +48,7 @@ export interface ReadingListItem {
     google_book_id: string;
     title: string;
     thumbnail: string;
+    cover_image: string;
     description: string;
     authors: string[];
   };
@@ -73,11 +64,10 @@ export type ReadingListDBItem = {
   created_at: Date;
 };
 
-
 // types.ts
 
-/** 
- * The raw “books” row you get back from the DB 
+/**
+ * The raw “books” row you get back from the DB
  */
 export interface BookRecord {
   id: string;
@@ -90,15 +80,25 @@ export interface BookRecord {
   page_count: number;
   categories: string[];
   thumbnail: string;
+  cover_image: string;
   preview_link: string;
-  created_at: string;    // ISO timestamp from Postgres
+  created_at: string; // ISO timestamp from Postgres
 }
 
 /**
  * One row of the joined reading_list ⇄ books query
  */
 export interface ReadingListDBRow {
-  status: "to_read" | "reading" | "completed"
-  books: BookRecord;     // nested under the `books` key by PostgREST
+  status: "to_read" | "reading" | "completed";
+  books: BookRecord; // nested under the `books` key by PostgREST
 }
 
+interface ImageLinks {
+  cover_image?: string;
+  smallThumbnail?: string;
+  thumbnail?: string;
+  small?: string;
+  medium?: string;
+  large?: string;
+  extraLarge?: string;
+}

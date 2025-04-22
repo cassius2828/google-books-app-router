@@ -8,18 +8,28 @@ export default function BookCard({
   authors,
   description,
   categories,
-  thumbnail,
+  imageLinks,
   pageCount,
   previewLink,
   publishedDate,
 }: GalleryBookCardProps) {
+  const coverSrc =
+    imageLinks?.cover_image ??
+    imageLinks?.extraLarge ??
+    imageLinks?.large ??
+    imageLinks?.medium ??
+    imageLinks?.small ??
+    imageLinks?.thumbnail ??
+    imageLinks?.smallThumbnail ??
+    process.env.NEXT_PUBLIC_IMG_NOT_FOUND!;
   return (
     <div className="max-w-80 bg-white rounded-lg shadow-md overflow-hidden">
       <div className="relative aspect-square">
         <Image
-          src={thumbnail}
+          src={coverSrc}
           alt={title}
           fill
+          sizes="(max-width: 768px) 75vw, 20vw"
           className="w-full object-cover object-top"
         />
       </div>

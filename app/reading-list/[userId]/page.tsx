@@ -14,8 +14,8 @@ export default async function ReadingListPage(props: { params: Params }) {
     | { data: [] } = await getUserReadingList(userId);
 
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full bg-white divide-y divide-gray-200">
+    <div className="overflow-x-auto max-w-[70rem] mx-auto mt-12">
+      <table className="min-w-full bg-white divide-y divide-gray-200 ">
         <thead className="bg-gray-50">
           <tr>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -29,6 +29,9 @@ export default async function ReadingListPage(props: { params: Params }) {
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Status
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Book Details
             </th>
           </tr>
         </thead>
