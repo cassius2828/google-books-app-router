@@ -1,7 +1,6 @@
-import Image from "next/image";
-import { signInWithGoogle } from "../_lib/actions";
 import PreviewImagesDesktop from "../_components/ReadingList/PreviewImagesDesktop";
 import PreviewImagesMobile from "../_components/ReadingList/PreviewImagesMobile";
+import { signInWithGoogle } from "../_lib/actions";
 
 export default function ReadingListOverviewPage() {
   return (
@@ -21,7 +20,7 @@ export default function ReadingListOverviewPage() {
       {/* Overview with Screenshots */}
       <section>
         <h2 className="text-3xl font-semibold text-gray-800 mb-6">
-          What You'll See
+          What You&apos;ll See
         </h2>
         <div className="hidden md:block">
           <PreviewImagesDesktop />
