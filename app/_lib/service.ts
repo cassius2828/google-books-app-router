@@ -9,9 +9,9 @@ const BASE_VOL_URL_BY_ID = `https://www.googleapis.com/books/v1/volumes/`;
 export const getBooksByTitle = async (query: string) => {
   try {
     const response = await axios.get(
-      `${BASE_VOL_URL}${query}&key=${GOOGLE_API_KEY}`
+      `${BASE_VOL_URL}${query}&key=${GOOGLE_API_KEY}&maxResults=40`
     );
-    return response.data.items;
+    return response.data;
   } catch (err) {
     console.error(err);
     throw err;
@@ -179,7 +179,7 @@ export const getUserReadingList = async (
 export const getIsBookInUsersList = async (
   userId: string,
   bookId: string
-): Promise<{ id: string } | null> => {
+): Promise<{ id?: string; user_id?: string } | null> => {
   const { data, error } = await supabase
     .from("reading_list")
     .select()
@@ -188,8 +188,7 @@ export const getIsBookInUsersList = async (
     .maybeSingle();
 
   if (error) {
-    console.error("Error checking reading list:", error);
-    throw error;
+    return { user_id: userId };
   }
 
   return data ?? null;
@@ -205,5 +204,5 @@ export const getNote = async (readingListId: string) => {
     console.error(error);
     throw error;
   }
-  return data?.content;
+  return data?.content || "";
 };

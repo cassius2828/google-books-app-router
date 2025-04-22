@@ -3,7 +3,7 @@
 import { Book, ReadingListStatusAndId } from "@/app/_lib/types";
 import { convert } from "html-to-text";
 import Image from "next/image";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 
 import {
@@ -19,11 +19,14 @@ import toast, { Toaster } from "react-hot-toast";
 
 export default function BookDetails() {
   const { bookId } = useParams();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [book, setBook] = useState<Book | null>(null);
   const [note, setNote] = useState<string>("");
   const [readingListObj, setReadingListObj] = useState<ReadingListStatusAndId>({
     id: "",
+    user_id: "",
+    book_id: "",
     status: "to_read",
   });
 
@@ -36,11 +39,14 @@ export default function BookDetails() {
       try {
         // get book data
         const { data: bookData } = await axios.get(`/api/books/${bookId}`);
+        console.log(bookData, " ,_- book data");
         setBook(bookData);
         // does book exist in user reading list
         const { data: exists } = await axios.get(
           `/api/books/is-book-in-list/${bookData?.volumeInfo?.id}`
         );
+        console.log(exists);
+        // set validator for reading list obj ONLY IF book exisits in users list
         setReadingListObj(exists);
         const { data: noteData } = await axios.get(`/api/notes/${exists.id}`);
         setNote(noteData);
@@ -76,15 +82,20 @@ export default function BookDetails() {
   const handleRemoveBookFromMyList = () => {
     try {
       startTransitionRemoveBook(async () => {
-        if (bookId) {
-          const result = await removeBookFromListAction(String(bookId));
+        if (readingListObj.book_id) {
+          const result = await removeBookFromListAction(
+            String(readingListObj.book_id)
+          );
           if (result.error) {
             toast.error(result.error, { icon: "🤕" });
+            return;
           } else {
             toast.success(`Removed ${title} from your reading list`);
+            return;
           }
         }
         toast.error("Cannot remove book since no book id was found");
+        return;
       });
     } catch (err) {
       // guide for type safety with errors
@@ -97,6 +108,7 @@ export default function BookDetails() {
   };
 
   const handleAddBookToMyList = () => {
+    console.log(readingListObj.user_id);
     try {
       startTransitionAddBook(async () => {
         const result = await addBookToListAction(book);
@@ -108,6 +120,10 @@ export default function BookDetails() {
           toast.error(result.insertError, { icon: "🚫➕📖" });
         } else {
           toast.success("Book added to your reading list");
+          setTimeout(() => {
+            console.log(readingListObj, "\n<-- reading list obj\n");
+            router.push(`/reading-list/${readingListObj.user_id}`);
+          }, 1000);
         }
       });
     } catch (err) {
@@ -148,7 +164,7 @@ export default function BookDetails() {
     imageLinks.smallThumbnail ??
     process.env.NEXT_PUBLIC_IMG_NOT_FOUND!;
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row gap-12 items-center justify-center bg-gray-50 p-6">
+    <div className="min-h-screen flex flex-col lg:flex-row gap-12 items-center justify-center bg-gray-50 p-6 relative">
       <div className="max-w-4xl w-full bg-white shadow-md rounded-lg p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
         <Image
           src={coverSrc}
@@ -189,18 +205,21 @@ export default function BookDetails() {
           <p className="text-gray-800 mb-4 line-clamp-6">
             {formattedDescription}
           </p>
-          <select
-            value={readingListObj.status}
-            onChange={(e) => {
-              const { value } = e.target;
-              handleChangeBookStatus(value);
-            }}
-            className="px-2 py-1 mb-4 w-32 text-xs font-semibold rounded-md bg-blue-100 text-blue-800 capitalize focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="to_read">To Read</option>
-            <option value="reading">Reading</option>
-            <option value="completed">Completed</option>
-          </select>
+          {readingListObj.id && (
+            <select
+              value={readingListObj.status}
+              onChange={(e) => {
+                const { value } = e.target;
+                handleChangeBookStatus(value);
+              }}
+              className="px-2 py-1 mb-4 w-32 text-xs font-semibold rounded-md bg-blue-100 text-blue-800 capitalize focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="to_read">To Read</option>
+              <option value="reading">Reading</option>
+              <option value="completed">Completed</option>
+            </select>
+          )}
+
           <div className="flex gap-4 justify-content-between">
             <Link
               href={previewLink}
@@ -256,10 +275,11 @@ export default function BookDetails() {
           <div className="flex justify-end gap-4 mt-2">
             {/* add logic where if no notes are written then btn is disabled */}
             <button
-            type="button"
+              type="button"
               onClick={(e) => {
-                e.preventDefault();setNote("")
-              } }
+                e.preventDefault();
+                setNote("");
+              }}
               className="mt-auto inline-block bg-red-600 text-white font-medium rounded-lg px-3 py-2 hover:bg-red-700 transition text-center"
             >
               Clear
@@ -270,6 +290,12 @@ export default function BookDetails() {
           </div>
         </form>
       )}
+      <button
+        onClick={() => router.back()}
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 border border-gray-700 rounded-md px-3 py-2 mt-12  transition-colors duration-200 hover:bg-gray-700 hover:text-gray-50"
+      >
+        back
+      </button>
     </div>
   );
 }

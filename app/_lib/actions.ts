@@ -72,8 +72,9 @@ export const addBookToListAction = async (book: Book) => {
 
 export const removeBookFromListAction = async (bookId: string) => {
   const session = await auth();
-  const userId = session?.user?.id;
-  if (!session?.user?.id)
+  const userId = await getPublicUserID(session?.user?.email || "");
+  console.log(userId, " \n\n<-- USER ID \n\n");
+  if (!session)
     return {
       statusCode: 403,
       error: "User not authorized to perform this action",
@@ -161,4 +162,3 @@ export const putChangeBookStatusAction = async (status: string, id: string) => {
 
   revalidatePath(`/reading-list/${session?.user?.id}`);
 };
-

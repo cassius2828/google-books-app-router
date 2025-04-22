@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <>
   
-      <main className="flex flex-col items-center justify-center py-20 px-4 bg-gray-50">
+      <main className="flex flex-col items-center justify-center pb-20 px-4 min-h-screen bg-gray-50">
         <h1 className="text-5xl font-extrabold text-gray-900 mb-4 text-center">
           Welcome to LibrisList
         </h1>
