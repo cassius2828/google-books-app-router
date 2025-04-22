@@ -149,7 +149,7 @@ export const getUserReadingList = async (
   try {
     const { data, error } = await supabase
       .from("reading_list")
-      .select<string, ReadingListDBRow>(`status, books(*)`)
+      .select<string, ReadingListDBRow>(`status, books(*), notes(*)`)
       .eq("user_id", userId);
     if (error) {
       return { data: [], error };
@@ -165,7 +165,7 @@ export const getUserReadingList = async (
 export const getIsBookInUsersList = async (
   userId: string,
   bookId: string
-): Promise<boolean> => {
+): Promise<{ id: string } | null> => {
   const { data, error } = await supabase
     .from("reading_list")
     .select("id")
@@ -178,5 +178,5 @@ export const getIsBookInUsersList = async (
     throw error;
   }
 
-  return data !== null;
+  return data ?? null;
 };

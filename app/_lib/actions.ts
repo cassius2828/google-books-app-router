@@ -94,3 +94,49 @@ export const removeBookFromListAction = async (bookId: string) => {
 // export const getUserReadingListAction = async (params:type) => {
 
 // }
+export const addNotesToBook = async (
+  formData: FormData,
+
+) => {
+  const session = await auth();
+  if (!session) throw new Error("Must be signed in to add notes to a book");
+  const userId = session?.user?.id;
+  const content = formData.get("content");
+  const readingListId = formData.get('readingListId');
+  
+  const { data: existingNote, error: existingError } = await supabase
+    .from("notes")
+    .select()
+    .eq("reading_list_id", readingListId)
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (existingError) {
+    return {
+      statusCode: 500,
+      error: `unexpected error when looking for existing user`,
+    };
+  }
+
+  if (existingNote) {
+    existingNote.update([{ content }]).select();
+  } else {
+    const { data: newNote, error: newNoteError } = await supabase
+      .from("notes")
+      .insert([
+        {
+          reading_list_id: readingListId,
+          content,
+        },
+      ]);
+
+    if (newNoteError) {
+      return {
+        statusCode: 500,
+        error: `Unable to create new note record`,
+      };
+    }
+
+    return newNote;
+  }
+};

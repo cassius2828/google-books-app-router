@@ -8,6 +8,7 @@ import { useEffect, useState, useTransition } from "react";
 
 import {
   addBookToListAction,
+  addNotesToBook,
   removeBookFromListAction,
 } from "@/app/_lib/actions";
 import Loader from "@/app/loading";
@@ -19,7 +20,7 @@ export default function BookDetails() {
   const { bookId } = useParams();
 
   const [book, setBook] = useState<Book | null>(null);
-  const [isBookInUserList, setIsBookInUserList] = useState<boolean>(false);
+  const [readingListId, setReadingListId] = useState<string>('');
   const [isPending, startTransition] = useTransition();
   useEffect(() => {
     if (!bookId) return;
@@ -32,7 +33,8 @@ export default function BookDetails() {
         const { data: exists } = await axios.get(
           `/api/books/is-book-in-list/${bookData?.volumeInfo?.id}`
         );
-        setIsBookInUserList(exists);
+        setReadingListId(exists.id);
+        console.log(exists, ' <-- should be reading list id')
       } catch (err) {
         console.error(err);
       }
@@ -106,6 +108,13 @@ export default function BookDetails() {
       toast.error(message);
     }
   };
+
+  const handleAddNotesToBook = async () => {
+  startTransition(() => {
+    const result = await addNotesToBook()
+  })
+    console.log('adding notes to book in reading list')
+  }
   const coverSrc =
     imageLinks.cover_image ??
     imageLinks.extraLarge ??
@@ -166,7 +175,7 @@ export default function BookDetails() {
             >
               Preview Book
             </Link>
-            {isBookInUserList ? (
+            {readingListId ? (
               <button
                 onClick={handleRemoveBookFromMyList}
                 disabled={isPending}
@@ -188,7 +197,9 @@ export default function BookDetails() {
           </div>
         </div>
       </div>
-      <div className="bg-white p-6 pb-4 rounded-lg shadow-md mb-6 w-full md:w-[40rem]">
+      <form action={addNotesToBook} className="bg-white p-6 pb-4 rounded-lg shadow-md mb-6 w-full md:w-[40rem]">
+        
+        <input type="hidden" name="readingListId" value={'happy'} />
         <label
           htmlFor="notes"
           className="block text-sm font-bold text-gray-700 mb-2"
@@ -211,7 +222,7 @@ export default function BookDetails() {
             Save
           </button>
         </div>
-      </div>
+      </form>
     </div>
   );
 }
