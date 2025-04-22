@@ -116,7 +116,7 @@ export default function BookDetails() {
     imageLinks.smallThumbnail ??
     process.env.NEXT_PUBLIC_IMG_NOT_FOUND!;
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
+    <div className="min-h-screen flex flex-col md:flex-row gap-12 items-center justify-center bg-gray-50 p-6">
       <div className="max-w-4xl w-full bg-white shadow-md rounded-lg p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
         <Image
           src={coverSrc}
@@ -186,6 +186,30 @@ export default function BookDetails() {
 
             <Toaster />
           </div>
+        </div>
+      </div>
+      <div className="bg-white p-6 pb-4 rounded-lg shadow-md mb-6 w-full md:w-[40rem]">
+        <label
+          htmlFor="notes"
+          className="block text-sm font-bold text-gray-700 mb-2"
+        >
+          Notes
+        </label>
+        <textarea
+          name="notes"
+          id="notes"
+          rows={12}
+          placeholder="Write your notes here..."
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+        />
+        <div className="flex justify-end gap-4 mt-2">
+          {/* add logic where if no notes are written then btn is disabled */}
+          <button className="mt-auto inline-block bg-red-600 text-white font-medium rounded-lg px-3 py-2 hover:bg-red-700 transition text-center">
+            Clear
+          </button>
+          <button className="mt-auto inline-block bg-blue-600 text-white font-medium rounded-lg px-3 py-2 hover:bg-blue-700 transition text-center">
+            Save
+          </button>
         </div>
       </div>
     </div>
