@@ -170,7 +170,7 @@ export default function BookDetails() {
               <button
                 onClick={handleRemoveBookFromMyList}
                 disabled={isPending}
-                className="mt-auto inline-block bg-red-600 text-white font-medium rounded-lg px-6 py-3 hover:bg-blue-700 transition text-center"
+                className="mt-auto inline-block bg-red-600 text-white font-medium rounded-lg px-6 py-3 hover:bg-red-700 transition text-center"
               >
                 {isPending ? "Removing book..." : "Remove From List"}
               </button>
