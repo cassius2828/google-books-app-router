@@ -73,11 +73,20 @@ export default function BookDetails() {
       toast.error(message);
     }
   };
+  const coverSrc =
+  imageLinks.cover_image ??
+  imageLinks.extraLarge ??
+  imageLinks.large ??
+  imageLinks.medium ??
+  imageLinks.small ??
+  imageLinks.thumbnail ??
+  imageLinks.smallThumbnail ??
+  process.env.NEXT_PUBLIC_IMG_NOT_FOUND!;
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
       <div className="max-w-4xl w-full bg-white shadow-md rounded-lg p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
         <Image
-          src={imageLinks.thumbnail || imageLinks.smallThumbnail}
+          src={coverSrc}
           alt={title}
           width={320}
           height={480}

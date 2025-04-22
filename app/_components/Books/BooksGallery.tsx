@@ -42,6 +42,7 @@ const BooksGallery = () => {
             pageCount,
             previewLink,
             publishedDate,
+            imageLinks,
           } = book.volumeInfo;
           // const { thumbnail } = book?.volumeInfo?.imageLinks;
           return (
@@ -53,12 +54,7 @@ const BooksGallery = () => {
               description={description || "N/A"}
               categories={categories || ["N/A"]}
               pageCount={pageCount}
-              thumbnail={
-                book.volumeInfo.imageLinks?.thumbnail ||
-                book.volumeInfo.imageLinks?.smallThumbnail ||
-                process.env.NEXT_PUBLIC_IMG_NOT_FOUND ||
-                ""
-              }
+              imageLinks={imageLinks}
               previewLink={previewLink || ""}
               publishedDate={publishedDate || "N/A"}
             />

@@ -40,6 +40,7 @@ export const getBookById = async (id: string) => {
           imageLinks: {
             thumbnail: existingBook.thumbnail,
             smallThumbnail: "",
+            cover_image: existingBook.cover_image
           },
         },
       };
@@ -114,7 +115,8 @@ export const postAddBookToDB = async (book: Book) => {
         page_count: pageCount,
         categories,
         preview_link: previewLink,
-        thumbnail: imageLinks.thumbnail || imageLinks.smallThumbnail,
+        cover_image: imageLinks.extraLarge || imageLinks.large || imageLinks.medium || imageLinks.small,
+        thumbnail:  imageLinks.thumbnail || imageLinks.smallThumbnail,
         google_book_id: book.id,
       },
     ])
