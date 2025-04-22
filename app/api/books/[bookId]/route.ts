@@ -5,7 +5,6 @@ export async function GET(request: NextRequest) {
   const array = request.url.split("/");
   const array2 = array[array.length - 1].split("?");
   const id = array2[0];
-  console.log(id, ' <-- ID')
   if (!id) {
     return NextResponse.json(
       { error: 'Missing "id" paramter' },

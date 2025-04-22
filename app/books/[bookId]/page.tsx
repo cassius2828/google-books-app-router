@@ -11,23 +11,32 @@ import Link from "next/link";
 import { addBookToListAction } from "@/app/_lib/actions";
 import Loader from "@/app/loading";
 import toast, { Toaster } from "react-hot-toast";
+import { auth } from "@/app/_lib/auth";
+import { getIsBookInUsersList, getPublicUserID } from "@/app/_lib/service";
 
 export default function BookDetails() {
   const { bookId } = useParams();
+
   const [book, setBook] = useState<Book | null>(null);
-
+  const [isBookInUserList, setIsBookInUserList] = useState<boolean>(false);
   const [isPending, startTransition] = useTransition();
-
   useEffect(() => {
     if (!bookId) return;
     async function load() {
       try {
-        const response = await axios.get(`/api/books/${bookId}`);
-        setBook(response.data);
+        // get book data
+        const { data: bookData } = await axios.get(`/api/books/${bookId}`);
+        setBook(bookData);
+        // does book exist in user reading list
+        const { data: exists } = await axios.get(
+          `/api/books/is-book-in-list/${bookData?.volumeInfo?.id}`
+        );
+        setIsBookInUserList(exists);
       } catch (err) {
         console.error(err);
       }
     }
+
     load();
   }, [bookId]);
 
@@ -74,14 +83,14 @@ export default function BookDetails() {
     }
   };
   const coverSrc =
-  imageLinks.cover_image ??
-  imageLinks.extraLarge ??
-  imageLinks.large ??
-  imageLinks.medium ??
-  imageLinks.small ??
-  imageLinks.thumbnail ??
-  imageLinks.smallThumbnail ??
-  process.env.NEXT_PUBLIC_IMG_NOT_FOUND!;
+    imageLinks.cover_image ??
+    imageLinks.extraLarge ??
+    imageLinks.large ??
+    imageLinks.medium ??
+    imageLinks.small ??
+    imageLinks.thumbnail ??
+    imageLinks.smallThumbnail ??
+    process.env.NEXT_PUBLIC_IMG_NOT_FOUND!;
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
       <div className="max-w-4xl w-full bg-white shadow-md rounded-lg p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -133,13 +142,24 @@ export default function BookDetails() {
             >
               Preview Book
             </Link>
-            <button
-              disabled={isPending}
-              onClick={handleAddBookToMyList}
-              className="mt-auto inline-block bg-blue-600 text-white font-medium rounded-lg px-6 py-3 hover:bg-blue-700 transition text-center"
-            >
-              {isPending ? "Adding book..." : "Add To My List"}
-            </button>
+            {isBookInUserList ? (
+              <button
+                disabled={isPending}
+                onClick={() => console.log("remove book fn")}
+                className="mt-auto inline-block bg-blue-600 text-white font-medium rounded-lg px-6 py-3 hover:bg-blue-700 transition text-center"
+              >
+                {isPending ? "Removing book..." : "Remove Book From List"}
+              </button>
+            ) : (
+              <button
+                disabled={isPending}
+                onClick={handleAddBookToMyList}
+                className="mt-auto inline-block bg-blue-600 text-white font-medium rounded-lg px-6 py-3 hover:bg-blue-700 transition text-center"
+              >
+                {isPending ? "Adding book..." : "Add To My List"}
+              </button>
+            )}
+
             <Toaster />
           </div>
         </div>

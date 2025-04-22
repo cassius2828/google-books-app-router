@@ -23,11 +23,10 @@ export const getBookById = async (id: string) => {
     // look in DB for book first
     const existingBook = await getBookFromDB(id);
     // using google id to find the book
-    console.log(id, "\n\n\n <-- id to find book \n\n\n");
-    console.log(existingBook, "\n\n\n <-- existing book \n\n\n");
     if (existingBook) {
       return {
         volumeInfo: {
+          id: existingBook.id,
           title: existingBook.title,
           authors: existingBook.authors,
           publisher: existingBook.publisher,
@@ -40,7 +39,7 @@ export const getBookById = async (id: string) => {
           imageLinks: {
             thumbnail: existingBook.thumbnail,
             smallThumbnail: "",
-            cover_image: existingBook.cover_image
+            cover_image: existingBook.cover_image,
           },
         },
       };
@@ -50,8 +49,6 @@ export const getBookById = async (id: string) => {
     const response = await axios.get(
       `${BASE_VOL_URL_BY_ID}${id}?key=${GOOGLE_API_KEY}`
     );
-
-    console.log(response.data, "\n\n\n <-- new book \n\n\n");
 
     return response.data;
   } catch (err) {
@@ -115,8 +112,12 @@ export const postAddBookToDB = async (book: Book) => {
         page_count: pageCount,
         categories,
         preview_link: previewLink,
-        cover_image: imageLinks.extraLarge || imageLinks.large || imageLinks.medium || imageLinks.small,
-        thumbnail:  imageLinks.thumbnail || imageLinks.smallThumbnail,
+        cover_image:
+          imageLinks.extraLarge ||
+          imageLinks.large ||
+          imageLinks.medium ||
+          imageLinks.small,
+        thumbnail: imageLinks.thumbnail || imageLinks.smallThumbnail,
         google_book_id: book.id,
       },
     ])
@@ -159,4 +160,23 @@ export const getUserReadingList = async (
     console.error(err);
     return { data: [] };
   }
+};
+
+export const getIsBookInUsersList = async (
+  userId: string,
+  bookId: string
+): Promise<boolean> => {
+  const { data, error } = await supabase
+    .from("reading_list")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("book_id", bookId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error checking reading list:", error);
+    throw error;
+  }
+
+  return data !== null;
 };
