@@ -109,9 +109,17 @@ export const addNotesToBook = async (formData: FormData) => {
   if (existingError) {
     throw new Error(`unexpected error when looking for existing user.`);
   }
-
+  console.log(existingNote, " \n\n <-- existing note \n\n");
   if (existingNote) {
-    existingNote.update([{ content }]).select();
+    // 2️⃣ update the existing note
+    const { error: updateError } = await supabase
+      .from("notes")
+      .update({ content })
+      .eq("id", existingNote.id);
+
+    if (updateError) {
+      throw new Error("Unable to update note");
+    }
   } else {
     const { error: newNoteError } = await supabase.from("notes").insert([
       {
@@ -133,7 +141,7 @@ export const addNotesToBook = async (formData: FormData) => {
 };
 
 export const putChangeBookStatusAction = async (status: string, id: string) => {
-  const session = await auth()
+  const session = await auth();
   console.log(status, " \n\n <-- status \n\n");
   const { error } = await supabase
     .from("reading_list")

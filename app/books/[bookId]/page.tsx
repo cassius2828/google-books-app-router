@@ -246,7 +246,6 @@ export default function BookDetails() {
             name="content"
             id="content"
             rows={12}
-            defaultValue={note}
             onChange={(e) => setNote(e.target.value)}
             value={note}
             placeholder="Write your notes here..."
