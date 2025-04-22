@@ -35,7 +35,7 @@ export default async function Header() {
               href={`/reading-list`}
               className="text-gray-600 hover:text-gray-900"
             >
-              Reading LIst
+              Reading List
             </Link>
           )}
 
