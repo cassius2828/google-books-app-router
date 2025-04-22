@@ -102,3 +102,8 @@ interface ImageLinks {
   large?: string;
   extraLarge?: string;
 }
+
+export interface ReadingListStatusAndId {
+  id: string;
+  status: "to_read" | "reading" | "completed";
+}

@@ -1,6 +1,6 @@
 // components/BookDetails.tsx
 "use client";
-import { Book } from "@/app/_lib/types";
+import { Book, ReadingListStatusAndId } from "@/app/_lib/types";
 import { convert } from "html-to-text";
 import Image from "next/image";
 import { useParams } from "next/navigation";
@@ -21,7 +21,11 @@ export default function BookDetails() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [book, setBook] = useState<Book | null>(null);
   const [note, setNote] = useState<string>("");
-  const [readingListId, setReadingListId] = useState<string>("");
+  const [readingListObj, setReadingListObj] = useState<ReadingListStatusAndId>({
+    id: "",
+    status: "to_read",
+  });
+
   const [isPending, startTransition] = useTransition();
   useEffect(() => {
     if (!bookId) return;
@@ -34,7 +38,7 @@ export default function BookDetails() {
         const { data: exists } = await axios.get(
           `/api/books/is-book-in-list/${bookData?.volumeInfo?.id}`
         );
-        setReadingListId(exists.id);
+        setReadingListObj(exists);
         const { data: noteData } = await axios.get(`/api/notes/${exists.id}`);
         setNote(noteData);
       } catch (err) {
@@ -131,7 +135,7 @@ export default function BookDetails() {
     imageLinks.smallThumbnail ??
     process.env.NEXT_PUBLIC_IMG_NOT_FOUND!;
   return (
-    <div className="min-h-screen flex flex-col md:flex-row gap-12 items-center justify-center bg-gray-50 p-6">
+    <div className="min-h-screen flex flex-col lg:flex-row gap-12 items-center justify-center bg-gray-50 p-6">
       <div className="max-w-4xl w-full bg-white shadow-md rounded-lg p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
         <Image
           src={coverSrc}
@@ -172,6 +176,11 @@ export default function BookDetails() {
           <p className="text-gray-800 mb-4 line-clamp-6">
             {formattedDescription}
           </p>
+          <span className="px-2 py-1 flex justify-center capitalize mb-4 w-32 text-xs leading-5 font-semibold rounded-md bg-blue-100 text-blue-800">
+            {readingListObj.status === "to_read"
+              ? "To Read"
+              : readingListObj.status}
+          </span>
           <div className="flex gap-4 justify-content-between">
             <Link
               href={previewLink}
@@ -181,7 +190,7 @@ export default function BookDetails() {
             >
               Preview Book
             </Link>
-            {readingListId ? (
+            {readingListObj.id ? (
               <button
                 onClick={handleRemoveBookFromMyList}
                 disabled={isPending}
@@ -203,12 +212,12 @@ export default function BookDetails() {
           </div>
         </div>
       </div>
-      {readingListId && (
+      {readingListObj.id && (
         <form
           action={handleAddNotesToBook}
           className="bg-white p-6 pb-4 rounded-lg shadow-md mb-6 w-full md:w-[40rem]"
         >
-          <input type="hidden" name="readingListId" value={readingListId} />
+          <input type="hidden" name="readingListId" value={readingListObj.id} />
           <label
             htmlFor="content"
             className="block text-sm font-bold text-gray-700 mb-2"
