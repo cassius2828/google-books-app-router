@@ -6,14 +6,22 @@ import Loader from "@/app/loading";
 import { Suspense } from "react";
 
 type Params = Promise<{ userId: string }>;
-export default async function ReadingListPage(props: { params: Params }) {
+type SearchParams = Promise<{ status: string }>;
+
+export default async function ReadingListPage(props: {
+  params: Params;
+  searchParams: SearchParams;
+}) {
   const { userId } = await props.params;
+  const { status } = await props.searchParams;
+  console.log(status);
 
   const readingList:
     | ReadingListDBRow[]
     | { data: []; error: unknown }
-    | { data: [] } = await getUserReadingList(userId);
-
+    | { data: [] } = await getUserReadingList(userId, status);
+    
+console.log(readingList, ' \n <-- reading list \n\n')
   return (
     <div className="flex flex-col items-center">
       <Filter />

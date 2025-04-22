@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useSearchParams, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const Filter = () => {
   const searchParams = useSearchParams();
@@ -11,6 +11,7 @@ const Filter = () => {
     const params = new URLSearchParams(searchParams);
     params.set("status", status);
     router.replace(`${pathname}?${params.toString()}`);
+
   };
 
   return (

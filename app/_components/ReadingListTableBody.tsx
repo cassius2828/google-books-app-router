@@ -20,7 +20,6 @@ const ReadingListTableBody = async ({
       </tbody>
     );
   }
-  if (!readingList.length) return <Loader />;
 
   return (
     <tbody className="bg-white divide-y divide-gray-200">

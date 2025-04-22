@@ -2,7 +2,6 @@ import { supabase } from "@/supabase/supabase";
 import axios from "axios";
 import { convert } from "html-to-text";
 import { Book, ReadingListDBRow } from "./types";
-import { revalidatePath } from "next/cache";
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 const BASE_VOL_URL = `https://www.googleapis.com/books/v1/volumes?q=`;
 const BASE_VOL_URL_BY_ID = `https://www.googleapis.com/books/v1/volumes/`;
@@ -149,7 +148,7 @@ export const getUserReadingList = async (
     return [];
   }
   try {
-    if (statusFilter) {
+    if (statusFilter && statusFilter !== "all") {
       const { data, error } = await supabase
         .from("reading_list")
         .select<string, ReadingListDBRow>(`status, books(*), notes(*)`)
@@ -158,8 +157,7 @@ export const getUserReadingList = async (
       if (error) {
         return { data: [], error };
       }
-      
-      revalidatePath(`/reading-list/${userId}`);
+
       return data;
     } else {
       const { data, error } = await supabase
