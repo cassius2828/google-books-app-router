@@ -11,7 +11,7 @@ export const getBooksByTitle = async (query: string) => {
     const response = await axios.get(
       `${BASE_VOL_URL}${query}&key=${GOOGLE_API_KEY}&maxResults=40`
     );
-    console.log(response.data , ' <-- \n data \n\n')
+    console.log(response.data, " <-- \n data \n\n");
     return response.data;
   } catch (err) {
     console.error(err);
@@ -180,7 +180,7 @@ export const getUserReadingList = async (
 export const getIsBookInUsersList = async (
   userId: string,
   bookId: string
-): Promise<{ id: string } | null> => {
+): Promise<{ id?: string; user_id?: string } | null> => {
   const { data, error } = await supabase
     .from("reading_list")
     .select()
@@ -189,8 +189,7 @@ export const getIsBookInUsersList = async (
     .maybeSingle();
 
   if (error) {
-    console.error("Error checking reading list:", error);
-    throw error;
+    return { user_id: userId };
   }
 
   return data ?? null;

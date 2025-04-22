@@ -44,7 +44,7 @@ const ReadingListTableBody = async ({
                 {books?.title}
               </div>
               <div className="text-sm text-gray-500">
-                {books?.authors.join(", ")}
+                {books?.authors?.join(", ")}
               </div>
             </td>
             <td className="hidden lg:block px-6 py-4 text-sm text-gray-500 line-clamp-2">

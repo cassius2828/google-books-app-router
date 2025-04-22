@@ -25,6 +25,7 @@ export default function BookDetails() {
   const [note, setNote] = useState<string>("");
   const [readingListObj, setReadingListObj] = useState<ReadingListStatusAndId>({
     id: "",
+    user_id: "",
     status: "to_read",
   });
 
@@ -37,11 +38,14 @@ export default function BookDetails() {
       try {
         // get book data
         const { data: bookData } = await axios.get(`/api/books/${bookId}`);
+        console.log(bookData, " ,_- book data");
         setBook(bookData);
         // does book exist in user reading list
         const { data: exists } = await axios.get(
           `/api/books/is-book-in-list/${bookData?.volumeInfo?.id}`
         );
+        console.log(exists);
+        // set validator for reading list obj ONLY IF book exisits in users list
         setReadingListObj(exists);
         const { data: noteData } = await axios.get(`/api/notes/${exists.id}`);
         setNote(noteData);
@@ -98,6 +102,7 @@ export default function BookDetails() {
   };
 
   const handleAddBookToMyList = () => {
+    console.log(readingListObj.user_id);
     try {
       startTransitionAddBook(async () => {
         const result = await addBookToListAction(book);
@@ -109,6 +114,10 @@ export default function BookDetails() {
           toast.error(result.insertError, { icon: "🚫➕📖" });
         } else {
           toast.success("Book added to your reading list");
+          setTimeout(() => {
+            console.log(readingListObj, "\n<-- reading list obj\n");
+            router.push(`/reading-list/${readingListObj.user_id}`);
+          }, 1000);
         }
       });
     } catch (err) {
