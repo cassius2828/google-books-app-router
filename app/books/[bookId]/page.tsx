@@ -18,7 +18,7 @@ import toast, { Toaster } from "react-hot-toast";
 
 export default function BookDetails() {
   const { bookId } = useParams();
-
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [book, setBook] = useState<Book | null>(null);
   const [note, setNote] = useState<string>("");
   const [readingListId, setReadingListId] = useState<string>("");
@@ -39,13 +39,15 @@ export default function BookDetails() {
         setNote(noteData);
       } catch (err) {
         console.error(err);
+      } finally {
+        setIsLoading(false);
       }
     }
 
     load();
   }, [bookId]);
 
-  if (!book) {
+  if (!book || isLoading) {
     return <Loader />;
   }
 
@@ -201,37 +203,39 @@ export default function BookDetails() {
           </div>
         </div>
       </div>
-      <form
-        action={handleAddNotesToBook}
-        className="bg-white p-6 pb-4 rounded-lg shadow-md mb-6 w-full md:w-[40rem]"
-      >
-        <input type="hidden" name="readingListId" value={readingListId} />
-        <label
-          htmlFor="content"
-          className="block text-sm font-bold text-gray-700 mb-2"
+      {readingListId && (
+        <form
+          action={handleAddNotesToBook}
+          className="bg-white p-6 pb-4 rounded-lg shadow-md mb-6 w-full md:w-[40rem]"
         >
-          Notes
-        </label>
-        <textarea
-          name="content"
-          id="content"
-          rows={12}
-          defaultValue={note}
-          onChange={(e) => setNote(e.target.value)}
-          value={note}
-          placeholder="Write your notes here..."
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-        />
-        <div className="flex justify-end gap-4 mt-2">
-          {/* add logic where if no notes are written then btn is disabled */}
-          <button className="mt-auto inline-block bg-red-600 text-white font-medium rounded-lg px-3 py-2 hover:bg-red-700 transition text-center">
-            Clear
-          </button>
-          <button className="mt-auto inline-block bg-blue-600 text-white font-medium rounded-lg px-3 py-2 hover:bg-blue-700 transition text-center">
-            Save
-          </button>
-        </div>
-      </form>
+          <input type="hidden" name="readingListId" value={readingListId} />
+          <label
+            htmlFor="content"
+            className="block text-sm font-bold text-gray-700 mb-2"
+          >
+            Notes
+          </label>
+          <textarea
+            name="content"
+            id="content"
+            rows={12}
+            defaultValue={note}
+            onChange={(e) => setNote(e.target.value)}
+            value={note}
+            placeholder="Write your notes here..."
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          />
+          <div className="flex justify-end gap-4 mt-2">
+            {/* add logic where if no notes are written then btn is disabled */}
+            <button className="mt-auto inline-block bg-red-600 text-white font-medium rounded-lg px-3 py-2 hover:bg-red-700 transition text-center">
+              Clear
+            </button>
+            <button className="mt-auto inline-block bg-blue-600 text-white font-medium rounded-lg px-3 py-2 hover:bg-blue-700 transition text-center">
+              Save
+            </button>
+          </div>
+        </form>
+      )}
     </div>
   );
 }
