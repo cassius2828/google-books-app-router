@@ -49,14 +49,14 @@ const ReadingListTableBody = async ({
                 {books?.authors.join(", ")}
               </div>
             </td>
-            <td className="px-6 py-4 text-sm text-gray-500 line-clamp-2 max-w-96">
+            <td className="px-6 py-4 text-sm text-gray-500 line-clamp-2">
               {books?.description.length > 200
                 ? books.description.slice(0, 200) + "..."
                 : books.description}
             </td>
             <td className="px-6 py-4 whitespace-nowrap">
-              <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-md bg-blue-100 text-blue-800">
-                {status && status}
+              <span className="px-2 py-1 capitalize inline-flex text-xs leading-5 font-semibold rounded-md bg-blue-100 text-blue-800">
+                {status === "to_read" ? "To Read" : status}
               </span>
             </td>
             <td className="px-6 py-4 whitespace-nowrap">

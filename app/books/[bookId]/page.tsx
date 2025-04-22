@@ -27,7 +27,9 @@ export default function BookDetails() {
     status: "to_read",
   });
 
-  const [isPending, startTransition] = useTransition();
+  const [isPendingAddBook, startTransitionAddBook] = useTransition();
+  const [isPendingRemoveBook, startTransitionRemoveBook] = useTransition();
+  const [isPendingNotes, startTransitionNotes] = useTransition();
   useEffect(() => {
     if (!bookId) return;
     async function load() {
@@ -73,7 +75,7 @@ export default function BookDetails() {
 
   const handleRemoveBookFromMyList = () => {
     try {
-      startTransition(async () => {
+      startTransitionRemoveBook(async () => {
         if (bookId) {
           const result = await removeBookFromListAction(String(bookId));
           if (result.error) {
@@ -96,7 +98,7 @@ export default function BookDetails() {
 
   const handleAddBookToMyList = () => {
     try {
-      startTransition(async () => {
+      startTransitionAddBook(async () => {
         const result = await addBookToListAction(book);
         if (result.noUserError) {
           toast.error(result.noUserError, { icon: "🚫👤" });
@@ -119,7 +121,7 @@ export default function BookDetails() {
   };
 
   const handleAddNotesToBook = (formData: FormData) => {
-    startTransition(async () => {
+    startTransitionNotes(async () => {
       const result = await addNotesToBook(formData);
       if (result?.newNoteError) {
         toast.error(result.newNoteError);
@@ -211,18 +213,18 @@ export default function BookDetails() {
             {readingListObj.id ? (
               <button
                 onClick={handleRemoveBookFromMyList}
-                disabled={isPending}
+                disabled={isPendingRemoveBook}
                 className="mt-auto inline-block bg-red-600 text-white font-medium rounded-lg px-6 py-3 hover:bg-red-700 transition text-center"
               >
-                {isPending ? "Removing book..." : "Remove From List"}
+                {isPendingRemoveBook ? "Removing book..." : "Remove From List"}
               </button>
             ) : (
               <button
-                disabled={isPending}
+                disabled={isPendingAddBook}
                 onClick={handleAddBookToMyList}
                 className="mt-auto inline-block bg-blue-600 text-white font-medium rounded-lg px-6 py-3 hover:bg-blue-700 transition text-center"
               >
-                {isPending ? "Adding book..." : "Add To My List"}
+                {isPendingAddBook ? "Adding book..." : "Add To My List"}
               </button>
             )}
 
@@ -253,11 +255,17 @@ export default function BookDetails() {
           />
           <div className="flex justify-end gap-4 mt-2">
             {/* add logic where if no notes are written then btn is disabled */}
-            <button className="mt-auto inline-block bg-red-600 text-white font-medium rounded-lg px-3 py-2 hover:bg-red-700 transition text-center">
+            <button
+            type="button"
+              onClick={(e) => {
+                e.preventDefault();setNote("")
+              } }
+              className="mt-auto inline-block bg-red-600 text-white font-medium rounded-lg px-3 py-2 hover:bg-red-700 transition text-center"
+            >
               Clear
             </button>
             <button className="mt-auto inline-block bg-blue-600 text-white font-medium rounded-lg px-3 py-2 hover:bg-blue-700 transition text-center">
-              Save
+              {isPendingNotes ? "Saving..." : "Save"}
             </button>
           </div>
         </form>

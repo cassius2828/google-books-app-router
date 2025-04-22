@@ -109,7 +109,7 @@ export const addNotesToBook = async (formData: FormData) => {
   if (existingError) {
     throw new Error(`unexpected error when looking for existing user.`);
   }
-  console.log(existingNote, " \n\n <-- existing note \n\n");
+
   if (existingNote) {
     // 2️⃣ update the existing note
     const { error: updateError } = await supabase
