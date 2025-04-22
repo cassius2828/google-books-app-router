@@ -92,9 +92,6 @@ export const removeBookFromListAction = async (bookId: string) => {
   } else redirect(`/reading-list/${userId}`);
 };
 
-// export const getUserReadingListAction = async (params:type) => {
-
-// }
 export const addNotesToBook = async (formData: FormData) => {
   const session = await auth();
   if (!session) throw new Error("Must be signed in to add notes to a book");
