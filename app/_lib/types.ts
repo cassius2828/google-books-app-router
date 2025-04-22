@@ -12,6 +12,7 @@ export type Book = {
     pageCount: number;
     categories: string[];
     previewLink: string;
+    google_book_id?: string;
     imageLinks: {
       smallThumbnail: string;
       thumbnail: string;
@@ -73,11 +74,10 @@ export type ReadingListDBItem = {
   created_at: Date;
 };
 
-
 // types.ts
 
-/** 
- * The raw “books” row you get back from the DB 
+/**
+ * The raw “books” row you get back from the DB
  */
 export interface BookRecord {
   id: string;
@@ -91,14 +91,13 @@ export interface BookRecord {
   categories: string[];
   thumbnail: string;
   preview_link: string;
-  created_at: string;    // ISO timestamp from Postgres
+  created_at: string; // ISO timestamp from Postgres
 }
 
 /**
  * One row of the joined reading_list ⇄ books query
  */
 export interface ReadingListDBRow {
-  status: "to_read" | "reading" | "completed"
-  books: BookRecord;     // nested under the `books` key by PostgREST
+  status: "to_read" | "reading" | "completed";
+  books: BookRecord; // nested under the `books` key by PostgREST
 }
-

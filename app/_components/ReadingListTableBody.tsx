@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { ReadingListDBRow } from "../_lib/types";
 import Loader from "../loading";
+import Link from "next/link";
 
 const ReadingListTableBody = async ({
   readingList,
@@ -48,13 +49,23 @@ const ReadingListTableBody = async ({
                 {books?.authors.join(", ")}
               </div>
             </td>
-            <td className="px-6 py-4 text-sm text-gray-500 line-clamp-2">
-              {books?.description}
+            <td className="px-6 py-4 text-sm text-gray-500 line-clamp-2 max-w-96">
+              {books?.description.length > 200
+                ? books.description.slice(0, 200) + "..."
+                : books.description}
             </td>
             <td className="px-6 py-4 whitespace-nowrap">
-              <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+              <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-md bg-blue-100 text-blue-800">
                 {status && status}
               </span>
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap">
+              <Link
+                href={`/books/${books.google_book_id}`}
+                className="text-sm bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition"
+              >
+                View Book
+              </Link>
             </td>
           </tr>
         );

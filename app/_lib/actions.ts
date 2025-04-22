@@ -14,7 +14,10 @@ export const addBookToListAction = async (book: Book) => {
     // get public user
     const publicUserID = await getPublicUserID(session?.user?.email);
     // add book to db
+    // this causes a mismatch between google id and book id since they are structured differently form db to api call
+
     const bookFromDB = await postAddBookToDB(book);
+    console.log(bookFromDB, ' \n\n\n <-- book from db \n\n\n')
     // check for duplicate entry in reading list
     const { data: existingEntry, error: selectErr } = await supabase
       .from("reading_list")
