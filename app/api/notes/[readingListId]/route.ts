@@ -9,7 +9,6 @@ export async function GET(
 
   try {
     const data = await getNote(readingListId);
-    console.log(data, ' <-- data')
     return NextResponse.json(data);
   } catch (err) {
     console.error(err);

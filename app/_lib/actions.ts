@@ -87,7 +87,6 @@ export const removeBookFromListAction = async (bookId: string) => {
 
   if (error) {
     console.error(error);
-    console.log(bookId);
     return { error: "Unable to remove book from users list", status: 500 };
   } else redirect(`/reading-list/${userId}`);
 };
@@ -98,9 +97,9 @@ export const removeBookFromListAction = async (bookId: string) => {
 export const addNotesToBook = async (formData: FormData) => {
   const session = await auth();
   if (!session) throw new Error("Must be signed in to add notes to a book");
+
   const content = formData.get("content");
   const readingListId = formData.get("readingListId");
-console.log(formData, ' \n\n <-- form data on server\n\n')
   const { data: existingNote, error: existingError } = await supabase
     .from("notes")
     .select()
@@ -108,7 +107,7 @@ console.log(formData, ' \n\n <-- form data on server\n\n')
     .maybeSingle();
 
   if (existingError) {
-    throw new Error(`unexpected error when looking for existing user. Error: ${existingError.message}`);
+    throw new Error(`unexpected error when looking for existing user.`);
   }
 
   if (existingNote) {

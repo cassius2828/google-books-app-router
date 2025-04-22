@@ -35,11 +35,7 @@ export default function BookDetails() {
           `/api/books/is-book-in-list/${bookData?.volumeInfo?.id}`
         );
         setReadingListId(exists.id);
-        console.log(exists, " <-- should be reading list id");
-        const { data: noteData } = await axios.get(
-          `/api/notes/${exists.id}`
-        );
-        console.log(noteData, " <-- note data from notes table db");
+        const { data: noteData } = await axios.get(`/api/notes/${exists.id}`);
         setNote(noteData);
       } catch (err) {
         console.error(err);

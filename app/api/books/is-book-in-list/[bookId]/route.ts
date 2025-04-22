@@ -7,7 +7,6 @@ export async function GET(
   { params }: { params: Promise<{ bookId: string }> }
 ) {
   const { bookId } = await params;
-  console.log(bookId, ' \n\n\n <-- book id from slug \n\n\n')
   const session = await auth();
   if (!session?.user?.email) {
     return NextResponse.json({ error: "Not signed in" }, { status: 401 });
