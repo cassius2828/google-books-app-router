@@ -2,7 +2,6 @@ import { supabase } from "@/supabase/supabase";
 import axios from "axios";
 import { convert } from "html-to-text";
 import { Book, ReadingListDBRow } from "./types";
-import { revalidatePath } from "next/cache";
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 const BASE_VOL_URL = `https://www.googleapis.com/books/v1/volumes?q=`;
 const BASE_VOL_URL_BY_ID = `https://www.googleapis.com/books/v1/volumes/`;
