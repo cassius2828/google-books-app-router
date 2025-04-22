@@ -105,5 +105,5 @@ interface ImageLinks {
 
 export interface ReadingListStatusAndId {
   id: string;
-  status: "to_read" | "reading" | "completed";
+  status: string;
 }
