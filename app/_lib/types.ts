@@ -109,3 +109,63 @@ export interface ReadingListStatusAndId {
   book_id: string;
   status: string;
 }
+
+// types.ts
+
+/** 
+ * Distinguishes parameters that build up the `q=` string vs.
+ * those sent independently (e.g. langRestrict, orderBy).
+ */
+export type ParamType = "query" | "independent";
+
+/**
+ * Configuration for a single search parameter.
+ */
+export interface SearchParam {
+  value: string;
+  type: ParamType;
+}
+
+/**
+ * All possible parameters for the advanced Google Books search.
+ */
+export interface AdvancedSearchParams {
+  /** Space-separated full text terms (spaces → '+') */
+  fullText: SearchParam;      // type: "query"
+
+  /** Exact phrase search (enclose in quotes) */
+  exactPhrase: SearchParam;   // type: "query"
+
+  /** Terms to exclude (prefix with '-') */
+  excludeText: SearchParam;   // type: "query"
+
+  /** Terms to include as alternates (pipe-separated) */
+  includesText: SearchParam;  // type: "query"
+
+  /** Restrict results to a specific language (ISO code) */
+  langRestrict: SearchParam;  // type: "independent"
+
+  /** Order results by 'relevance' or 'newest' */
+  orderBy: SearchParam;       // type: "independent"
+
+  /** Filter by print type: 'all' | 'books' | 'magazines' */
+  printType: SearchParam;     // type: "independent"
+
+  /** Base query string to prepend all other query parts */
+  q: SearchParam;             // type: "query"
+
+  /** Volume ID to fetch a single book directly */
+  volumeId: SearchParam;      // type: "independent"
+
+  /** Author-specific filter (prefix with 'inauthor:') */
+  author: SearchParam;        // type: "query"
+
+  /** Title-specific filter (prefix with 'intitle:') */
+  title: SearchParam;         // type: "query"
+
+  /** Publisher-specific filter (prefix with 'inpublisher:') */
+  publisher: SearchParam;     // type: "query"
+
+  /** Subject-specific filter (prefix with 'subject:', pipe-delimited) */
+  subject: SearchParam;       // type: "query"
+}

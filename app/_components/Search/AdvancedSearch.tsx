@@ -2,7 +2,7 @@
 
 import { useBooksContext } from "@/app/_context/BooksContext";
 import { advancedSearchAction } from "@/app/_lib/actions";
-import { Book } from "@/app/_lib/types";
+import { AdvancedSearchParams, Book } from "@/app/_lib/types";
 import { buildAdvancedSearchParamsQuery } from "@/app/_lib/utils";
 import axios from "axios";
 import { useState } from "react";
@@ -20,33 +20,77 @@ import SearchBtn from "./SearchBtn";
 import MaxResultsSelect from "./Inputs/MaxResultsSelect";
 import PublicationDateInput from "./Inputs/PublicationDateInput";
 
-export interface AdvancedSearchParams {
-  filter: string;
-  langRestrict: string;
-  orderBy: string;
-  printType: string;
-  q: string;
-  volumeId: string;
-  author: string;
-  title: string;
-  publisher: string;
-  subject: string;
-}
+const exampleObj = {
+  // replace spaces with + -- q=example+here+you+go
+  fullText: {
+    value: "",
+    type: "query",
+  },
+  // add " " around words for eact phrase q="example"
+  exactPhrase: {
+    value: "",
+    type: "query",
+  },
+  // excludes text from search results -- q=-badguys
+  excludeText: {
+    value: "",
+    type: "query",
+  },
+  // separate words by pipe q=example|here
+  includesText: {
+    value: "",
+    type: "query",
+  },
+  // langRestrict=en
+  langRestrict: {
+    value: "en",
+    type: "independent",
+  },
+  // orderBy=relevance
+  orderBy: {
+    value: "relevance",
+    type: "independent",
+  },
+  // printType=all
+  printType: {
+    value: "all",
+    type: "independent",
+  },
+  // overall query, will append to this value and start with this value
+  q: {
+    value: "",
+    type: "query",
+  },
+  // will query by itself, replaces finalStr in fn
+  volumeId: {
+    value: "",
+    type: "independent",
+  },
+  // q=inauthor:Lemony+Snicket
+  author: {
+    value: "",
+    type: "query",
+  },
+  // q=intitle:Series+of+unfortunate+events
+  title: {
+    value: "",
+    type: "query",
+  },
+  // q=inpublisher:Tin+House
+  publisher: {
+    value: "",
+    type: "query",
+  },
+  // q=subject:finance|self-help
+  subject: {
+    value: "",
+    type: "query",
+  },
+};
 
 export default function AdvancedSearch() {
   const { setBooks } = useBooksContext();
-  const [params, setParams] = useState<AdvancedSearchParams>({
-    filter: "",
-    langRestrict: "",
-    orderBy: "relevance",
-    printType: "all",
-    q: "",
-    volumeId: "",
-    author: "",
-    title: "",
-    publisher: "",
-    subject: "",
-  });
+  const [params, setParams] = useState<AdvancedSearchParams>(exampleObj);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -74,7 +118,9 @@ export default function AdvancedSearch() {
       </h2>
       {/* top section */}
       <div className="flex flex-col md:flex-row items-start max-w-4xl">
-        <span className="md:mx-5 mb-5 text-sm w-32 font-bold mt-3">Find results</span>
+        <span className="md:mx-5 mb-5 text-sm w-32 font-bold mt-3">
+          Find results
+        </span>
 
         <InputQueriesContainer params={params} handleChange={handleChange} />
 
