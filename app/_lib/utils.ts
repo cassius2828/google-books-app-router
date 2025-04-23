@@ -58,34 +58,73 @@ export const buildAdvancedSearchParamsQuery = (
             queryStr,
             buildFullTextQuery
           );
+          continue;
         }
         if (key === "exactPhrase") {
-          queryStr = handleQueryAddition(
-            valueObj.value,
-            queryStr,
-            buildExactPhraseQuery
-          );
+          if (queryStr.length > 2) {
+            queryStr += "+";
+            queryStr = handleQueryAddition(
+              valueObj.value,
+              queryStr,
+              buildExactPhraseQuery
+            );
+          } else {
+            queryStr = handleQueryAddition(
+              valueObj.value,
+              queryStr,
+              buildExactPhraseQuery
+            );
+          }
+
+          continue;
         }
         if (key === "excludeText") {
-          queryStr = handleQueryAddition(
-            valueObj.value,
-            queryStr,
-            buildExcludeTextQuery
-          );
+          if (queryStr.length > 2) {
+            queryStr += "+";
+            queryStr = handleQueryAddition(
+              valueObj.value,
+              queryStr,
+              buildExcludeTextQuery
+            );
+          } else {
+            queryStr = handleQueryAddition(
+              valueObj.value,
+              queryStr,
+              buildExcludeTextQuery
+            );
+          }
+          continue;
         }
         if (key === "includesText") {
-          queryStr = handleQueryAddition(
-            valueObj.value,
-            queryStr,
-            buildIncludesTextQuery
-          );
+          if (queryStr.length > 2) {
+            queryStr += "+";
+
+            queryStr = handleQueryAddition(
+              valueObj.value,
+              queryStr,
+              buildIncludesTextQuery
+            );
+          } else {
+            queryStr = handleQueryAddition(
+              valueObj.value,
+              queryStr,
+              buildIncludesTextQuery
+            );
+          }
+          continue;
         }
+        queryStr = handleQueryAdditionWithKeyPrefix(
+          key,
+          valueObj.value,
+          queryStr,
+          buildFullTextQuery
+        );
       }
     }
   }
-if(queryStr.length > 2) return queryStr + finalStr
-else return finalStr.replace('&','?')
- 
+  console.log(queryStr);
+  if (queryStr.length > 2) return queryStr + finalStr;
+  else return finalStr.replace("&", "?");
 };
 const handleQueryAddition = (
   value: string,
@@ -98,6 +137,23 @@ const handleQueryAddition = (
     return queryStr;
   } else return queryStr;
 };
+const handleQueryAdditionWithKeyPrefix = (
+  key: string,
+  value: string,
+  queryStr: string,
+  fn: (value: string) => string | void
+) => {
+  let newStr = fn(value);
+  if (newStr) {
+    if (key === "subject") {
+      newStr = "+subject:" + newStr;
+    } else {
+      newStr = `+in${key}:${newStr}`;
+    }
+    queryStr += newStr;
+    return queryStr;
+  } else return queryStr;
+};
 
 // let newStr = buildFullTextQuery(valueObj.value);
 // if (newStr) {
@@ -106,17 +162,17 @@ const handleQueryAddition = (
 const exampleObj: AdvancedSearchParams = {
   // replace spaces with + -- q=example+here+you+go
   fullText: {
-    value: "",
+    value: "if you give a mouse",
     type: "query",
   },
   // add " " around words for eact phrase q="example"
   exactPhrase: {
-    value: "",
+    value: "cookie",
     type: "query",
   },
   // excludes text from search results -- q=-badguys
   excludeText: {
-    value: "",
+    value: "pig bacon",
     type: "query",
   },
   // separate words by pipe q=example|here
@@ -151,26 +207,25 @@ const exampleObj: AdvancedSearchParams = {
   },
   // q=inauthor:Lemony+Snicket
   author: {
-    value: "",
+    value: "John Simmons",
     type: "query",
   },
   // q=intitle:Series+of+unfortunate+events
   title: {
-    value: "John Simmons",
+    value: "How to use the John",
     type: "query",
   },
   // q=inpublisher:Tin+House
   publisher: {
-    value: "",
+    value: "RecoInc",
     type: "query",
   },
   // q=subject:finance|self-help
   subject: {
-    value: "",
+    value: "fiction",
     type: "query",
   },
 };
 console.log(buildAdvancedSearchParamsQuery(exampleObj));
 // ex of a with minus query
 // https://www.google.com/search?tbo=p&tbm=bks&q=lord+-rings&num=10
-
