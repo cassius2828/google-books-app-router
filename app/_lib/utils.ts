@@ -4,6 +4,7 @@ import { AdvancedSearchParams, SearchParam } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+
 }
 const buildFullTextQuery = (str: string) => {
   if (!str) return;
@@ -22,8 +23,8 @@ const buildExcludeTextQuery = (str: string) => {
   let tempStr = "";
   const multWords = str.split(" ");
   if (multWords.length > 1) {
-    tempStr = multWords.join("|");
-    finalStr = "-(".concat(tempStr, ")");
+    tempStr = multWords.join("+-");
+    finalStr = "-".concat(tempStr, "");
   } else finalStr = "-" + str;
   return finalStr;
 };
@@ -220,3 +221,7 @@ const exampleObj: AdvancedSearchParams = {
 console.log(buildAdvancedSearchParamsQuery(exampleObj));
 // ex of a with minus query
 // https://www.google.com/search?tbo=p&tbm=bks&q=lord+-rings&num=10
+
+// CORRECTIONS
+// exclude: does not use pipe, it uses +- for each word, NOT case senstive
+// generic query must come first, otherwise it is fine for any other order

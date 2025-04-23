@@ -23,22 +23,22 @@ import PublicationDateInput from "./Inputs/PublicationDateInput";
 const exampleObj: AdvancedSearchParams = {
   // replace spaces with + -- q=example+here+you+go
   fullText: {
-    value: "if you give a mouse a",
+    value: "",
     type: "query",
   },
   // add " " around words for eact phrase q="example"
   exactPhrase: {
-    value: "cookie",
+    value: "",
     type: "query",
   },
   // excludes text from search results -- q=-badguys
   excludeText: {
-    value: "pig bacon",
+    value: "Cookie Brownie",
     type: "query",
   },
   // separate words by pipe q=example|here
   includesText: {
-    value: "",
+    value: "brownie pancake",
     type: "query",
   },
   // langRestrict=en
@@ -73,7 +73,7 @@ const exampleObj: AdvancedSearchParams = {
   },
   // q=inpublisher:Tin+House
   publisher: {
-    value: "HarperCollins",
+    value: "",
     type: "query",
   },
   // q=subject:finance|self-help
