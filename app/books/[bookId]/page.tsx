@@ -292,7 +292,7 @@ export default function BookDetails() {
       )}
       <button
         onClick={() => router.back()}
-        className="absolute bottom-0 left-1/2 -translate-x-1/2 border border-gray-700 rounded-md px-3 py-2 mt-12  transition-colors duration-200 hover:bg-gray-700 hover:text-gray-50"
+        className="absolute -bottom-8 left-1/2 -translate-x-1/2 border border-gray-700 rounded-md px-3 py-2 mt-12  transition-colors duration-200 hover:bg-gray-700 hover:text-gray-50"
       >
         back
       </button>
