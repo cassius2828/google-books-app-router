@@ -24,6 +24,20 @@ const ReadingListTableBody = async ({
     <tbody className="bg-white divide-y divide-gray-200">
       {readingList?.map((item: ReadingListDBRow) => {
         const { books, status } = item;
+        let statusTextColor: string = "";
+        switch (status) {
+          case "to_read":
+            statusTextColor = "bg-blue-100 text-blue-800";
+            break;
+          case "reading":
+            statusTextColor = "bg-yellow-100 text-yellow-800";
+            break;
+          case "completed":
+            statusTextColor = "bg-green-100 text-green-800";
+            break;
+          default:
+            statusTextColor = "bg-blue-100 text-blue-800";
+        }
         return (
           <tr key={books?.id} className="hover:bg-gray-50">
             <td className="px-6 py-4 whitespace-nowrap">
@@ -53,7 +67,9 @@ const ReadingListTableBody = async ({
                 : books.description}
             </td>
             <td className="px-6 py-4 whitespace-nowrap">
-              <span className="px-2 py-1 capitalize inline-flex text-xs leading-5 font-semibold rounded-md bg-blue-100 text-blue-800">
+              <span
+                className={`px-2 py-1 capitalize inline-flex text-xs leading-5 font-semibold rounded-md ${statusTextColor}`}
+              >
                 {status === "to_read" ? "To Read" : status}
               </span>
             </td>
