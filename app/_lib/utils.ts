@@ -83,8 +83,9 @@ export const buildAdvancedSearchParamsQuery = (
       }
     }
   }
-
-  return {finalStr, queryStr};
+if(queryStr.length > 2) return queryStr + finalStr
+else return finalStr.replace('&','?')
+ 
 };
 const handleQueryAddition = (
   value: string,
