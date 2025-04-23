@@ -1,9 +1,6 @@
 // components/Header.tsx
 
-import Image from "next/image";
-import Link from "next/link";
 import { auth } from "../_lib/auth";
-import { signInWithGoogle, singOutAction } from "../_lib/actions";
 import { getPublicUserID } from "../_lib/service";
 import DesktopNav from "./Nav/DesktopNav";
 import MobileNav from "./Nav/MobileNav";
