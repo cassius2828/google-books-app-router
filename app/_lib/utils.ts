@@ -155,10 +155,6 @@ const handleQueryAdditionWithKeyPrefix = (
   } else return queryStr;
 };
 
-// let newStr = buildFullTextQuery(valueObj.value);
-// if (newStr) {
-//   queryStr += newStr;
-// }
 const exampleObj: AdvancedSearchParams = {
   // replace spaces with + -- q=example+here+you+go
   fullText: {
@@ -194,11 +190,6 @@ const exampleObj: AdvancedSearchParams = {
   printType: {
     value: "all",
     type: "independent",
-  },
-  // overall query, will append to this value and start with this value
-  q: {
-    value: "",
-    type: "query",
   },
   // will query by itself, replaces finalStr in fn
   volumeId: {

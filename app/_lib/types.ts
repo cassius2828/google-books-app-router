@@ -112,7 +112,7 @@ export interface ReadingListStatusAndId {
 
 // types.ts
 
-/** 
+/**
  * Distinguishes parameters that build up the `q=` string vs.
  * those sent independently (e.g. langRestrict, orderBy).
  */
@@ -131,41 +131,38 @@ export interface SearchParam {
  */
 export interface AdvancedSearchParams {
   /** Space-separated full text terms (spaces → '+') */
-  fullText: SearchParam;      // type: "query"
+  fullText: SearchParam; // type: "query"
 
   /** Exact phrase search (enclose in quotes) */
-  exactPhrase: SearchParam;   // type: "query"
+  exactPhrase: SearchParam; // type: "query"
 
   /** Terms to exclude (prefix with '-') */
-  excludeText: SearchParam;   // type: "query"
+  excludeText: SearchParam; // type: "query"
 
   /** Terms to include as alternates (pipe-separated) */
-  includesText: SearchParam;  // type: "query"
+  includesText: SearchParam; // type: "query"
 
   /** Restrict results to a specific language (ISO code) */
-  langRestrict: SearchParam;  // type: "independent"
+  langRestrict: SearchParam; // type: "independent"
 
   /** Order results by 'relevance' or 'newest' */
-  orderBy: SearchParam;       // type: "independent"
+  orderBy: SearchParam; // type: "independent"
 
   /** Filter by print type: 'all' | 'books' | 'magazines' */
-  printType: SearchParam;     // type: "independent"
-
-  /** Base query string to prepend all other query parts */
-  q: SearchParam;             // type: "query"
+  printType: SearchParam; // type: "independent"
 
   /** Volume ID to fetch a single book directly */
-  volumeId: SearchParam;      // type: "independent"
+  volumeId: SearchParam; // type: "independent"
 
   /** Author-specific filter (prefix with 'inauthor:') */
-  author: SearchParam;        // type: "query"
+  author: SearchParam; // type: "query"
 
   /** Title-specific filter (prefix with 'intitle:') */
-  title: SearchParam;         // type: "query"
+  title: SearchParam; // type: "query"
 
   /** Publisher-specific filter (prefix with 'inpublisher:') */
-  publisher: SearchParam;     // type: "query"
+  publisher: SearchParam; // type: "query"
 
   /** Subject-specific filter (prefix with 'subject:', pipe-delimited) */
-  subject: SearchParam;       // type: "query"
+  subject: SearchParam; // type: "query"
 }

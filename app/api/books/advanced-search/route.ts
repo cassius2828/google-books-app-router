@@ -1,20 +1,27 @@
+// app/api/books/volumes/route.ts
+import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
-import { NextRequest } from "next/server";
-const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
-const BASE_VOL_URL = process.env.BASE_VOL_URL;
+
+const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY!;
+const BASE_VOL_URL = process.env.BASE_VOL_URL!;
+
 export async function GET(request: NextRequest) {
-  let builtParams;
+  const fullUrl = request.url;
+
+  // 2) Extract just the query string (everything after '?')
+  const { search } = new URL(fullUrl);
+console.log(search , ' \n\n<-- search url \n\n')
+  const googleUrl = `${BASE_VOL_URL}${search}&key=${GOOGLE_API_KEY}`;
+
   try {
-    const response = await axios.get(
-      `${BASE_VOL_URL}${builtParams}&key=${GOOGLE_API_KEY}`
-    );
-    return response.data;
+    const { data } = await axios.get(googleUrl);
+    console.log(data, '\n\n <-- data\n\n')
+    return NextResponse.json(data);
   } catch (err) {
     console.error(err);
-    throw new Error(String(err));
+    return NextResponse.json(
+      { error: "Failed to proxy to Google Books" },
+      { status: 502 }
+    );
   }
 }
-
-// export const advancedSearchAction = async (params: AdvancedSearchParams) => {
-//     const response = await axios.get(``)
-//   };

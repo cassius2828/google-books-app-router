@@ -20,20 +20,20 @@ import SearchBtn from "./SearchBtn";
 import MaxResultsSelect from "./Inputs/MaxResultsSelect";
 import PublicationDateInput from "./Inputs/PublicationDateInput";
 
-const exampleObj = {
+const exampleObj: AdvancedSearchParams = {
   // replace spaces with + -- q=example+here+you+go
   fullText: {
-    value: "",
+    value: "if you give a mouse a",
     type: "query",
   },
   // add " " around words for eact phrase q="example"
   exactPhrase: {
-    value: "",
+    value: "cookie",
     type: "query",
   },
   // excludes text from search results -- q=-badguys
   excludeText: {
-    value: "",
+    value: "pig bacon",
     type: "query",
   },
   // separate words by pipe q=example|here
@@ -56,11 +56,6 @@ const exampleObj = {
     value: "all",
     type: "independent",
   },
-  // overall query, will append to this value and start with this value
-  q: {
-    value: "",
-    type: "query",
-  },
   // will query by itself, replaces finalStr in fn
   volumeId: {
     value: "",
@@ -68,17 +63,17 @@ const exampleObj = {
   },
   // q=inauthor:Lemony+Snicket
   author: {
-    value: "",
+    value: "Laura Numeroff",
     type: "query",
   },
   // q=intitle:Series+of+unfortunate+events
   title: {
-    value: "",
+    value: "if you give a mouse a",
     type: "query",
   },
   // q=inpublisher:Tin+House
   publisher: {
-    value: "",
+    value: "HarperCollins",
     type: "query",
   },
   // q=subject:finance|self-help
@@ -102,9 +97,11 @@ export default function AdvancedSearch() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const builtParams = buildAdvancedSearchParamsQuery(params);
+    console.log(builtParams, ' <-- result of build params')
     const books: Book[] = await axios.get(
-      `/api/search/advanced?${builtParams}`
+      `/api/books/advanced-search?${builtParams}`
     );
+    console.log(books, '<-- BOOKS FORM PROXY')
     setBooks(books);
   };
 
