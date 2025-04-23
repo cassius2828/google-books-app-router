@@ -2,7 +2,7 @@
 import { BooksProvider } from "@/app/_context/BooksContext";
 import { ReactNode } from "react";
 
-const BooksGalleryProviderWrapper = ({ children }: { children: ReactNode }) => {
+const BooksProviderWrapper = ({ children }: { children: ReactNode }) => {
   return <BooksProvider>{children}</BooksProvider>;
 };
-export default BooksGalleryProviderWrapper;
+export default BooksProviderWrapper;

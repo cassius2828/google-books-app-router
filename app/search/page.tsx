@@ -2,7 +2,7 @@
 import BooksGallery from "@/app/_components/Books/BooksGallery";
 import SearchInput from "../_components/SearchInput";
 import { Suspense } from "react";
-import BooksGalleryProviderWrapper from "../_components/Books/BooksGalleryProviderWrapper";
+import BooksGalleryProviderWrapper from "../_components/Books/BooksProviderWrapper";
 import Loader from "../loading";
 import Link from "next/link";
 

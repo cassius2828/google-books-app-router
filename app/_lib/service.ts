@@ -3,7 +3,7 @@ import axios from "axios";
 import { convert } from "html-to-text";
 import { Book, ReadingListDBRow } from "./types";
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
-const BASE_VOL_URL = `https://www.googleapis.com/books/v1/volumes?q=`;
+const BASE_VOL_URL = process.env.BASE_VOL_URL;
 const BASE_VOL_URL_BY_ID = `https://www.googleapis.com/books/v1/volumes/`;
 
 export const getBooksByTitle = async (query: string) => {
