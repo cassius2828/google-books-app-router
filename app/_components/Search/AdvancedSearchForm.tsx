@@ -13,13 +13,11 @@ import LanguageSelect from "./Inputs/LanguageSelect";
 import MaxResultsSelect from "./Inputs/MaxResultsSelect";
 import OrderByRadios from "./Inputs/OrderByRadios";
 import PublisherInput from "./Inputs/PublisherInput";
+import SubjectInputContainer from "./Inputs/Subjects/SubjectInputContainer";
 import TitleInput from "./Inputs/TitleInput";
 import VolumeIdInput from "./Inputs/VolumeIdInput";
-import SubjectInputContainer from "./Inputs/Subjects/SubjectInputContainer";
 
-import SearchBtn from "./SearchBtn";
-import ClearSearchBtn from "./ClearSearchBtn";
-import BtnContainer from "./BtnContainer";
+import BtnContainer from "./Buttons/BtnContainer";
 
 export default function AdvancedSearchForm() {
   const { setBooks, advancedSearchFormData, setAdvancedSearchFormData } =
