@@ -21,6 +21,7 @@ import BtnContainer from "./Buttons/BtnContainer";
 import { useTransition } from "react";
 
 export default function AdvancedSearchForm() {
+  // books context
   const {
     setBooks,
     advancedSearchFormData,
@@ -28,7 +29,33 @@ export default function AdvancedSearchForm() {
     scrollToSection,
     advancedSearchResultsRef,
   } = useBooksContext();
+  // transition
   const [isPendingBooks, startBooksTransition] = useTransition();
+
+  const fetchBooks = async () => {
+    const { volumeId } = advancedSearchFormData;
+    const isVolumeIDSearch = Boolean(volumeId.value);
+
+    const query = buildAdvancedSearchUrl(advancedSearchFormData);
+
+    try {
+      const { data: resp } = await axios.get<GoogleBooksAPIResponse>(
+        // solves issue of leading "?" when searching for vol by id
+        `/api/books/advanced-search${isVolumeIDSearch ? "/" : "?"}${query}`
+      );
+      setBooks(resp);
+      // scroll to results
+      scrollToSection(advancedSearchResultsRef);
+    } catch (err) {
+      console.error(err);
+      setBooks([]);
+    }
+  };
+
+  ///////////////////////////
+  // Handlers
+  ///////////////////////////
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -46,28 +73,7 @@ export default function AdvancedSearchForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    startBooksTransition(async () => {
-      const { volumeId } = advancedSearchFormData;
-      const isVolumeIDSearch = Boolean(volumeId.value);
-
-      const query = buildAdvancedSearchUrl(advancedSearchFormData);
-      console.log(query, " <-- result of build query");
-      try {
-        const { data: resp } = await axios.get<GoogleBooksAPIResponse>(
-          // solves issue of leading "?" when searching for vol by id
-          `/api/books/advanced-search${isVolumeIDSearch ? "/" : "?"}${query}`
-        );
-
-        setBooks(resp);
-
-        scrollToSection(advancedSearchResultsRef);
-      } catch (err) {
-        console.error(err);
-
-        setBooks([]);
-      }
-    });
-    // checks if we received a single books or list of books and handles accordingly
+    startBooksTransition(async () => await fetchBooks());
   };
 
   return (
