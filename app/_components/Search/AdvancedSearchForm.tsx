@@ -2,7 +2,7 @@
 import axios from "axios";
 
 import { useBooksContext } from "@/app/_context/BooksContext";
-import { Book, GoogleBooksAPIResponse } from "@/app/_lib/types";
+import { GoogleBooksAPIResponse } from "@/app/_lib/types";
 import { buildAdvancedSearchUrl } from "@/app/_lib/utils";
 
 import AuthorInput from "./Inputs/AuthorInput";

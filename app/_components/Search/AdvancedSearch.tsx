@@ -7,8 +7,7 @@ import AdvancedSearchForm from "./AdvancedSearchForm";
 const AdvancedSearchResults = lazy(() => import("./AdvancedSearchResults"));
 
 export default function AdvancedSearch() {
-  const { books, setBooks, advancedSearchFormData, setAdvancedSearchFormData } =
-    useBooksContext();
+  const { books, setBooks } = useBooksContext();
 
   // reset books when user navigates to this page
   useEffect(() => {
