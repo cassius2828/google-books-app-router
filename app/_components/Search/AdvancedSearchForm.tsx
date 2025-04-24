@@ -18,6 +18,7 @@ import TitleInput from "./Inputs/TitleInput";
 import VolumeIdInput from "./Inputs/VolumeIdInput";
 
 import BtnContainer from "./Buttons/BtnContainer";
+import { useTransition } from "react";
 
 export default function AdvancedSearchForm() {
   const {
@@ -27,7 +28,7 @@ export default function AdvancedSearchForm() {
     scrollToSection,
     advancedSearchResultsRef,
   } = useBooksContext();
-
+  const [isPendingBooks, startBooksTransition] = useTransition();
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -45,25 +46,27 @@ export default function AdvancedSearchForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { volumeId } = advancedSearchFormData;
-    const isVolumeIDSearch = Boolean(volumeId.value);
+    startBooksTransition(async () => {
+      const { volumeId } = advancedSearchFormData;
+      const isVolumeIDSearch = Boolean(volumeId.value);
 
-    const query = buildAdvancedSearchUrl(advancedSearchFormData);
-    console.log(query, " <-- result of build query");
-    try {
-      const { data: resp } = await axios.get<GoogleBooksAPIResponse>(
-        // solves issue of leading "?" when searching for vol by id
-        `/api/books/advanced-search${isVolumeIDSearch ? "/" : "?"}${query}`
-      );
+      const query = buildAdvancedSearchUrl(advancedSearchFormData);
+      console.log(query, " <-- result of build query");
+      try {
+        const { data: resp } = await axios.get<GoogleBooksAPIResponse>(
+          // solves issue of leading "?" when searching for vol by id
+          `/api/books/advanced-search${isVolumeIDSearch ? "/" : "?"}${query}`
+        );
 
-      setBooks(resp);
+        setBooks(resp);
 
-      scrollToSection(advancedSearchResultsRef);
-    } catch (err) {
-      console.error(err);
+        scrollToSection(advancedSearchResultsRef);
+      } catch (err) {
+        console.error(err);
 
-      setBooks([]);
-    }
+        setBooks([]);
+      }
+    });
     // checks if we received a single books or list of books and handles accordingly
   };
 
@@ -138,7 +141,7 @@ export default function AdvancedSearchForm() {
           setParams={setAdvancedSearchFormData}
         />
       </div>
-      <BtnContainer />
+      <BtnContainer isPending={isPendingBooks} />
     </form>
   );
 }
