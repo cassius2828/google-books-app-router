@@ -15,9 +15,11 @@ import OrderByRadios from "./Inputs/OrderByRadios";
 import PublisherInput from "./Inputs/PublisherInput";
 import TitleInput from "./Inputs/TitleInput";
 import VolumeIdInput from "./Inputs/VolumeIdInput";
-
 import SubjectInputContainer from "./Inputs/Subjects/SubjectInputContainer";
+
 import SearchBtn from "./SearchBtn";
+import ClearSearchBtn from "./ClearSearchBtn";
+import BtnContainer from "./BtnContainer";
 
 export default function AdvancedSearchForm() {
   const { setBooks, advancedSearchFormData, setAdvancedSearchFormData } =
@@ -132,8 +134,7 @@ export default function AdvancedSearchForm() {
           setParams={setAdvancedSearchFormData}
         />
       </div>
-
-      <SearchBtn />
+      <BtnContainer />
     </form>
   );
 }

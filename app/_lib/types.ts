@@ -13,6 +13,7 @@ export type BookContextType = {
   advancedSearchFormData: AdvancedSearchParams;
   setAdvancedSearchFormData: Dispatch<SetStateAction<AdvancedSearchParams>>;
   breakpointColumnsObj: BreakpointColumns;
+  initialSearchObj: AdvancedSearchParams;
 };
 
 export type GoogleBooksAPIResponse = Book[];
