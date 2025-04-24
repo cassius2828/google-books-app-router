@@ -39,17 +39,6 @@ export default function AdvancedSearchForm() {
     }));
   };
 
-  // be used for "filter" part of url
-  const handleRadioChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setAdvancedSearchFormData((prev) => ({
-      ...prev,
-      [name]: { ...[name], value },
-    }));
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const { volumeId } = advancedSearchFormData;
@@ -100,7 +89,7 @@ export default function AdvancedSearchForm() {
       <div className="grid grid-cols-1 sm:grid-cols-2 max-w-4xl gap-4">
         <ContentRadios
           params={advancedSearchFormData}
-          handleChange={handleRadioChange}
+          handleChange={handleChange}
         />
 
         <LanguageSelect
@@ -110,7 +99,7 @@ export default function AdvancedSearchForm() {
 
         <OrderByRadios
           params={advancedSearchFormData}
-          handleChange={handleRadioChange}
+          handleChange={handleChange}
         />
 
         <FilterContentSelect

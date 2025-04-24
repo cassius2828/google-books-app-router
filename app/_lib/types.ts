@@ -185,3 +185,11 @@ interface VolumeInfo {
     smallThumbnail?: string;
   };
 }
+
+export interface AdvancedSearchInputParams {
+  handleChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => void;
+  params: AdvancedSearchParams;
+  setParams?: Dispatch<SetStateAction<AdvancedSearchParams>>;
+}
