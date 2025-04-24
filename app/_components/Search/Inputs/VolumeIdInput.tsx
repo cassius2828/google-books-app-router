@@ -1,4 +1,6 @@
-const VolumeIdInput = ({params, handleChange}) => {
+import { AdvancedSearchInputParams } from "@/app/_lib/types"
+
+const VolumeIdInput = ({params, handleChange}:AdvancedSearchInputParams) => {
   return (
     <div>
     <label

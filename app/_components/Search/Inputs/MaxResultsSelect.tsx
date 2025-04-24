@@ -1,4 +1,6 @@
-const MaxResultsSelect = ({params, handleChange}) => {
+import { AdvancedSearchInputParams } from "@/app/_lib/types"
+
+const MaxResultsSelect = ({params, handleChange}:AdvancedSearchInputParams) => {
   return (
     <div className="mt-4 md:mt-0">
     <label

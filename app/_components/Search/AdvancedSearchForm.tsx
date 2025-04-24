@@ -128,8 +128,8 @@ export default function AdvancedSearchForm() {
         />
         <SubjectInputContainer
           handleChange={handleChange}
-          advancedSearchFormData={advancedSearchFormData}
-          setAdvancedSearchFormData={setAdvancedSearchFormData}
+          params={advancedSearchFormData}
+          setParams={setAdvancedSearchFormData}
         />
       </div>
 

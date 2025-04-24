@@ -1,4 +1,6 @@
-const AuthorInput = ({params, handleChange}) => {
+import { AdvancedSearchInputParams } from "@/app/_lib/types"
+
+const AuthorInput = ({params, handleChange}:AdvancedSearchInputParams) => {
   return (
     <div>
     <label

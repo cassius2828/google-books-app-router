@@ -1,8 +1,8 @@
+import { AdvancedSearchInputParamsWithSetter } from "@/app/_lib/types";
 import { useEffect } from "react";
 
-const EitherSubjectInput = ({ params, handleChange, setParams }) => {
+const EitherSubjectInput = ({ params, handleChange, setParams }:AdvancedSearchInputParamsWithSetter) => {
   useEffect(() => {
-    console.log("reset either subjec tinput ");
     setParams((prev) => ({
       ...prev,
       allSubjects: {

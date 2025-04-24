@@ -1,4 +1,6 @@
-const InputQueriesContainer = ({ params, handleChange }) => {
+import { AdvancedSearchInputParams } from "@/app/_lib/types";
+
+const InputQueriesContainer = ({ params, handleChange }:AdvancedSearchInputParams) => {
   return (
     <div className="flex flex-col md:gap-1 items-start justify-between w-full">
       {/* all words */}

@@ -1,4 +1,6 @@
-const FilterContentSelect = ({ params, handleChange }) => {
+import { AdvancedSearchInputParams } from "@/app/_lib/types";
+
+const FilterContentSelect = ({ params, handleChange }:AdvancedSearchInputParams) => {
   return (
     <div>
       <label

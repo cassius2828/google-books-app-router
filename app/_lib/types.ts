@@ -191,5 +191,12 @@ export interface AdvancedSearchInputParams {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => void;
   params: AdvancedSearchParams;
-  setParams?: Dispatch<SetStateAction<AdvancedSearchParams>>;
+}
+
+export interface AdvancedSearchInputParamsWithSetter {
+  handleChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => void;
+  params: AdvancedSearchParams;
+  setParams: Dispatch<SetStateAction<AdvancedSearchParams>>;
 }

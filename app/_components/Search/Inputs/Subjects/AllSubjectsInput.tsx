@@ -1,10 +1,13 @@
+import { AdvancedSearchInputParamsWithSetter } from "@/app/_lib/types";
 import { useEffect } from "react";
 
-const AllSubjectsInput = ({ params, handleChange, setParams }) => {
+const AllSubjectsInput = ({
+  params,
+  handleChange,
+  setParams,
+}: AdvancedSearchInputParamsWithSetter) => {
   // reset state each time subject input is toggle so context state is not out of sync with UI
   useEffect(() => {
-    console.log("reset all subject input ");
-
     setParams((prev) => ({
       ...prev,
       allSubjects: {

@@ -1,4 +1,6 @@
-const OrderByRadios = ({ params, handleChange }) => {
+import { AdvancedSearchInputParams } from "@/app/_lib/types";
+
+const OrderByRadios = ({ params, handleChange }:AdvancedSearchInputParams) => {
   return (
     <div>
       <label

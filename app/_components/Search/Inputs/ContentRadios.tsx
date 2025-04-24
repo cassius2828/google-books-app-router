@@ -1,6 +1,6 @@
-import { useEffect } from "react";
+import { AdvancedSearchInputParams } from "@/app/_lib/types";
 
-const ContentRadios = ({params, handleChange}) => {
+const ContentRadios = ({params, handleChange}:AdvancedSearchInputParams) => {
 
   return (
     <div>

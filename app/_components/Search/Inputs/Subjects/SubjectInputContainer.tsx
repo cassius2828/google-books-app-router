@@ -1,12 +1,13 @@
 import { useState } from "react";
 import AllSubjectsInput from "./AllSubjectsInput";
 import EitherSubjectInput from "./EitherSubjectInput";
+import { AdvancedSearchInputParamsWithSetter } from "@/app/_lib/types";
 
 const SubjectInputContainer = ({
-  advancedSearchFormData,
+  params,
   handleChange,
-  setAdvancedSearchFormData,
-}) => {
+  setParams,
+}: AdvancedSearchInputParamsWithSetter) => {
   const [toggleSubjectInputs, setToggleSubjectInputs] =
     useState<string>("eitherSubject");
   return (
@@ -46,15 +47,15 @@ const SubjectInputContainer = ({
       </div>
       {toggleSubjectInputs === "allSubjects" ? (
         <AllSubjectsInput
-          params={advancedSearchFormData}
+          params={params}
           handleChange={handleChange}
-          setParams={setAdvancedSearchFormData}
+          setParams={setParams}
         />
       ) : (
         <EitherSubjectInput
-          params={advancedSearchFormData}
+          params={params}
           handleChange={handleChange}
-          setParams={setAdvancedSearchFormData}
+          setParams={setParams}
         />
       )}
     </div>
