@@ -4,13 +4,15 @@ import axios from "axios";
 
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY!;
 const BASE_VOL_URL = process.env.BASE_VOL_URL!;
-
+// TODO: FInd a way to ensure the ? at the beginning of the search param is not present for the volumeId
+// TODO: or send it to a different URL
 export async function GET(request: NextRequest) {
   const fullUrl = request.url;
 
   // 2) Extract just the query string (everything after '?')
   const { search } = new URL(fullUrl);
 console.log(search , ' \n\n<-- search url \n\n')
+
   const googleUrl = `${BASE_VOL_URL}${search}&key=${GOOGLE_API_KEY}`;
 console.log(googleUrl, ' \n-- google url \n')
   try {

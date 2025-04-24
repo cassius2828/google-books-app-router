@@ -3,7 +3,10 @@ import { AdvancedSearchParams } from "./types";
 export const buildAdvancedSearchUrl = (params: AdvancedSearchParams) => {
   // 1) build your q= segment as a plain, human-readable string
   const qSegments: string[] = [];
-
+  if (params.volumeId.value) {
+    // go straight to the single‐volume endpoint
+    return `${encodeURIComponent(params.volumeId.value)}`;
+  }
   if (params.fullText.value) {
     qSegments.push(params.fullText.value); // “if you give a mouse”
   }
@@ -49,13 +52,11 @@ export const buildAdvancedSearchUrl = (params: AdvancedSearchParams) => {
     sp.set("langRestrict", params.langRestrict.value);
   if (params.orderBy.value) sp.set("orderBy", params.orderBy.value);
   if (params.printType.value) sp.set("printType", params.printType.value);
+  if (params.maxResults.value) sp.set("maxResults", params.maxResults.value);
   // …any other independent params…
 
   // 3) special case for volumeId
-  if (params.volumeId.value) {
-    // go straight to the single‐volume endpoint
-    return `${encodeURIComponent(params.volumeId.value)}`;
-  }
+
 
   // 4) pull it all together
   // URLSearchParams.toString() will:
@@ -65,8 +66,6 @@ export const buildAdvancedSearchUrl = (params: AdvancedSearchParams) => {
   console.log(query);
   return `${query}`;
 };
-
-
 
 const exampleObj: AdvancedSearchParams = {
   // replace spaces with + -- q=example+here+you+go
@@ -104,6 +103,10 @@ const exampleObj: AdvancedSearchParams = {
     value: "all",
     type: "independent",
   },
+  maxResults: {
+    value: "10",
+    type: "independent",
+  },
   // will query by itself, replaces finalStr in fn
   volumeId: {
     value: "",
@@ -114,11 +117,11 @@ const exampleObj: AdvancedSearchParams = {
     value: "John Simmons",
     type: "query",
   },
-    // &filter=ebooks
-    filter: {
-      value: "ebooks",
-      type: "independent",
-    },
+  // &filter=ebooks
+  filter: {
+    value: "ebooks",
+    type: "independent",
+  },
   // q=intitle:Series+of+unfortunate+events
   title: {
     value: "How to use the John",

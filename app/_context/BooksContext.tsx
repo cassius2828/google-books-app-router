@@ -16,12 +16,12 @@ const initialSearchObj: AdvancedSearchParams = {
   },
   // excludes text from search results -- q=-badguys
   excludeText: {
-    value: "Cookie",
+    value: "",
     type: "query",
   },
   // separate words by pipe q=example|here
   includesText: {
-    value: "brownie",
+    value: "",
     type: "query",
   },
   // max value of results
@@ -51,12 +51,12 @@ const initialSearchObj: AdvancedSearchParams = {
   },
   // q=inauthor:Lemony+Snicket
   author: {
-    value: "Laura Numeroff",
+    value: "",
     type: "query",
   },
   // &filter=ebooks
   filter: {
-    value: "ebooks",
+    value: "full",
     type: "independent",
   },
   // q=intitle:Series+of+unfortunate+events

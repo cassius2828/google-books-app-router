@@ -30,7 +30,16 @@ export default function AdvancedSearch() {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setAdvancedSearchFormData((prev) => ({ ...prev, [name]: value }));
+    console.log(advancedSearchFormData);
+    setAdvancedSearchFormData((prev) => ({
+      ...prev,
+      [name]: {
+        // take whatever was in prev[name] (the whole SearchParam)
+        ...prev[name as keyof typeof prev],
+        // then set just its `value`
+        value,
+      },
+    }));
   };
 
   // be used for "filter" part of url
@@ -45,11 +54,13 @@ export default function AdvancedSearch() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    // solves issue of leading "?" when searching for vol by id
+    const isVolumeIDSearch = !!advancedSearchFormData.volumeId.value;
     e.preventDefault();
     const query = buildAdvancedSearchUrl(advancedSearchFormData);
     console.log(query, " <-- result of build query");
     const books: Book[] = await axios.get(
-      `/api/books/advanced-search?${query}`
+      `/api/books/advanced-search${isVolumeIDSearch ? "/" : "?"}${query}`
     );
     console.log(books, "<-- BOOKS FORM PROXY");
     setBooks(books);
