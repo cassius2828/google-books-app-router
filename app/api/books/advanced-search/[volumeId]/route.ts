@@ -16,7 +16,7 @@ export async function GET(
   try {
     const { data } = await axios.get(googleUrl);
     console.log(data, "\n\n <-- data\n\n");
-    return NextResponse.json(data);
+    return NextResponse.json([data]);
   } catch (err) {
     console.error(err);
     return NextResponse.json(

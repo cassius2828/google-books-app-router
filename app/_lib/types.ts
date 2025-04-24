@@ -3,26 +3,7 @@ import { Dispatch, SetStateAction } from "react";
 // types.ts
 export type Book = {
   id: string;
-  volumeInfo: {
-    title: string;
-    authors: string[];
-    publisher: string;
-    publishedDate: string;
-    description: string;
-    pageCount: number;
-    categories: string[];
-    previewLink: string;
-    google_book_id?: string;
-    imageLinks: {
-      cover_image?: string;
-      extraLarge?: string;
-      large?: string;
-      medium?: string;
-      small?: string;
-      thumbnail?: string;
-      smallThumbnail?: string;
-    };
-  };
+  volumeInfo: VolumeInfo;
 };
 
 export type GalleryBookCardProps = {
@@ -173,4 +154,29 @@ export interface AdvancedSearchParams {
   allSubjects: SearchParam; // type: "query"
 
   eitherSubject: SearchParam; // type: "query"
+}
+
+export type GoogleBooksAPIResponse = Book[]
+
+
+   // single‐volume case
+interface VolumeInfo {
+  title: string;
+  authors: string[];
+  publisher: string;
+  publishedDate: string;
+  description: string;
+  pageCount: number;
+  categories: string[];
+  previewLink: string;
+  google_book_id?: string;
+  imageLinks: {
+    cover_image?: string;
+    extraLarge?: string;
+    large?: string;
+    medium?: string;
+    small?: string;
+    thumbnail?: string;
+    smallThumbnail?: string;
+  };
 }

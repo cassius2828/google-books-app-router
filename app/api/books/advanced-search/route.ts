@@ -18,7 +18,7 @@ console.log(googleUrl, ' \n-- google url \n')
   try {
     const { data } = await axios.get(googleUrl);
     console.log(data, '\n\n <-- data\n\n')
-    return NextResponse.json(data);
+    return NextResponse.json(data.items);
   } catch (err) {
     console.error(err);
     return NextResponse.json(

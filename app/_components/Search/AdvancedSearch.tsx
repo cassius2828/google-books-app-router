@@ -4,7 +4,6 @@ import { useBooksContext } from "@/app/_context/BooksContext";
 import Loader from "@/app/loading";
 import { lazy, Suspense, useEffect } from "react";
 import AdvancedSearchForm from "./AdvancedSearchForm";
-import BookCard from "../Books/BookCard";
 const AdvancedSearchResults = lazy(() => import("./AdvancedSearchResults"));
 
 export default function AdvancedSearch() {

@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 const AdvancedSearchResults = ({ books }: { books: Book[] }) => {
     useEffect(() => {
-        console.log(books, ' \n <-- BOOKS PROP\n')
+        // console.log(books, ' \n <-- BOOKS PROP\n')
     },[books])
   return (
     <section className="p-3 mt-6">

@@ -2,7 +2,7 @@
 import axios from "axios";
 
 import { useBooksContext } from "@/app/_context/BooksContext";
-import { Book } from "@/app/_lib/types";
+import { Book, GoogleBooksAPIResponse } from "@/app/_lib/types";
 import { buildAdvancedSearchUrl } from "@/app/_lib/utils";
 
 import AuthorInput from "./Inputs/AuthorInput";
@@ -51,24 +51,25 @@ export default function AdvancedSearchForm() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    // solves issue of leading "?" when searching for vol by id
-    const isVolumeIDSearch = !!advancedSearchFormData.volumeId.value;
     e.preventDefault();
+    const { volumeId } = advancedSearchFormData;
+    const isVolumeIDSearch = Boolean(volumeId.value);
+
     const query = buildAdvancedSearchUrl(advancedSearchFormData);
     console.log(query, " <-- result of build query");
-    const books: Book[] = await axios.get(
-      `/api/books/advanced-search${isVolumeIDSearch ? "/" : "?"}${query}`
-    );
-    console.log(books.data, "<-- BOOKS FORM PROXY");
-    // checks if we received a single books or list of books and handles accordingly
-    if (!books.data.items) {
-      const singleBookArr = [];
-      singleBookArr.push(books.data);
-      setBooks(singleBookArr);
-    } else {
-        console.log(books.data.items, ' <-- books.data.items ; setting books state')
-      setBooks(books.data.items);
+    try {
+      const { data: resp } = await axios.get<GoogleBooksAPIResponse>(
+        // solves issue of leading "?" when searching for vol by id
+        `/api/books/advanced-search${isVolumeIDSearch ? "/" : "?"}${query}`
+      );
+
+      setBooks(resp);
+    } catch (err) {
+      console.error(err);
+
+      setBooks([]);
     }
+    // checks if we received a single books or list of books and handles accordingly
   };
 
   return (
@@ -147,3 +148,20 @@ export default function AdvancedSearchForm() {
     </form>
   );
 }
+
+/*
+
+   if (!books.data.items) {
+      const singleBookArr = [];
+      singleBookArr.push(books.data);
+      setBooks(singleBookArr);
+      
+    } else {
+      const multBooks = books.data.items;
+      console.log(
+        books.data.items,
+        " <-- books.data.items ; setting books state"
+      );
+      setBooks(Array.isArray(multBooks) ? multBooks : [multBooks]);
+    }
+*/
