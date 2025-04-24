@@ -164,7 +164,7 @@ export default function BookDetails() {
     imageLinks.smallThumbnail ??
     process.env.NEXT_PUBLIC_IMG_NOT_FOUND!;
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row gap-12 items-center justify-center bg-gray-50 p-6 relative">
+    <div className="min-h-screen flex flex-col lg:flex-row gap-12 items-center justify-center bg-gray-50 p-6 pb-32 relative">
       <div className="max-w-4xl w-full bg-white shadow-md rounded-lg p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
         <Image
           src={coverSrc}
@@ -292,7 +292,7 @@ export default function BookDetails() {
       )}
       <button
         onClick={() => router.back()}
-        className="absolute -bottom-8 left-1/2 -translate-x-1/2 border border-gray-700 rounded-md px-3 py-2 mt-12  transition-colors duration-200 hover:bg-gray-700 hover:text-gray-50"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 border border-gray-300 hover:border-gray-700 rounded-md px-3 py-2 mt-12  transition-colors duration-200 bg-gray-300 hover:bg-gray-700 hover:text-gray-50"
       >
         back
       </button>
