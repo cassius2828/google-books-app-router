@@ -61,12 +61,13 @@ export default function AdvancedSearchForm() {
     );
     console.log(books.data, "<-- BOOKS FORM PROXY");
     // checks if we received a single books or list of books and handles accordingly
-    if (!Array.isArray(books.data)) {
+    if (!books.data.items) {
       const singleBookArr = [];
       singleBookArr.push(books.data);
       setBooks(singleBookArr);
     } else {
-      setBooks(books);
+        console.log(books.data.items, ' <-- books.data.items ; setting books state')
+      setBooks(books.data.items);
     }
   };
 
