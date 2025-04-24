@@ -11,7 +11,7 @@ const VolumeIdInput = ({params, handleChange}) => {
       type="text"
       name="volumeId"
       id="volumeId"
-      value={params.volumeId}
+      value={params.volumeId.value}
       onChange={handleChange}
       placeholder="e.g. F387XHkcflwC"
       className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"

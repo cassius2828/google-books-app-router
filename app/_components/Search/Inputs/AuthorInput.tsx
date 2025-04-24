@@ -11,7 +11,7 @@ const AuthorInput = ({params, handleChange}) => {
       type="text"
       name="author"
       id="author"
-      value={params.author}
+      value={params.author.value}
       onChange={handleChange}
       placeholder="Author name"
       className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"

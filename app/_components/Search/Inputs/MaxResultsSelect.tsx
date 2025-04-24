@@ -10,7 +10,7 @@ const MaxResultsSelect = ({params, handleChange}) => {
     <select
       name="maxResults"
       id="maxResults"
-      value={params.filter}
+      value={params.maxResults.value}
       onChange={handleChange}
       className="mt-1 block w-16 px-3 py-1 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
     >

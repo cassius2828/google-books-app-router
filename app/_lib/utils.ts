@@ -1,160 +1,72 @@
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
-import { AdvancedSearchParams, SearchParam } from "./types";
+import { AdvancedSearchParams } from "./types";
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
+export const buildAdvancedSearchUrl = (params: AdvancedSearchParams) => {
+  // 1) build your q= segment as a plain, human-readable string
+  const qSegments: string[] = [];
 
-}
-const buildFullTextQuery = (str: string) => {
-  if (!str) return;
-  str = str.split(" ").join("+");
-  return str;
-};
-const buildExactPhraseQuery = (str: string) => {
-  if (!str) return;
-  str = '"'.concat(str, '"');
-  return str;
-};
-
-const buildExcludeTextQuery = (str: string) => {
-  if (!str) return;
-  let finalStr = "";
-  let tempStr = "";
-  const multWords = str.split(" ");
-  if (multWords.length > 1) {
-    tempStr = multWords.join("+-");
-    finalStr = "-".concat(tempStr, "");
-  } else finalStr = "-" + str;
-  return finalStr;
-};
-
-const buildIncludesTextQuery = (str: string) => {
-  if (!str) return;
-  let finalStr = "";
-  const multWords = str.split(" ");
-  if (multWords.length > 1) {
-    finalStr = multWords.join("|");
-
-    return finalStr;
-  } else return str;
-};
-
-export const buildAdvancedSearchParamsQuery = (
-  params: AdvancedSearchParams
-) => {
-  let finalStr = "";
-  let queryStr = "q=";
-
-  for (const key in params) {
-    const valueObj: SearchParam = params[key as keyof AdvancedSearchParams];
-
-    if (valueObj.value) {
-      if (key === "volumeId") return `/${valueObj.value}`;
-      if (valueObj.type !== "query") finalStr += `&${key}=${valueObj.value}`;
-      else {
-        if (key === "fullText") {
-          queryStr = handleQueryAddition(
-            valueObj.value,
-            queryStr,
-            buildFullTextQuery
-          );
-          continue;
-        }
-        if (key === "exactPhrase") {
-          if (queryStr.length > 2) {
-            queryStr += "+";
-            queryStr = handleQueryAddition(
-              valueObj.value,
-              queryStr,
-              buildExactPhraseQuery
-            );
-          } else {
-            queryStr = handleQueryAddition(
-              valueObj.value,
-              queryStr,
-              buildExactPhraseQuery
-            );
-          }
-
-          continue;
-        }
-        if (key === "excludeText") {
-          if (queryStr.length > 2) {
-            queryStr += "+";
-            queryStr = handleQueryAddition(
-              valueObj.value,
-              queryStr,
-              buildExcludeTextQuery
-            );
-          } else {
-            queryStr = handleQueryAddition(
-              valueObj.value,
-              queryStr,
-              buildExcludeTextQuery
-            );
-          }
-          continue;
-        }
-        if (key === "includesText") {
-          if (queryStr.length > 2) {
-            queryStr += "+";
-
-            queryStr = handleQueryAddition(
-              valueObj.value,
-              queryStr,
-              buildIncludesTextQuery
-            );
-          } else {
-            queryStr = handleQueryAddition(
-              valueObj.value,
-              queryStr,
-              buildIncludesTextQuery
-            );
-          }
-          continue;
-        }
-        queryStr = handleQueryAdditionWithKeyPrefix(
-          key,
-          valueObj.value,
-          queryStr,
-          buildFullTextQuery
-        );
-      }
-    }
+  if (params.fullText.value) {
+    qSegments.push(params.fullText.value); // “if you give a mouse”
   }
-  console.log(queryStr);
-  if (queryStr.length > 2) return queryStr + finalStr;
-  else return finalStr.replace("&", "?");
+  if (params.exactPhrase.value) {
+    qSegments.push(`"${params.exactPhrase.value}"`); // '"cookie"'
+  }
+  if (params.includesText.value) {
+    qSegments.push(params.includesText.value.split(" ").join("|")); // '"cookie"'
+  }
+  if (params.excludeText.value) {
+    // split into words, then prefix each with '-'
+    qSegments.push(...params.excludeText.value.split(" ").map((w) => `-${w}`)); // ['-pig', '-bacon']
+  }
+  // …handle includesText, author, title, publisher, subject in the same way…
+  if (params.author.value) {
+    qSegments.push(`inauthor:${params.author.value}`); // 'inauthor:John+Simmons'
+  }
+  if (params.publisher.value) {
+    qSegments.push(`inpublisher:${params.publisher.value}`); // 'inauthor:John+Simmons'
+  }
+  if (params.title.value) {
+    qSegments.push(`intitle:${params.title.value}`); // 'inauthor:John+Simmons'
+  }
+  if (params.allSubjects.value) {
+    // subject:fiction+subject:sci-fi
+    params.allSubjects.value
+      .split(/\s+/)
+      .filter(Boolean)
+      .forEach((sub) => {
+        qSegments.push(`subject:${sub}`);
+      });
+  }
+  if (params.eitherSubject.value) {
+    qSegments.push(`subject:${params.title.value}`); // 'subject:fiction+sci-fi'
+  }
+
+  const qString = qSegments.join(" "); // e.g. 'if you give a mouse "cookie" -pig -bacon inauthor:John Simmons'
+
+  // 2) build a URLSearchParams object
+  const sp = new URLSearchParams();
+  if (qString) sp.set("q", qString);
+  if (params.langRestrict.value)
+    sp.set("langRestrict", params.langRestrict.value);
+  if (params.orderBy.value) sp.set("orderBy", params.orderBy.value);
+  if (params.printType.value) sp.set("printType", params.printType.value);
+  // …any other independent params…
+
+  // 3) special case for volumeId
+  if (params.volumeId.value) {
+    // go straight to the single‐volume endpoint
+    return `${encodeURIComponent(params.volumeId.value)}`;
+  }
+
+  // 4) pull it all together
+  // URLSearchParams.toString() will:
+  //  - percent-encode reserved chars (quotes → %22, colon → %3A, etc.)
+  //  - turn spaces into '+'
+  const query = sp.toString();
+  console.log(query);
+  return `${query}`;
 };
-const handleQueryAddition = (
-  value: string,
-  queryStr: string,
-  fn: (value: string) => string | void
-) => {
-  const newStr = fn(value);
-  if (newStr) {
-    queryStr += newStr;
-    return queryStr;
-  } else return queryStr;
-};
-const handleQueryAdditionWithKeyPrefix = (
-  key: string,
-  value: string,
-  queryStr: string,
-  fn: (value: string) => string | void
-) => {
-  let newStr = fn(value);
-  if (newStr) {
-    if (key === "subject") {
-      newStr = "+subject:" + newStr;
-    } else {
-      newStr = `+in${key}:${newStr}`;
-    }
-    queryStr += newStr;
-    return queryStr;
-  } else return queryStr;
-};
+
+
 
 const exampleObj: AdvancedSearchParams = {
   // replace spaces with + -- q=example+here+you+go
@@ -174,7 +86,7 @@ const exampleObj: AdvancedSearchParams = {
   },
   // separate words by pipe q=example|here
   includesText: {
-    value: "",
+    value: "mom dad",
     type: "query",
   },
   // langRestrict=en
@@ -202,6 +114,11 @@ const exampleObj: AdvancedSearchParams = {
     value: "John Simmons",
     type: "query",
   },
+    // &filter=ebooks
+    filter: {
+      value: "ebooks",
+      type: "independent",
+    },
   // q=intitle:Series+of+unfortunate+events
   title: {
     value: "How to use the John",
@@ -213,12 +130,16 @@ const exampleObj: AdvancedSearchParams = {
     type: "query",
   },
   // q=subject:finance|self-help
-  subject: {
-    value: "fiction",
+  eitherSubject: {
+    value: "fiction sci-fi",
+    type: "query",
+  },
+  allSubjects: {
+    value: "fiction sci-fi",
     type: "query",
   },
 };
-console.log(buildAdvancedSearchParamsQuery(exampleObj));
+console.log(buildAdvancedSearchUrl(exampleObj));
 // ex of a with minus query
 // https://www.google.com/search?tbo=p&tbm=bks&q=lord+-rings&num=10
 

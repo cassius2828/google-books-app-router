@@ -11,7 +11,7 @@ const PublisherInput = ({params, handleChange}) => {
       type="text"
       name="publisher"
       id="publisher"
-      value={params.publisher}
+      value={params.publisher.value}
       onChange={handleChange}
       placeholder="Publisher name"
       className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"

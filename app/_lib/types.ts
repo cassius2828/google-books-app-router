@@ -139,11 +139,15 @@ export interface AdvancedSearchParams {
   /** Terms to exclude (prefix with '-') */
   excludeText: SearchParam; // type: "query"
 
+  maxResults: SearchParam;
+
   /** Terms to include as alternates (pipe-separated) */
   includesText: SearchParam; // type: "query"
 
   /** Restrict results to a specific language (ISO code) */
   langRestrict: SearchParam; // type: "independent"
+
+  filter: SearchParam; // type: "independent"
 
   /** Order results by 'relevance' or 'newest' */
   orderBy: SearchParam; // type: "independent"
@@ -164,5 +168,7 @@ export interface AdvancedSearchParams {
   publisher: SearchParam; // type: "query"
 
   /** Subject-specific filter (prefix with 'subject:', pipe-delimited) */
-  subject: SearchParam; // type: "query"
+  allSubjects: SearchParam; // type: "query"
+
+  eitherSubject: SearchParam; // type: "query"
 }

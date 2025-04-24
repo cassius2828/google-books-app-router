@@ -3,7 +3,7 @@ const OrderByRadios = () => {
     <div>
       <label
         htmlFor="filter"
-        className="block text-xs font-medium text-gray-700"
+        className="block text-xs font-medium text-gray-700 mb-2"
       >
         Order By
       </label>
@@ -11,7 +11,7 @@ const OrderByRadios = () => {
         <label htmlFor="relevance" className="inline-flex items-center">
           <input
             id="relevance"
-            name="contentType"
+            name="orderBy"
             type="radio"
             value="magazines"
             className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-2 focus:ring-blue-500 rounded-full"
@@ -22,7 +22,7 @@ const OrderByRadios = () => {
         <label htmlFor="newest" className="inline-flex items-center">
           <input
             id="newest"
-            name="contentType"
+            name="orderBy"
             type="radio"
             value="newspapers"
             className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-2 focus:ring-blue-500 rounded-full"

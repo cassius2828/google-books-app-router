@@ -1,24 +1,25 @@
 "use client";
 
 import { useBooksContext } from "@/app/_context/BooksContext";
-import { advancedSearchAction } from "@/app/_lib/actions";
 import { AdvancedSearchParams, Book } from "@/app/_lib/types";
-import { buildAdvancedSearchParamsQuery } from "@/app/_lib/utils";
+
 import axios from "axios";
 import { useState } from "react";
+import AuthorInput from "./Inputs/AuthorInput";
+import ContentRadios from "./Inputs/ContentRadios";
+import FilterContentSelect from "./Inputs/FilterContentSelect";
 import InputQueriesContainer from "./Inputs/InputQueriesContainer";
 import LanguageSelect from "./Inputs/LanguageSelect";
-import ContentRadios from "./Inputs/ContentRadios";
-import OrderByRadios from "./Inputs/OrderByRadios";
-import FilterContentSelect from "./Inputs/FilterContentSelect";
-import VolumeIdInput from "./Inputs/VolumeIdInput";
-import AuthorInput from "./Inputs/AuthorInput";
-import TitleInput from "./Inputs/TitleInput";
-import PublisherInput from "./Inputs/PublisherInput";
-import SubjectInput from "./Inputs/SubjectInput";
-import SearchBtn from "./SearchBtn";
 import MaxResultsSelect from "./Inputs/MaxResultsSelect";
-import PublicationDateInput from "./Inputs/PublicationDateInput";
+import OrderByRadios from "./Inputs/OrderByRadios";
+import PublisherInput from "./Inputs/PublisherInput";
+
+import TitleInput from "./Inputs/TitleInput";
+import VolumeIdInput from "./Inputs/VolumeIdInput";
+import SearchBtn from "./SearchBtn";
+import { buildAdvancedSearchUrl } from "@/app/_lib/utils";
+import AllSubjectsInput from "./Inputs/AllSubjectsInput";
+import EitherSubjectInput from "./Inputs/EitherSubjectInput";
 
 const exampleObj: AdvancedSearchParams = {
   // replace spaces with + -- q=example+here+you+go
@@ -33,13 +34,18 @@ const exampleObj: AdvancedSearchParams = {
   },
   // excludes text from search results -- q=-badguys
   excludeText: {
-    value: "Cookie Brownie",
+    value: "Cookie",
     type: "query",
   },
   // separate words by pipe q=example|here
   includesText: {
-    value: "brownie pancake",
+    value: "brownie",
     type: "query",
+  },
+  // max value of results
+  maxResults: {
+    value: "",
+    type: "independent",
   },
   // langRestrict=en
   langRestrict: {
@@ -66,9 +72,14 @@ const exampleObj: AdvancedSearchParams = {
     value: "Laura Numeroff",
     type: "query",
   },
+  // &filter=ebooks
+  filter: {
+    value: "ebooks",
+    type: "independent",
+  },
   // q=intitle:Series+of+unfortunate+events
   title: {
-    value: "if you give a mouse a",
+    value: "",
     type: "query",
   },
   // q=inpublisher:Tin+House
@@ -77,7 +88,12 @@ const exampleObj: AdvancedSearchParams = {
     type: "query",
   },
   // q=subject:finance|self-help
-  subject: {
+  eitherSubject: {
+    value: "",
+    type: "query",
+  },
+  // q=subject:finance+subject:self-help
+  allSubjects: {
     value: "",
     type: "query",
   },
@@ -94,14 +110,22 @@ export default function AdvancedSearch() {
     setParams((prev) => ({ ...prev, [name]: value }));
   };
 
+  // be used for "filter" part of url
+  const handleRadioChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setParams((prev) => ({ ...prev, [name]: value }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const builtParams = buildAdvancedSearchParamsQuery(params);
-    console.log(builtParams, ' <-- result of build params')
+    const query = buildAdvancedSearchUrl(params);
+    console.log(query, " <-- result of build query");
     const books: Book[] = await axios.get(
-      `/api/books/advanced-search?${builtParams}`
+      `/api/books/advanced-search?${query}`
     );
-    console.log(books, '<-- BOOKS FORM PROXY')
+    console.log(books, "<-- BOOKS FORM PROXY");
     setBooks(books);
   };
 
@@ -125,7 +149,7 @@ export default function AdvancedSearch() {
       </div>
       {/* bottom section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 max-w-4xl gap-4">
-        <ContentRadios />
+        <ContentRadios params={params} handleChange={handleRadioChange} />
 
         <LanguageSelect params={params} handleChange={handleChange} />
 
@@ -141,9 +165,11 @@ export default function AdvancedSearch() {
 
         <PublisherInput params={params} handleChange={handleChange} />
 
-        <SubjectInput params={params} handleChange={handleChange} />
-
-        <PublicationDateInput />
+        {true ? (
+          <AllSubjectsInput params={params} handleChange={handleChange} />
+        ) : (
+          <EitherSubjectInput params={params} handleChange={handleChange} />
+        )}
       </div>
 
       <SearchBtn />
