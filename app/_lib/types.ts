@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, RefObject, SetStateAction } from "react";
 
 ///////////////////////////
 // Books
@@ -13,6 +13,9 @@ export type BookContextType = {
   advancedSearchFormData: AdvancedSearchParams;
   setAdvancedSearchFormData: Dispatch<SetStateAction<AdvancedSearchParams>>;
   breakpointColumnsObj: BreakpointColumns;
+  initialSearchObj: AdvancedSearchParams;
+  advancedSearchResultsRef: RefObject<HTMLElement | null>;
+  scrollToSection: (ref: RefObject<HTMLElement | null>) => void;
 };
 
 export type GoogleBooksAPIResponse = Book[];

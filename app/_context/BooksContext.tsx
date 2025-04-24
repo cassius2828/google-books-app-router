@@ -1,10 +1,13 @@
 // app/_lib/context/BooksContext.tsx
-import {
-  AdvancedSearchParams,
-  Book,
-  BookContextType
-} from "@/app/_lib/types";
-import React, { createContext, ReactNode, useContext, useState } from "react";
+import { AdvancedSearchParams, Book, BookContextType } from "@/app/_lib/types";
+import React, {
+  createContext,
+  ReactNode,
+  RefObject,
+  useContext,
+  useRef,
+  useState,
+} from "react";
 
 const BooksContext = createContext<BookContextType | undefined>(undefined);
 const initialSearchObj: AdvancedSearchParams = {
@@ -88,21 +91,31 @@ export const BooksProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [books, setBooks] = useState<Book[]>([]);
+  const advancedSearchResultsRef = useRef(null);
   const [advancedSearchFormData, setAdvancedSearchFormData] =
     useState<AdvancedSearchParams>(initialSearchObj);
-    const breakpointColumnsObj = {
-      default: 4,
-      1100: 3,
-      700: 2,
-      500: 1,
-    };
+  const breakpointColumnsObj = {
+    default: 4,
+    1100: 3,
+    700: 2,
+    500: 1,
+  };
+  const scrollToSection = (ref: RefObject<HTMLElement | null>) => {
+    console.log(ref, ' <-- REF ')
+    ref.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <BooksContext.Provider
       value={{
         books,
         setBooks,
         advancedSearchFormData,
-        setAdvancedSearchFormData,breakpointColumnsObj
+        setAdvancedSearchFormData,
+        breakpointColumnsObj,
+        initialSearchObj,
+        advancedSearchResultsRef,
+        scrollToSection,
       }}
     >
       {children}

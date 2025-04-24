@@ -13,15 +13,20 @@ import LanguageSelect from "./Inputs/LanguageSelect";
 import MaxResultsSelect from "./Inputs/MaxResultsSelect";
 import OrderByRadios from "./Inputs/OrderByRadios";
 import PublisherInput from "./Inputs/PublisherInput";
+import SubjectInputContainer from "./Inputs/Subjects/SubjectInputContainer";
 import TitleInput from "./Inputs/TitleInput";
 import VolumeIdInput from "./Inputs/VolumeIdInput";
 
-import SubjectInputContainer from "./Inputs/Subjects/SubjectInputContainer";
-import SearchBtn from "./SearchBtn";
+import BtnContainer from "./Buttons/BtnContainer";
 
 export default function AdvancedSearchForm() {
-  const { setBooks, advancedSearchFormData, setAdvancedSearchFormData } =
-    useBooksContext();
+  const {
+    setBooks,
+    advancedSearchFormData,
+    setAdvancedSearchFormData,
+    scrollToSection,
+    advancedSearchResultsRef,
+  } = useBooksContext();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -33,7 +38,6 @@ export default function AdvancedSearchForm() {
       [name]: {
         // take whatever was in prev[name] (the whole SearchParam)
         ...prev[name as keyof typeof prev],
-        // then set just its `value`
         value,
       },
     }));
@@ -53,6 +57,8 @@ export default function AdvancedSearchForm() {
       );
 
       setBooks(resp);
+
+      scrollToSection(advancedSearchResultsRef);
     } catch (err) {
       console.error(err);
 
@@ -132,25 +138,7 @@ export default function AdvancedSearchForm() {
           setParams={setAdvancedSearchFormData}
         />
       </div>
-
-      <SearchBtn />
+      <BtnContainer />
     </form>
   );
 }
-
-/*
-
-   if (!books.data.items) {
-      const singleBookArr = [];
-      singleBookArr.push(books.data);
-      setBooks(singleBookArr);
-      
-    } else {
-      const multBooks = books.data.items;
-      console.log(
-        books.data.items,
-        " <-- books.data.items ; setting books state"
-      );
-      setBooks(Array.isArray(multBooks) ? multBooks : [multBooks]);
-    }
-*/
