@@ -1,4 +1,5 @@
 import { GalleryBookCardProps } from "@/app/_lib/types";
+import { convert } from "html-to-text";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -22,6 +23,8 @@ export default function BookCard({
     imageLinks?.thumbnail ??
     imageLinks?.smallThumbnail ??
     process.env.NEXT_PUBLIC_IMG_NOT_FOUND!;
+  const formattedDescription = convert(description);
+
   return (
     <div className="max-w-80 bg-white rounded-lg shadow-md overflow-hidden">
       <div className="relative aspect-square">
@@ -37,9 +40,9 @@ export default function BookCard({
         <h2 className="text-xl font-semibold text-gray-900 mb-2">{title}</h2>
         <p className="text-sm text-gray-700 mb-2">By {authors.join(", ")}</p>
         <p className="text-gray-600 mb-2">
-          {description.length > 100
-            ? `${description.slice(0, 100)}...`
-            : description}
+          {formattedDescription.length > 100
+            ? `${formattedDescription.slice(0, 100)}...`
+            : formattedDescription}
         </p>
         <div className="flex flex-wrap gap-2 mb-2">
           {categories.map((cat: string) => (

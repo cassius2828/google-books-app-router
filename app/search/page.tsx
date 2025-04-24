@@ -2,8 +2,9 @@
 import BooksGallery from "@/app/_components/Books/BooksGallery";
 import SearchInput from "../_components/SearchInput";
 import { Suspense } from "react";
-import BooksGalleryProviderWrapper from "../_components/Books/BooksGalleryProviderWrapper";
+import BooksGalleryProviderWrapper from "../_components/Books/BooksProviderWrapper";
 import Loader from "../loading";
+import Link from "next/link";
 
 export const metadata = {
   title: "Search Books",
@@ -21,9 +22,11 @@ export default function SearchPage() {
           <Suspense fallback={<div>Loading search…</div>}>
             <SearchInput />
           </Suspense>
-          <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition">
-            Search
-          </button>
+          <Link href={"/search/advanced"}>
+            <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition">
+              Advanced Search
+            </button>
+          </Link>
         </div>
         {/* wraps with client component so we can use the provider to wrap the books gallery
         -- must wrap them while in a client component, it would not allow us directly in a server component
