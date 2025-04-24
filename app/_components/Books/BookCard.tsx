@@ -23,8 +23,8 @@ export default function BookCard({
     imageLinks?.thumbnail ??
     imageLinks?.smallThumbnail ??
     process.env.NEXT_PUBLIC_IMG_NOT_FOUND!;
-      const formattedDescription = convert(description);
-    
+  const formattedDescription = convert(description);
+
   return (
     <div className="max-w-80 bg-white rounded-lg shadow-md overflow-hidden">
       <div className="relative aspect-square">
