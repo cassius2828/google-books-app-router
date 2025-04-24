@@ -1,8 +1,8 @@
-const OrderByRadios = () => {
+const OrderByRadios = ({ params, handleChange }) => {
   return (
     <div>
       <label
-        htmlFor="filter"
+        htmlFor="orderBy"
         className="block text-xs font-medium text-gray-700 mb-2"
       >
         Order By
@@ -13,7 +13,9 @@ const OrderByRadios = () => {
             id="relevance"
             name="orderBy"
             type="radio"
-            value="magazines"
+            value="relevance"
+            checked={params.orderBy.value === "relevance"}
+            onChange={handleChange}
             className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-2 focus:ring-blue-500 rounded-full"
           />
           <span className="ml-2 text-gray-700 capitalize">Relevance</span>
@@ -24,7 +26,9 @@ const OrderByRadios = () => {
             id="newest"
             name="orderBy"
             type="radio"
-            value="newspapers"
+            value="newest"
+            checked={params.orderBy.value === "newest"}
+            onChange={handleChange}
             className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-2 focus:ring-blue-500 rounded-full"
           />
           <span className="ml-2 text-gray-700 capitalize">Newest</span>

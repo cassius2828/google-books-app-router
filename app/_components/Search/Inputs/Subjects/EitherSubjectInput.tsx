@@ -1,11 +1,23 @@
-const EitherSubjectInput = ({ params, handleChange }) => {
+import { useEffect } from "react";
+
+const EitherSubjectInput = ({ params, handleChange, setParams }) => {
+  useEffect(() => {
+    console.log("reset either subjec tinput ");
+    setParams((prev) => ({
+      ...prev,
+      allSubjects: {
+        ...prev.allSubjects,
+        value: "",
+      },
+    }));
+  }, []);
   return (
     <div>
       <label
         htmlFor="eitherSubject"
         className="block text-xs font-medium text-gray-700"
       >
-        Either Subject
+        Any of Listed Subjects
       </label>
       <input
         type="text"
@@ -13,7 +25,7 @@ const EitherSubjectInput = ({ params, handleChange }) => {
         id="eitherSubject"
         value={params.eitherSubject.value}
         onChange={handleChange}
-        placeholder="Subject"
+        placeholder="History Biography American"
         className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
       />
     </div>

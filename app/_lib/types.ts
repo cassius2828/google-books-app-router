@@ -40,6 +40,8 @@ export type GalleryBookCardProps = {
 export type BookContextType = {
   books: Book[];
   setBooks: Dispatch<SetStateAction<Book[]>>;
+  advancedSearchFormData: AdvancedSearchParams;
+  setAdvancedSearchFormData: Dispatch<SetStateAction<AdvancedSearchParams>>;
 };
 
 export interface ReadingListItem {
