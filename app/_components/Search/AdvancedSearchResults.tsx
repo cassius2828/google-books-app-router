@@ -5,15 +5,20 @@ import Masonry from "react-masonry-css";
 import { useBooksContext } from "@/app/_context/BooksContext";
 
 const AdvancedSearchResults = ({ books }: { books: Book[] }) => {
-  const { breakpointColumnsObj } = useBooksContext();
+  const { breakpointColumnsObj, advancedSearchResultsRef } = useBooksContext();
   return (
-    <section className="p-3 mt-6 max-w-7xl mx-auto">
+    <section
+      ref={advancedSearchResultsRef}
+      className="p-3 mt-6 max-w-7xl mx-auto"
+    >
       <h2 className="text-2xl font-semibold text-gray-800 mb-4">Results</h2>
 
       {books === null ? (
         <Loader />
       ) : books.length === 0 ? (
-        <p className="text-gray-600">No results found.</p>
+        <div className="h-screen">
+          <p className="text-gray-600">No results found.</p>
+        </div>
       ) : (
         <Masonry
           breakpointCols={breakpointColumnsObj}
@@ -36,6 +41,7 @@ const AdvancedSearchResults = ({ books }: { books: Book[] }) => {
           ))}
         </Masonry>
       )}
+      <div></div>
     </section>
   );
 };

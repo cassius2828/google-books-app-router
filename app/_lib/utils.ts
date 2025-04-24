@@ -1,10 +1,10 @@
 import { AdvancedSearchParams } from "./types";
-import { clsx, type ClassValue } from "clsx"
- import { twMerge } from "tailwind-merge"
- 
- export function cn(...inputs: ClassValue[]) {
-   return twMerge(clsx(inputs))
- }
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 export const buildAdvancedSearchUrl = (params: AdvancedSearchParams) => {
   // 1) build your q= segment as a plain, human-readable string
@@ -63,7 +63,6 @@ export const buildAdvancedSearchUrl = (params: AdvancedSearchParams) => {
 
   // 3) special case for volumeId
 
-
   // 4) pull it all together
   // URLSearchParams.toString() will:
   //  - percent-encode reserved chars (quotes → %22, colon → %3A, etc.)
@@ -73,82 +72,82 @@ export const buildAdvancedSearchUrl = (params: AdvancedSearchParams) => {
   return `${query}`;
 };
 
-const exampleObj: AdvancedSearchParams = {
-  // replace spaces with + -- q=example+here+you+go
-  fullText: {
-    value: "if you give a mouse",
-    type: "query",
-  },
-  // add " " around words for eact phrase q="example"
-  exactPhrase: {
-    value: "cookie",
-    type: "query",
-  },
-  // excludes text from search results -- q=-badguys
-  excludeText: {
-    value: "pig bacon",
-    type: "query",
-  },
-  // separate words by pipe q=example|here
-  includesText: {
-    value: "mom dad",
-    type: "query",
-  },
-  // langRestrict=en
-  langRestrict: {
-    value: "en",
-    type: "independent",
-  },
-  // orderBy=relevance
-  orderBy: {
-    value: "relevance",
-    type: "independent",
-  },
-  // printType=all
-  printType: {
-    value: "all",
-    type: "independent",
-  },
-  maxResults: {
-    value: "10",
-    type: "independent",
-  },
-  // will query by itself, replaces finalStr in fn
-  volumeId: {
-    value: "",
-    type: "independent",
-  },
-  // q=inauthor:Lemony+Snicket
-  author: {
-    value: "John Simmons",
-    type: "query",
-  },
-  // &filter=ebooks
-  filter: {
-    value: "ebooks",
-    type: "independent",
-  },
-  // q=intitle:Series+of+unfortunate+events
-  title: {
-    value: "How to use the John",
-    type: "query",
-  },
-  // q=inpublisher:Tin+House
-  publisher: {
-    value: "RecoInc",
-    type: "query",
-  },
-  // q=subject:finance|self-help
-  eitherSubject: {
-    value: "fiction sci-fi",
-    type: "query",
-  },
-  allSubjects: {
-    value: "fiction sci-fi",
-    type: "query",
-  },
-};
-console.log(buildAdvancedSearchUrl(exampleObj));
+// const exampleObj: AdvancedSearchParams = {
+//   // replace spaces with + -- q=example+here+you+go
+//   fullText: {
+//     value: "if you give a mouse",
+//     type: "query",
+//   },
+//   // add " " around words for eact phrase q="example"
+//   exactPhrase: {
+//     value: "cookie",
+//     type: "query",
+//   },
+//   // excludes text from search results -- q=-badguys
+//   excludeText: {
+//     value: "pig bacon",
+//     type: "query",
+//   },
+//   // separate words by pipe q=example|here
+//   includesText: {
+//     value: "mom dad",
+//     type: "query",
+//   },
+//   // langRestrict=en
+//   langRestrict: {
+//     value: "en",
+//     type: "independent",
+//   },
+//   // orderBy=relevance
+//   orderBy: {
+//     value: "relevance",
+//     type: "independent",
+//   },
+//   // printType=all
+//   printType: {
+//     value: "all",
+//     type: "independent",
+//   },
+//   maxResults: {
+//     value: "10",
+//     type: "independent",
+//   },
+//   // will query by itself, replaces finalStr in fn
+//   volumeId: {
+//     value: "",
+//     type: "independent",
+//   },
+//   // q=inauthor:Lemony+Snicket
+//   author: {
+//     value: "John Simmons",
+//     type: "query",
+//   },
+//   // &filter=ebooks
+//   filter: {
+//     value: "ebooks",
+//     type: "independent",
+//   },
+//   // q=intitle:Series+of+unfortunate+events
+//   title: {
+//     value: "How to use the John",
+//     type: "query",
+//   },
+//   // q=inpublisher:Tin+House
+//   publisher: {
+//     value: "RecoInc",
+//     type: "query",
+//   },
+//   // q=subject:finance|self-help
+//   eitherSubject: {
+//     value: "fiction sci-fi",
+//     type: "query",
+//   },
+//   allSubjects: {
+//     value: "fiction sci-fi",
+//     type: "query",
+//   },
+// };
+// console.log(buildAdvancedSearchUrl(exampleObj));
 // ex of a with minus query
 // https://www.google.com/search?tbo=p&tbm=bks&q=lord+-rings&num=10
 
