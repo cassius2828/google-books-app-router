@@ -7,9 +7,9 @@ const BASE_VOL_URL = process.env.BASE_VOL_URL!;
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<string> }
+  { params }: { params: Promise<{ volumeId: string }> }
 ) {
-const {volumeId} = await params
+  const { volumeId } = await params;
 
   const googleUrl = `${BASE_VOL_URL}/${volumeId}?key=${GOOGLE_API_KEY}`;
   console.log(googleUrl, " \n-- google url \n");
