@@ -10,7 +10,7 @@ const ClearSearchBtn = () => {
           setAdvancedSearchFormData(initialSearchObj);
         }}
         type="button"
-        className="px-6 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition"
+        className="px-6 py-2 w-32 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition"
       >
         Clear
       </button>
