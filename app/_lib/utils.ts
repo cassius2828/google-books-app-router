@@ -1,4 +1,10 @@
 import { AdvancedSearchParams } from "./types";
+import { clsx, type ClassValue } from "clsx"
+ import { twMerge } from "tailwind-merge"
+ 
+ export function cn(...inputs: ClassValue[]) {
+   return twMerge(clsx(inputs))
+ }
 
 export const buildAdvancedSearchUrl = (params: AdvancedSearchParams) => {
   // 1) build your q= segment as a plain, human-readable string
