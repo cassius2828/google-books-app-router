@@ -90,13 +90,19 @@ export const BooksProvider: React.FC<{ children: ReactNode }> = ({
   const [books, setBooks] = useState<Book[]>([]);
   const [advancedSearchFormData, setAdvancedSearchFormData] =
     useState<AdvancedSearchParams>(initialSearchObj);
+    const breakpointColumnsObj = {
+      default: 4,
+      1100: 3,
+      700: 2,
+      500: 1,
+    };
   return (
     <BooksContext.Provider
       value={{
         books,
         setBooks,
         advancedSearchFormData,
-        setAdvancedSearchFormData,
+        setAdvancedSearchFormData,breakpointColumnsObj
       }}
     >
       {children}

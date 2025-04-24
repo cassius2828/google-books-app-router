@@ -7,14 +7,9 @@ import { Book } from "@/app/_lib/types";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Masonry from "react-masonry-css";
-const breakpointColumnsObj = {
-  default: 4,
-  1100: 3,
-  700: 2,
-  500: 1
-};
+
 const BooksGallery = () => {
-  const { books, setBooks } = useBooksContext();
+  const { books, setBooks, breakpointColumnsObj } = useBooksContext();
   const [paginationIndex, setPaginiationIndex] = useState<number>(1);
   const [displayBooks, setDisplayBooks] = useState<Book[]>([]);
   const searchParams = useSearchParams();

@@ -23,8 +23,14 @@ export type BookContextType = {
   setBooks: Dispatch<SetStateAction<Book[]>>;
   advancedSearchFormData: AdvancedSearchParams;
   setAdvancedSearchFormData: Dispatch<SetStateAction<AdvancedSearchParams>>;
+  breakpointColumnsObj: BreakpointColumns;
 };
-
+interface BreakpointColumns {
+  /** Fallback column count when no other breakpoint matches */
+  default: number;
+  /** Any other numeric breakpoint → column count */
+  [minWidth: number]: number;
+}
 export interface ReadingListItem {
   books: {
     id: string;
@@ -156,10 +162,9 @@ export interface AdvancedSearchParams {
   eitherSubject: SearchParam; // type: "query"
 }
 
-export type GoogleBooksAPIResponse = Book[]
+export type GoogleBooksAPIResponse = Book[];
 
-
-   // single‐volume case
+// single‐volume case
 interface VolumeInfo {
   title: string;
   authors: string[];
