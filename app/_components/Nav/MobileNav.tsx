@@ -61,7 +61,7 @@ export default async function MobileNav({ publicUserID }: MobileNavProps) {
       </div>
 
       {/* Collapsible menu */}
-      <div className="hidden peer-checked:flex flex-col space-y-2 bg-white rounded-b-lg shadow-lg p-4 absolute top-full left-0 w-full z-20">
+      <div className="hidden peer-checked:flex flex-col space-y-2 bg-white rounded-b-lg shadow-lg p-4 absolute top-full left-0 w-full z-50">
         <Link href="/" className="text-gray-600 hover:text-gray-900">
           Home
         </Link>

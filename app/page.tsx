@@ -18,7 +18,7 @@ export default function Home() {
       </div>
 
       <main className="flex flex-col items-center justify-center pb-20 px-4 h-screen bg-blue-50 ">
-        <div className="bg-gray-50 p-3 rounded-md relative z-50 shadow-lg flex flex-col items-center">
+        <div className="bg-gray-50 p-3 rounded-md relative z-30 shadow-lg flex flex-col items-center">
           <h1 className="text-5xl font-extrabold text-gray-900 mb-4 text-center">
             Welcome to LibrisList
           </h1>
