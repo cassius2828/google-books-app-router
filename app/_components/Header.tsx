@@ -15,7 +15,7 @@ export default async function Header() {
   return (
     <header className="bg-white shadow-md relative z-50">
       <div className="container mx-auto flex items-center justify-between px-6 py-4">
-        <div className="text-2xl font-semibold text-gray-800 flex gap-2 items-center">
+        <div className="text-2xl font-semibold text-gray-800 flex gap-2 items-center relative z-50">
           LibrisList
           <Image
           src={logo}
