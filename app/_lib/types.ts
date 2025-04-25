@@ -18,8 +18,6 @@ export type BookContextType = {
   scrollToSection: (ref: RefObject<HTMLElement | null>) => void;
 };
 
-export type GoogleBooksAPIResponse = Book[];
-
 // single‐volume case
 interface VolumeInfo {
   title: string;
