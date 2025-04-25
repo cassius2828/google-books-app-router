@@ -2,7 +2,7 @@
 import axios from "axios";
 
 import { useBooksContext } from "@/app/_context/BooksContext";
-import { GoogleBooksAPIResponse } from "@/app/_lib/types";
+import { Book } from "@/app/_lib/types";
 import { buildAdvancedSearchUrl } from "@/app/_lib/utils";
 
 import AuthorInput from "./Inputs/AuthorInput";
@@ -17,8 +17,8 @@ import SubjectInputContainer from "./Inputs/Subjects/SubjectInputContainer";
 import TitleInput from "./Inputs/TitleInput";
 import VolumeIdInput from "./Inputs/VolumeIdInput";
 
-import BtnContainer from "./Buttons/BtnContainer";
 import { useTransition } from "react";
+import BtnContainer from "./Buttons/BtnContainer";
 
 export default function AdvancedSearchForm() {
   // books context
@@ -39,7 +39,7 @@ export default function AdvancedSearchForm() {
     const query = buildAdvancedSearchUrl(advancedSearchFormData);
 
     try {
-      const { data: resp } = await axios.get<GoogleBooksAPIResponse>(
+      const { data: resp } = await axios.get<Book[]>(
         // solves issue of leading "?" when searching for vol by id
         `/api/books/advanced-search${isVolumeIDSearch ? "/" : "?"}${query}`
       );
