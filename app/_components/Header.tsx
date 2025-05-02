@@ -12,6 +12,7 @@ export default async function Header() {
   if (session?.user?.email) {
     publicUserID = await getPublicUserID(session?.user?.email);
   }
+
   return (
     <header className="bg-white shadow-md relative z-50">
       <div className="container mx-auto flex items-center justify-between px-6 py-4">

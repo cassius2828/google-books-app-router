@@ -1,5 +1,5 @@
+import { signInWithGoogle, signOutAction } from "@/app/_lib/actions";
 import { auth } from "@/app/_lib/auth";
-import { signInWithGoogle, singOutAction } from "@/app/_lib/actions";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -100,7 +100,7 @@ export default async function MobileNav({ publicUserID }: MobileNavProps) {
               <span className="text-gray-700">
                 Welcome, {session.user.name?.split(" ")[0]}
               </span>
-              <form action={singOutAction} className="ml-auto">
+              <form action={signOutAction} className="ml-auto">
                 <button
                   type="submit"
                   className="text-sm text-gray-600 hover:text-gray-900"

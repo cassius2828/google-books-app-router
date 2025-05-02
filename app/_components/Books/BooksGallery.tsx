@@ -23,7 +23,6 @@ const BooksGallery = () => {
           `/api/books?q=${encodeURIComponent(query)}`
         );
         const data = response.data;
-        console.log(data, " <-- books data");
         if (data) {
           setBooks(data.items);
           setDisplayBooks(data.items.slice(0, 10));
@@ -39,9 +38,6 @@ const BooksGallery = () => {
     const num = index * 10;
     const num2 = num + 10;
     setDisplayBooks(array.slice(0, num2));
-    console.log("ran");
-    console.log(displayBooks);
-    console.log(books);
   };
   useEffect(() => {
     calculatePagination(paginationIndex, books);

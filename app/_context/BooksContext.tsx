@@ -101,7 +101,6 @@ export const BooksProvider: React.FC<{ children: ReactNode }> = ({
     500: 1,
   };
   const scrollToSection = (ref: RefObject<HTMLElement | null>) => {
-    console.log(ref, ' <-- REF ')
     ref.current?.scrollIntoView({ behavior: "smooth" });
   };
 

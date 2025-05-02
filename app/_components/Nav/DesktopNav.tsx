@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { signInWithGoogle, singOutAction } from "@/app/_lib/actions";
+import { signInWithGoogle, signOutAction } from "@/app/_lib/actions";
 import { auth } from "@/app/_lib/auth";
 
 const DesktopNav = async ({ publicUserID }: { publicUserID: string }) => {
@@ -49,7 +49,7 @@ const DesktopNav = async ({ publicUserID }: { publicUserID: string }) => {
             <span className="text-gray-700">
               Welcome, {session.user.name?.split(" ").slice(0, 1)}
             </span>
-            <form action={singOutAction}>
+            <form action={signOutAction}>
               <button className="cursor-pointer ml-4 text-sm text-gray-600 hover:text-gray-900">
                 Sign Out
               </button>

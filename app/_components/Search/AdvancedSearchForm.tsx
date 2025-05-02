@@ -60,7 +60,6 @@ export default function AdvancedSearchForm() {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    console.log(advancedSearchFormData);
     setAdvancedSearchFormData((prev) => ({
       ...prev,
       [name]: {

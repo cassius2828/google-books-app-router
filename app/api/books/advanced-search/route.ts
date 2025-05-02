@@ -11,13 +11,11 @@ export async function GET(request: NextRequest) {
 
   // 2) Extract just the query string (everything after '?')
   const { search } = new URL(fullUrl);
-console.log(search , ' \n\n<-- search url \n\n')
 
   const googleUrl = `${BASE_VOL_URL}${search}&key=${GOOGLE_API_KEY}`;
-console.log(googleUrl, ' \n-- google url \n')
+
   try {
     const { data } = await axios.get(googleUrl);
-    console.log(data, '\n\n <-- data\n\n')
     return NextResponse.json(data.items);
   } catch (err) {
     console.error(err);
