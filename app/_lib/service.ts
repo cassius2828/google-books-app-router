@@ -62,9 +62,9 @@ export const getBookById = async (id: string) => {
 export const getPublicUserID = async (email: string) => {
   const { data: publicUser, error } = await supabase
     .from("users")
-    .select("id")
+    .select<string>("id")
     .eq("email", email)
-    .maybeSingle();
+    .maybeSingle<{ id: string }>();
 
   if (error) {
     console.error("Error fetching public user ID:", error);
@@ -74,23 +74,23 @@ export const getPublicUserID = async (email: string) => {
   } else {
     if (!publicUser) {
       const session = await auth();
-      const { data: newUserInsertID, error } = await supabase
+      const { data: newUserInsert, error } = await supabase
         .from("users")
         .insert([
           {
             id: randomUUID(),
-            username: session?.user?.name?.split(" ")[0],
+            username: session?.user?.name,
             email: session?.user?.email,
             avatar: session?.user?.image,
           },
         ])
         .select<string>("id")
-        .single();
+        .single<{ id: string }>();
       if (error) {
         console.error("Error creating new user in public DB:", error);
         throw new Error(`Could not create a new user in the public database`);
       }
-      if (newUserInsertID) return newUserInsertID;
+      if (newUserInsert.id) return newUserInsert.id;
     } else return publicUser.id;
   }
 };
