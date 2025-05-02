@@ -13,8 +13,14 @@ export async function GET(
   }
   if (session?.user?.email && bookId) {
     const userId = await getPublicUserID(session?.user?.email);
-    const data = await getIsBookInUsersList(userId, bookId);
-    console.log(data, ' <-- data from route api ')
-    return NextResponse.json(data);
+    if (userId) {
+      const data = await getIsBookInUsersList(userId, bookId);
+      return NextResponse.json(data);
+    } else {
+      return NextResponse.json({
+        error:
+          "Cannot find userId, therefore cannot find book in list. Make sure you are signed in to view your book",
+      });
+    }
   }
 }

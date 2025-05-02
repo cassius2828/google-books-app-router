@@ -12,10 +12,9 @@ export async function GET(
   const { volumeId } = await params;
 
   const googleUrl = `${BASE_VOL_URL}/${volumeId}?key=${GOOGLE_API_KEY}`;
-  console.log(googleUrl, " \n-- google url \n");
+
   try {
     const { data } = await axios.get(googleUrl);
-    console.log(data, "\n\n <-- data\n\n");
     return NextResponse.json([data]);
   } catch (err) {
     console.error(err);

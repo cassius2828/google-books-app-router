@@ -7,10 +7,10 @@ import { Marquee } from "./marquee";
 
 export async function Marquee3D() {
   const word = faker.word.noun();
-  console.log(word, " \n\n<-- generated word \n\n");
+// book data
   const data = await getBooksByTitle(word);
   const books: Book[] = data.items.slice(0, 20);
-  console.log(books, " \n\n<-- books \n\n");
+// rows of books
   const firstRow = books.slice(0, books.length / 2);
   const secondRow = books.slice(books.length / 2);
   const thirdRow = books.slice(0, books.length / 2);

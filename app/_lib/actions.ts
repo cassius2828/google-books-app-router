@@ -7,7 +7,7 @@ import { getPublicUserID, postAddBookToDB } from "./service";
 import { Book } from "./types";
 
 export const signInWithGoogle = async () => await signIn("google");
-export const singOutAction = async () => await signOut();
+export const signOutAction = async () => await signOut();
 
 // docs say to avoid try catch and throwing errors in action fns
 export const addBookToListAction = async (book: Book) => {
@@ -73,7 +73,7 @@ export const addBookToListAction = async (book: Book) => {
 export const removeBookFromListAction = async (bookId: string) => {
   const session = await auth();
   const userId = await getPublicUserID(session?.user?.email || "");
-  console.log(userId, " \n\n<-- USER ID \n\n");
+
   if (!session)
     return {
       statusCode: 403,
@@ -140,7 +140,7 @@ export const addNotesToBook = async (formData: FormData) => {
 
 export const putChangeBookStatusAction = async (status: string, id: string) => {
   const session = await auth();
-  console.log(status, " \n\n <-- status \n\n");
+
   const { error } = await supabase
     .from("reading_list")
     .update([
@@ -159,5 +159,3 @@ export const putChangeBookStatusAction = async (status: string, id: string) => {
 
   revalidatePath(`/reading-list/${session?.user?.id}`);
 };
-
-

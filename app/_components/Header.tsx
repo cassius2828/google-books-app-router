@@ -12,22 +12,18 @@ export default async function Header() {
   if (session?.user?.email) {
     publicUserID = await getPublicUserID(session?.user?.email);
   }
+
   return (
     <header className="bg-white shadow-md relative z-50">
       <div className="container mx-auto flex items-center justify-between px-6 py-4">
         <div className="text-2xl font-semibold text-gray-800 flex gap-2 items-center relative z-50">
           LibrisList
-          <Image
-          src={logo}
-          alt="LibrisList Logo"
-          width={40}
-          height={40}
-        />
+          <Image src={logo} alt="LibrisList Logo" width={40} height={40} />
         </div>
         {/* desktop */}
-        <DesktopNav publicUserID={publicUserID} />
+        <DesktopNav publicUserID={publicUserID || ""} />
         {/* mobile */}
-        <MobileNav publicUserID={publicUserID} />
+        <MobileNav publicUserID={publicUserID || ""} />
       </div>
     </header>
   );

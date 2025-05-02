@@ -2,6 +2,8 @@ import { supabase } from "@/supabase/supabase";
 import axios from "axios";
 import { convert } from "html-to-text";
 import { Book, ReadingListDBRow } from "./types";
+import { auth } from "./auth";
+import { randomUUID } from "crypto";
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 const BASE_VOL_URL = process.env.BASE_VOL_URL;
 const BASE_VOL_URL_BY_ID = `https://www.googleapis.com/books/v1/volumes/`;
@@ -60,9 +62,9 @@ export const getBookById = async (id: string) => {
 export const getPublicUserID = async (email: string) => {
   const { data: publicUser, error } = await supabase
     .from("users")
-    .select("id")
+    .select<string>("id")
     .eq("email", email)
-    .single();
+    .maybeSingle<{ id: string }>();
 
   if (error) {
     console.error("Error fetching public user ID:", error);
@@ -70,7 +72,26 @@ export const getPublicUserID = async (email: string) => {
       `Could not get a user_id by the email provided. \nEmail: ${email}`
     );
   } else {
-    return publicUser.id;
+    if (!publicUser) {
+      const session = await auth();
+      const { data: newUserInsert, error } = await supabase
+        .from("users")
+        .insert([
+          {
+            id: randomUUID(),
+            username: session?.user?.name,
+            email: session?.user?.email,
+            avatar: session?.user?.image,
+          },
+        ])
+        .select<string>("id")
+        .single<{ id: string }>();
+      if (error) {
+        console.error("Error creating new user in public DB:", error);
+        throw new Error(`Could not create a new user in the public database`);
+      }
+      if (newUserInsert.id) return newUserInsert.id;
+    } else return publicUser.id;
   }
 };
 
@@ -206,5 +227,3 @@ export const getNote = async (readingListId: string) => {
   }
   return data?.content || "";
 };
-
-

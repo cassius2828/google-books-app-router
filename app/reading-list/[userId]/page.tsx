@@ -14,7 +14,6 @@ export default async function ReadingListPage(props: {
 }) {
   const { userId } = await props.params;
   const { status } = await props.searchParams;
-  console.log(status);
 
   const readingList:
     | ReadingListDBRow[]
