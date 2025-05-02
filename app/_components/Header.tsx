@@ -6,6 +6,7 @@ import { getPublicUserID } from "../_lib/service";
 import DesktopNav from "./Nav/DesktopNav";
 import MobileNav from "./Nav/MobileNav";
 import logo from "@/app/icon.png";
+
 export default async function Header() {
   const session = await auth();
   let publicUserID;

@@ -71,3 +71,9 @@ export const buildAdvancedSearchUrl = (params: AdvancedSearchParams) => {
 
   return `${query}`;
 };
+
+
+export const isInAppBrowser = () => {
+  const ua = navigator.userAgent
+  return /FBAN|FBAV|Instagram|LinkedIn|Line|Twitter/i.test(ua)
+}

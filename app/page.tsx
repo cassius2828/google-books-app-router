@@ -1,7 +1,7 @@
 // pages/index.tsx
-
 import Link from "next/link";
 import { Marquee3D } from "./_components/Marquee3D";
+import InAppBrowserModal from "./_components/Modals/AppBrowserModal";
 
 export const metadata = {
   title: "LibrisList",
@@ -34,6 +34,7 @@ export default function Home() {
             Start Browsing
           </Link>
         </div>
+        <InAppBrowserModal />
       </main>
     </>
   );
