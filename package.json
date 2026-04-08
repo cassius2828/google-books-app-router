@@ -6,7 +6,9 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "jest",
+    "test:ci": "jest --ci --coverage"
   },
   "dependencies": {
     "@auth/mongodb-adapter": "^3.11.1",
@@ -30,11 +32,13 @@
     "@eslint/eslintrc": "^3",
     "@faker-js/faker": "^9.7.0",
     "@tailwindcss/postcss": "^4",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.5.12",
+    "jest": "^30.3.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

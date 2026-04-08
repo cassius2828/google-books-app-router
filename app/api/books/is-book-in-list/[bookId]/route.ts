@@ -1,4 +1,5 @@
 import { auth } from "@/app/_lib/auth";
+import { isValidReadingListLookupId } from "@/app/_lib/readingListIds";
 import { getIsBookInUsersList, getPublicUserID } from "@/app/_lib/service";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -11,7 +12,7 @@ export async function GET(
   if (!session?.user?.email) {
     return NextResponse.json({ error: "Not signed in" }, { status: 401 });
   }
-  if (!bookId || bookId === "undefined") {
+  if (!bookId || !isValidReadingListLookupId(bookId)) {
     return NextResponse.json(null);
   }
   const userId = await getPublicUserID(session.user.email);

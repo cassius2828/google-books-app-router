@@ -10,6 +10,7 @@ import {
   NoteModel,
   type BookDoc,
 } from "./models";
+import { isValidReadingListLookupId } from "./readingListIds";
 
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 const BASE_VOL_URL = process.env.BASE_VOL_URL;
@@ -208,10 +209,9 @@ export const getIsBookInUsersList = async (
 } | null> => {
   if (!bookId || !userId) return null;
 
-  await connectDB();
+  if (!isValidReadingListLookupId(bookId)) return null;
 
-  const mongoose = (await import("mongoose")).default;
-  if (!mongoose.Types.ObjectId.isValid(bookId)) return null;
+  await connectDB();
 
   const entry = await ReadingListModel.findOne({
     user_id: userId,
