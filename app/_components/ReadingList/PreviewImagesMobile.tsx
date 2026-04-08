@@ -1,16 +1,18 @@
 import Image from "next/image";
 
+const ASSET_BASE = "https://d2uth2nw0znbpc.cloudfront.net/google-books";
+
 const images = [
   {
-    src: `${process.env.NEXT_PUBLIC_SUPABASE_BUCKET_URL}/side-one.png`,
+    src: `${ASSET_BASE}/side-one.png`,
     alt: "Search books screenshot",
   },
   {
-    src: `${process.env.NEXT_PUBLIC_SUPABASE_BUCKET_URL}/side-two.png`,
+    src: `${ASSET_BASE}/side-two.png`,
     alt: "Reading list screenshot",
   },
   {
-    src: `${process.env.NEXT_PUBLIC_SUPABASE_BUCKET_URL}/book-details.png`,
+    src: `${ASSET_BASE}/book-details.png`,
     alt: "Book details screenshot",
   },
 ];

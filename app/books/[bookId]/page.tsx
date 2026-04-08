@@ -41,13 +41,19 @@ export default function BookDetails() {
         const { data: bookData } = await axios.get(`/api/books/${bookId}`);
         setBook(bookData);
         // does book exist in user reading list
-        const { data: exists } = await axios.get(
-          `/api/books/is-book-in-list/${bookData?.volumeInfo?.id}`
-        );
-        // set validator for reading list obj ONLY IF book exisits in users list
-        setReadingListObj(exists);
-        const { data: noteData } = await axios.get(`/api/notes/${exists.id}`);
-        setNote(noteData);
+        const bookDbId = bookData?.volumeInfo?.id;
+        if (bookDbId) {
+          const { data: exists } = await axios.get(
+            `/api/books/is-book-in-list/${bookDbId}`
+          );
+          if (exists?.id) {
+            setReadingListObj(exists);
+            const { data: noteData } = await axios.get(
+              `/api/notes/${exists.id}`
+            );
+            setNote(noteData);
+          }
+        }
       } catch (err) {
         console.error(err);
       } finally {
@@ -151,13 +157,13 @@ export default function BookDetails() {
   };
 
   const coverSrc =
-    imageLinks.cover_image ??
-    imageLinks.extraLarge ??
-    imageLinks.large ??
-    imageLinks.medium ??
-    imageLinks.small ??
-    imageLinks.thumbnail ??
-    imageLinks.smallThumbnail ??
+    imageLinks.cover_image ||
+    imageLinks.extraLarge ||
+    imageLinks.large ||
+    imageLinks.medium ||
+    imageLinks.small ||
+    imageLinks.thumbnail ||
+    imageLinks.smallThumbnail ||
     process.env.NEXT_PUBLIC_IMG_NOT_FOUND!;
   return (
     <div className="min-h-screen flex flex-col lg:flex-row gap-12 items-center justify-center bg-gray-50 p-6 pb-32 relative">

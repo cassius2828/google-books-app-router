@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
       "lh3.googleusercontent.com",
       "books.google.com",
       "png.pngtree.com",
-      "vcpajugcxgnkkacsurfx.supabase.co"
+      "d2uth2nw0znbpc.cloudfront.net",
     ],
   },
 };

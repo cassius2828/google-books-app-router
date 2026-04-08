@@ -11,16 +11,16 @@ export async function GET(
   if (!session?.user?.email) {
     return NextResponse.json({ error: "Not signed in" }, { status: 401 });
   }
-  if (session?.user?.email && bookId) {
-    const userId = await getPublicUserID(session?.user?.email);
-    if (userId) {
-      const data = await getIsBookInUsersList(userId, bookId);
-      return NextResponse.json(data);
-    } else {
-      return NextResponse.json({
-        error:
-          "Cannot find userId, therefore cannot find book in list. Make sure you are signed in to view your book",
-      });
-    }
+  if (!bookId || bookId === "undefined") {
+    return NextResponse.json(null);
   }
+  const userId = await getPublicUserID(session.user.email);
+  if (!userId) {
+    return NextResponse.json({
+      error:
+        "Cannot find userId, therefore cannot find book in list. Make sure you are signed in to view your book",
+    });
+  }
+  const data = await getIsBookInUsersList(userId, bookId);
+  return NextResponse.json(data);
 }

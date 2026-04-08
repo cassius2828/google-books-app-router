@@ -206,7 +206,12 @@ export const getIsBookInUsersList = async (
   book_id?: string;
   status?: string;
 } | null> => {
+  if (!bookId || !userId) return null;
+
   await connectDB();
+
+  const mongoose = (await import("mongoose")).default;
+  if (!mongoose.Types.ObjectId.isValid(bookId)) return null;
 
   const entry = await ReadingListModel.findOne({
     user_id: userId,
