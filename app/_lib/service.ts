@@ -1,9 +1,16 @@
-import { supabase } from "@/supabase/supabase";
 import axios from "axios";
 import { convert } from "html-to-text";
 import { Book, ReadingListDBRow } from "./types";
 import { auth } from "./auth";
-import { randomUUID } from "crypto";
+import { connectDB } from "./db";
+import {
+  UserModel,
+  BookModel,
+  ReadingListModel,
+  NoteModel,
+  type BookDoc,
+} from "./models";
+
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 const BASE_VOL_URL = process.env.BASE_VOL_URL;
 const BASE_VOL_URL_BY_ID = `https://www.googleapis.com/books/v1/volumes/`;
@@ -22,13 +29,11 @@ export const getBooksByTitle = async (query: string) => {
 
 export const getBookById = async (id: string) => {
   try {
-    // look in DB for book first
     const existingBook = await getBookFromDB(id);
-    // using google id to find the book
     if (existingBook) {
       return {
         volumeInfo: {
-          id: existingBook.id,
+          id: existingBook._id.toString(),
           title: existingBook.title,
           authors: existingBook.authors,
           publisher: existingBook.publisher,
@@ -47,11 +52,9 @@ export const getBookById = async (id: string) => {
       };
     }
 
-    // fetch book from google if not in db
     const response = await axios.get(
       `${BASE_VOL_URL_BY_ID}${id}?key=${GOOGLE_API_KEY}`
     );
-
     return response.data;
   } catch (err) {
     console.error(err);
@@ -59,47 +62,36 @@ export const getBookById = async (id: string) => {
   }
 };
 
-export const getPublicUserID = async (email: string) => {
-  const { data: publicUser, error } = await supabase
-    .from("users")
-    .select<string>("id")
-    .eq("email", email)
-    .maybeSingle<{ id: string }>();
+export const getPublicUserID = async (email: string): Promise<string> => {
+  await connectDB();
 
-  if (error) {
-    console.error("Error fetching public user ID:", error);
-    throw new Error(
-      `Could not get a user_id by the email provided. \nEmail: ${email}`
-    );
-  } else {
-    if (!publicUser) {
-      const session = await auth();
-      const { data: newUserInsert, error } = await supabase
-        .from("users")
-        .insert([
-          {
-            id: randomUUID(),
-            username: session?.user?.name,
-            email: session?.user?.email,
-            avatar: session?.user?.image,
-          },
-        ])
-        .select<string>("id")
-        .single<{ id: string }>();
-      if (error) {
-        console.error("Error creating new user in public DB:", error);
-        throw new Error(`Could not create a new user in the public database`);
-      }
-      if (newUserInsert.id) return newUserInsert.id;
-    } else return publicUser.id;
+  const publicUser = await UserModel.findOne({ email }).lean();
+
+  if (publicUser) {
+    return publicUser._id.toString();
   }
+
+  const session = await auth();
+  const sessionEmail = session?.user?.email;
+  if (!sessionEmail) {
+    throw new Error("No email found in session");
+  }
+  const newUser = await UserModel.create({
+    username: session?.user?.name ?? "Unknown",
+    email: sessionEmail,
+    avatar: session?.user?.image ?? null,
+  });
+
+  return newUser._id.toString();
 };
 
 export const postAddBookToDB = async (book: Book) => {
-  debugger;
   if (!book) {
     throw new Error("Missing Book");
   }
+
+  await connectDB();
+
   const {
     volumeInfo: {
       title,
@@ -120,77 +112,85 @@ export const postAddBookToDB = async (book: Book) => {
     if (existingBook) return existingBook;
   }
 
-  // insert book if it does not exist in our db
-  const { data, error } = await supabase
-    .from("books")
-    .insert([
-      {
-        title,
-        authors,
-        publisher,
-        published_date: publishedDate,
-        description: formattedDescription,
-        page_count: pageCount,
-        categories,
-        preview_link: previewLink,
-        cover_image:
-          imageLinks.extraLarge ||
-          imageLinks.large ||
-          imageLinks.medium ||
-          imageLinks.small,
-        thumbnail: imageLinks.thumbnail || imageLinks.smallThumbnail,
-        google_book_id: book.id,
-      },
-    ])
-    .select()
-    .single();
-  if (error)
-    throw new Error(`Unable to add book to database: ${error.message}`);
-  return data;
+  const newBook = await BookModel.create({
+    google_book_id: book.id,
+    title,
+    authors,
+    publisher,
+    published_date: publishedDate,
+    description: formattedDescription,
+    page_count: pageCount,
+    categories,
+    cover_image:
+      imageLinks.extraLarge ||
+      imageLinks.large ||
+      imageLinks.medium ||
+      imageLinks.small ||
+      "",
+    thumbnail: imageLinks.thumbnail || imageLinks.smallThumbnail || "",
+    preview_link: previewLink,
+  });
+
+  return newBook.toObject();
 };
 
-export const getBookFromDB = async (bookId: string) => {
-  const { data, error } = await supabase
-    .from("books")
-    .select()
-    .eq("google_book_id", bookId)
-    .maybeSingle();
-  if (error) throw new Error("could not get book from database");
-  else return data;
+export const getBookFromDB = async (
+  bookId: string
+): Promise<BookDoc | null> => {
+  await connectDB();
+  return BookModel.findOne({ google_book_id: bookId }).lean<BookDoc>();
 };
 
 export const getUserReadingList = async (
   userId: string,
   statusFilter?: string
-): Promise<
-  ReadingListDBRow[] | { data: []; error: unknown } | { data: [] }
-> => {
+): Promise<ReadingListDBRow[] | { data: []; error?: unknown }> => {
   if (!userId) {
     return [];
   }
   try {
+    await connectDB();
+
+    const query: Record<string, string> = { user_id: userId };
     if (statusFilter && statusFilter !== "all") {
-      const { data, error } = await supabase
-        .from("reading_list")
-        .select<string, ReadingListDBRow>(`status, books(*), notes(*)`)
-        .eq("user_id", userId)
-        .eq("status", statusFilter);
-      if (error) {
-        return { data: [], error };
-      }
-
-      return data;
-    } else {
-      const { data, error } = await supabase
-        .from("reading_list")
-        .select<string, ReadingListDBRow>(`status, books(*), notes(*)`)
-        .eq("user_id", userId);
-      if (error) {
-        return { data: [], error };
-      }
-
-      return data;
+      query.status = statusFilter;
     }
+
+    const entries = await ReadingListModel.find(query)
+      .populate("book_id")
+      .lean();
+
+    const result: ReadingListDBRow[] = await Promise.all(
+      entries.map(async (entry) => {
+        const note = await NoteModel.findOne({
+          reading_list_id: entry._id,
+        }).lean();
+
+        const book = entry.book_id as unknown as BookDoc;
+        return {
+          status: entry.status,
+          books: {
+            id: book._id.toString(),
+            google_book_id: book.google_book_id,
+            title: book.title,
+            authors: book.authors,
+            publisher: book.publisher,
+            published_date: book.published_date,
+            description: book.description,
+            page_count: book.page_count,
+            categories: book.categories,
+            thumbnail: book.thumbnail,
+            cover_image: book.cover_image,
+            preview_link: book.preview_link,
+            created_at: (book as unknown as { createdAt?: Date }).createdAt
+              ?.toISOString() ?? "",
+          },
+          notes: note ? [{ id: note._id.toString(), content: note.content }] : [],
+        } as unknown as ReadingListDBRow;
+      })
+    );
+
+    return result;
   } catch (err) {
     console.error(err);
     return { data: [] };
@@ -200,30 +200,35 @@ export const getUserReadingList = async (
 export const getIsBookInUsersList = async (
   userId: string,
   bookId: string
-): Promise<{ id?: string; user_id?: string } | null> => {
-  const { data, error } = await supabase
-    .from("reading_list")
-    .select()
-    .eq("user_id", userId)
-    .eq("book_id", bookId)
-    .maybeSingle();
+): Promise<{
+  id?: string;
+  user_id?: string;
+  book_id?: string;
+  status?: string;
+} | null> => {
+  await connectDB();
 
-  if (error) {
-    return { user_id: userId };
-  }
+  const entry = await ReadingListModel.findOne({
+    user_id: userId,
+    book_id: bookId,
+  }).lean();
 
-  return data ?? null;
+  if (!entry) return null;
+
+  return {
+    id: entry._id.toString(),
+    user_id: entry.user_id.toString(),
+    book_id: entry.book_id.toString(),
+    status: entry.status,
+  };
 };
 
 export const getNote = async (readingListId: string) => {
-  const { data, error } = await supabase
-    .from("notes")
-    .select("content")
-    .eq("reading_list_id", readingListId)
-    .maybeSingle();
-  if (error) {
-    console.error(error);
-    throw error;
-  }
-  return data?.content || "";
+  await connectDB();
+
+  const note = await NoteModel.findOne({
+    reading_list_id: readingListId,
+  }).lean();
+
+  return note?.content || "";
 };

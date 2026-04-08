@@ -1,78 +1,66 @@
 "use server";
-import { supabase } from "@/supabase/supabase";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { auth, signIn, signOut } from "./auth";
 import { getPublicUserID, postAddBookToDB } from "./service";
 import { Book } from "./types";
+import { connectDB } from "./db";
+import { ReadingListModel, NoteModel } from "./models";
 
 export const signInWithGoogle = async () => await signIn("google");
 export const signOutAction = async () => await signOut();
 
-// docs say to avoid try catch and throwing errors in action fns
-export const addBookToListAction = async (book: Book) => {
+type AddBookResult =
+  | { noUserError: string }
+  | { existingEntry: string }
+  | { insertError: string }
+  | { success: true };
+
+export const addBookToListAction = async (
+  book: Book
+): Promise<AddBookResult> => {
   const session = await auth();
-  if (session?.user?.email) {
-    // get public user
-    const publicUserID = await getPublicUserID(session?.user?.email);
-    // add book to db
-    // this causes a mismatch between google id and book id since they are structured differently form db to api call
-
-    const bookFromDB = await postAddBookToDB(book);
-    // check for duplicate entry in reading list
-    const { data: existingEntry, error: selectErr } = await supabase
-      .from("reading_list")
-      .select()
-      .eq("book_id", bookFromDB.id)
-      .eq("user_id", publicUserID)
-      .maybeSingle();
-
-    // ? suppose i keep this since this would be an unexpected error imo
-    if (selectErr) throw new Error(selectErr.message);
-
-    // handle duplicate entry
-    if (existingEntry) {
-      const label = bookFromDB.title || "This book";
-      return {
-        existingEntry: `"${label}" is already in your list`,
-      };
-    }
-
-    // insert and select new entry in reading list
-    const { data, error: insertError } = await supabase
-      .from("reading_list")
-      .insert([
-        {
-          user_id: publicUserID,
-          book_id: bookFromDB.id,
-          status: "reading",
-        },
-      ])
-      .select()
-      .single();
-
-    // handle insert error in reading list
-    if (insertError) {
-      return {
-        insertError: `Unable to add ${
-          book.volumeInfo.title || " book"
-        } to reading list`,
-      };
-    }
-
-    // return new entry in reading list
-    return data;
-  } else {
-    // handle no user error
+  if (!session?.user?.email) {
     return {
-      noUserError: "No signed‑in user was found. Please sign in to continue.",
+      noUserError:
+        "No signed\u2011in user was found. Please sign in to continue.",
     };
   }
+
+  const publicUserID = await getPublicUserID(session.user.email);
+  const bookFromDB = await postAddBookToDB(book);
+
+  await connectDB();
+
+  const existingEntry = await ReadingListModel.findOne({
+    book_id: bookFromDB._id,
+    user_id: publicUserID,
+  }).lean();
+
+  if (existingEntry) {
+    const label = bookFromDB.title || "This book";
+    return {
+      existingEntry: `"${label}" is already in your list`,
+    };
+  }
+
+  const newEntry = await ReadingListModel.create({
+    user_id: publicUserID,
+    book_id: bookFromDB._id,
+    status: "reading",
+  });
+
+  if (!newEntry) {
+    return {
+      insertError: `Unable to add ${book.volumeInfo.title || " book"} to reading list`,
+    };
+  }
+
+  return { success: true };
 };
 
 export const removeBookFromListAction = async (bookId: string) => {
   const session = await auth();
-  const userId = await getPublicUserID(session?.user?.email || "");
 
   if (!session)
     return {
@@ -80,77 +68,66 @@ export const removeBookFromListAction = async (bookId: string) => {
       error: "User not authorized to perform this action",
     };
 
-  const { error } = await supabase
-    .from("reading_list")
-    .delete()
-    .eq("user_id", userId)
-    .eq("book_id", bookId);
+  const userId = await getPublicUserID(session?.user?.email || "");
 
-  if (error) {
-    console.error(error);
+  await connectDB();
+
+  const result = await ReadingListModel.deleteOne({
+    user_id: userId,
+    book_id: bookId,
+  });
+
+  if (result.deletedCount === 0) {
     return { error: "Unable to remove book from users list", status: 500 };
-  } else redirect(`/reading-list/${userId}`);
+  }
+
+  redirect(`/reading-list/${userId}`);
 };
 
 export const addNotesToBook = async (formData: FormData) => {
   const session = await auth();
   if (!session) throw new Error("Must be signed in to add notes to a book");
 
-  const content = formData.get("content");
-  const readingListId = formData.get("readingListId");
-  const { data: existingNote, error: existingError } = await supabase
-    .from("notes")
-    .select()
-    .eq("reading_list_id", readingListId)
-    .maybeSingle();
+  const content = formData.get("content") as string;
+  const readingListId = formData.get("readingListId") as string;
 
-  if (existingError) {
-    throw new Error(`unexpected error when looking for existing user.`);
-  }
+  await connectDB();
+
+  const existingNote = await NoteModel.findOne({
+    reading_list_id: readingListId,
+  });
 
   if (existingNote) {
-    // 2️⃣ update the existing note
-    const { error: updateError } = await supabase
-      .from("notes")
-      .update({ content })
-      .eq("id", existingNote.id);
-
-    if (updateError) {
-      throw new Error("Unable to update note");
-    }
+    existingNote.content = content;
+    await existingNote.save();
   } else {
-    const { error: newNoteError } = await supabase.from("notes").insert([
-      {
-        reading_list_id: readingListId,
-        content,
-      },
-    ]);
+    const result = await NoteModel.create({
+      reading_list_id: readingListId,
+      content,
+    });
 
-    // can return this value since we have a handle function that does not return a value in the
-    // action handler on the client
-    if (newNoteError) {
+    if (!result) {
       return {
         statusCode: 500,
         newNoteError: `Unable to create new note`,
       };
     }
   }
+
   revalidatePath("/books/*");
 };
 
-export const putChangeBookStatusAction = async (status: string, id: string) => {
+export const putChangeBookStatusAction = async (
+  status: string,
+  id: string
+) => {
   const session = await auth();
 
-  const { error } = await supabase
-    .from("reading_list")
-    .update([
-      {
-        status,
-      },
-    ])
-    .eq("id", id);
+  await connectDB();
 
-  if (error) {
+  const result = await ReadingListModel.findByIdAndUpdate(id, { status });
+
+  if (!result) {
     return {
       statusCode: 500,
       error: `Unable to update status for this book`,

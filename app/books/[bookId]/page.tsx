@@ -109,11 +109,11 @@ export default function BookDetails() {
     try {
       startTransitionAddBook(async () => {
         const result = await addBookToListAction(book);
-        if (result.noUserError) {
+        if ("noUserError" in result) {
           toast.error(result.noUserError, { icon: "🚫👤" });
-        } else if (result.existingEntry) {
+        } else if ("existingEntry" in result) {
           toast.error(result.existingEntry, { icon: "📖📖" });
-        } else if (result.insertError) {
+        } else if ("insertError" in result) {
           toast.error(result.insertError, { icon: "🚫➕📖" });
         } else {
           toast.success("Book added to your reading list");

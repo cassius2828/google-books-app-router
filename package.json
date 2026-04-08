@@ -9,14 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@auth/supabase-adapter": "^1.8.0",
-    "@supabase/supabase-js": "^2.49.4",
+    "@auth/mongodb-adapter": "^3.11.1",
     "axios": "^1.8.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "html-to-text": "^9.0.5",
-    "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.503.0",
+    "mongoose": "^9.4.1",
     "next": "15.5.12",
     "next-auth": "^5.0.0-beta.25",
     "react": "^19.2.4",
@@ -31,13 +30,11 @@
     "@eslint/eslintrc": "^3",
     "@faker-js/faker": "^9.7.0",
     "@tailwindcss/postcss": "^4",
-    "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.5.12",
-    "supabase": "^2.20.12",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

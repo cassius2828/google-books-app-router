@@ -1,40 +1,17 @@
-import { SupabaseAdapter } from "@auth/supabase-adapter";
-import jwt from "jsonwebtoken";
-import NextAuth, { Session, User } from "next-auth";
-import Google from "next-auth/providers/google";
+import { MongoDBAdapter } from "@auth/mongodb-adapter";
+import NextAuth, { type DefaultSession } from "next-auth";
+import { getMongoClient } from "./db";
+import { authConfig } from "./auth.config";
 
 declare module "next-auth" {
-  interface Session {
-    supabaseAccessToken?: string;
+  interface Session extends DefaultSession {
+    user: {
+      id: string;
+    } & DefaultSession["user"];
   }
 }
 
-const authConfig = {
-  debug: false,
-  secret: process.env.NEXTAUTH_SECRET,
-  providers: [Google],
-  adapter: SupabaseAdapter({
-    url: process.env.SUPABASE_URL!,
-    secret: process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  }),
-  callbacks: {
-    async redirect({ baseUrl }: { baseUrl: string }) {
-      return baseUrl;
-    },
-    async session({ session, user }: { session: Session; user: User }) {
-      const signingSecret = process.env.SUPABASE_JWT;
-      if (signingSecret) {
-        const payload = {
-          aud: "authenticated",
-          exp: Math.floor(new Date(session.expires).getTime() / 1000),
-          sub: user.id,
-          email: user.email,
-          role: "authenticated",
-        };
-        session.supabaseAccessToken = jwt.sign(payload, signingSecret);
-      }
-      return session;
-    },
-  },
-};
-export const { handlers, signIn, signOut, auth } = NextAuth(authConfig);
+export const { handlers, signIn, signOut, auth } = NextAuth({
+  ...authConfig,
+  adapter: MongoDBAdapter(getMongoClient()),
+});
