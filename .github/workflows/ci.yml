@@ -36,6 +36,7 @@ jobs:
       BASE_VOL_URL: ${{ secrets.BASE_VOL_URL }}
       MONGODB_URI: ${{ secrets.MONGODB_URI }}
       AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+      AUTH_TRUST_HOST: "true"
       AUTH_GOOGLE_ID: "unused-in-e2e"
       AUTH_GOOGLE_SECRET: "unused-in-e2e"
     steps:
