@@ -1,21 +1,16 @@
+import { ImageLinks } from "./types";
+
+const IMG_NOT_FOUND = process.env.NEXT_PUBLIC_IMG_NOT_FOUND ?? "";
+
 /**
  * Picks the best available cover URL from Google Books / DB image fields.
  * Uses `||` so empty strings fall through (unlike `??`).
  */
-export type BookImageLinks = {
-  cover_image?: string;
-  extraLarge?: string;
-  large?: string;
-  medium?: string;
-  small?: string;
-  thumbnail?: string;
-  smallThumbnail?: string;
-};
-
 export function resolveCoverImageSrc(
-  imageLinks: BookImageLinks,
-  fallbackUrl: string
+  imageLinks: ImageLinks | undefined | null,
+  fallbackUrl: string = IMG_NOT_FOUND
 ): string {
+  if (!imageLinks) return fallbackUrl;
   return (
     imageLinks.cover_image ||
     imageLinks.extraLarge ||
@@ -26,4 +21,15 @@ export function resolveCoverImageSrc(
     imageLinks.smallThumbnail ||
     fallbackUrl
   );
+}
+
+/**
+ * Resolves a cover image from DB-stored fields (cover_image + thumbnail).
+ */
+export function resolveCoverFromRecord(
+  coverImage?: string,
+  thumbnail?: string,
+  fallbackUrl: string = IMG_NOT_FOUND
+): string {
+  return coverImage || thumbnail || fallbackUrl;
 }

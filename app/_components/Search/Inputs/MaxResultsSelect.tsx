@@ -1,27 +1,39 @@
-import { AdvancedSearchInputParams } from "@/app/_lib/types"
+import { AdvancedSearchInputParams } from "@/app/_lib/types";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-const MaxResultsSelect = ({params, handleChange}:AdvancedSearchInputParams) => {
+const MaxResultsSelect = ({ params, handleChange }: AdvancedSearchInputParams) => {
+  const handleValueChange = (value: string) => {
+    const syntheticEvent = {
+      target: { name: "maxResults", value },
+    } as React.ChangeEvent<HTMLSelectElement>;
+    handleChange(syntheticEvent);
+  };
+
   return (
-    <div className="mt-4 md:mt-0">
-    <label
-      htmlFor="maxResults"
-      className="block text-xs font-medium text-gray-700"
-    >
-      Results
-    </label>
-    <select
-      name="maxResults"
-      id="maxResults"
-      value={params.maxResults.value}
-      onChange={handleChange}
-      className="mt-1 block w-16 px-3 py-1 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-    >
-      <option value="10">10</option>
-      <option value="20">20</option>
-      <option value="30">30</option>
-      <option value="40">40</option>
-    </select>
-  </div>
-  )
-}
-export default MaxResultsSelect
+    <div className="flex items-center gap-2">
+      <label className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+        Results per page
+      </label>
+      <Select
+        value={params.maxResults.value || "12"}
+        onValueChange={handleValueChange}
+      >
+        <SelectTrigger size="sm" className="w-[70px]">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="12">12</SelectItem>
+          <SelectItem value="24">24</SelectItem>
+          <SelectItem value="40">40</SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
+  );
+};
+export default MaxResultsSelect;

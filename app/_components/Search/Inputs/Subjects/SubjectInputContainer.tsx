@@ -10,40 +10,33 @@ const SubjectInputContainer = ({
 }: AdvancedSearchInputParamsWithSetter) => {
   const [toggleSubjectInputs, setToggleSubjectInputs] =
     useState<string>("eitherSubject");
+
+  const options = [
+    { id: "eitherSubjectRadio", value: "eitherSubject", label: "Can Have Any of Listed Subjects" },
+    { id: "allSubjectsRadio", value: "allSubjects", label: "Must Have All of Listed Subjects" },
+  ];
+
   return (
-    <div className="flex flex-col gap-3 mt-3">
-      <div className="flex w-full justify-start gap-4">
-        <label
-          htmlFor="eitherSubjectRadio"
-          className="inline-flex items-center"
-        >
-          <input
-            type="radio"
-            name="eitherSubjectRadio"
-            id="eitherSubjectRadio"
-            value={"eitherSubject"}
-            checked={toggleSubjectInputs === "eitherSubject"}
-            onChange={() => setToggleSubjectInputs("eitherSubject")}
-            className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-2 focus:ring-blue-500 rounded-full"
-          />
-          <span className="ml-2 text-gray-700 capitalize">
-            Can Have Any of Listed Subjects
-          </span>
-        </label>{" "}
-        <label htmlFor="allSubjectsRadio" className="inline-flex items-center">
-          <input
-            type="radio"
-            name="allSubjectsRadio"
-            id="allSubjectsRadio"
-            value={"allSubjects"}
-            checked={toggleSubjectInputs === "allSubjects"}
-            onChange={() => setToggleSubjectInputs("allSubjects")}
-            className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-2 focus:ring-blue-500 rounded-full"
-          />
-          <span className="ml-2 text-gray-700 capitalize">
-            Must Have All of Listed Subjects
-          </span>
-        </label>
+    <div className="space-y-4">
+      <div className="flex flex-wrap gap-4">
+        {options.map((opt) => (
+          <label
+            key={opt.id}
+            htmlFor={opt.id}
+            className="inline-flex items-center gap-2 cursor-pointer"
+          >
+            <input
+              type="radio"
+              name={opt.id}
+              id={opt.id}
+              value={opt.value}
+              checked={toggleSubjectInputs === opt.value}
+              onChange={() => setToggleSubjectInputs(opt.value)}
+              className="size-4 accent-primary"
+            />
+            <span className="text-sm text-foreground">{opt.label}</span>
+          </label>
+        ))}
       </div>
       {toggleSubjectInputs === "allSubjects" ? (
         <AllSubjectsInput

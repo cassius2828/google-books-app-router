@@ -6,21 +6,20 @@ const AllSubjectsInput = ({
   handleChange,
   setParams,
 }: AdvancedSearchInputParamsWithSetter) => {
-  // reset state each time subject input is toggle so context state is not out of sync with UI
   useEffect(() => {
     setParams((prev) => ({
       ...prev,
-      allSubjects: {
-        ...prev.allSubjects,
+      eitherSubject: {
+        ...prev.eitherSubject,
         value: "",
       },
     }));
   }, []);
   return (
-    <div>
+    <div className="space-y-2">
       <label
         htmlFor="allSubjects"
-        className="block text-xs font-medium text-gray-700"
+        className="text-sm font-medium text-foreground"
       >
         All Subjects
       </label>
@@ -31,7 +30,7 @@ const AllSubjectsInput = ({
         value={params.allSubjects.value}
         onChange={handleChange}
         placeholder="Fiction Mystery Horror"
-        className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+        className="flex h-9 w-full rounded-lg border border-border bg-background px-3 py-1 text-sm text-foreground shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       />
     </div>
   );

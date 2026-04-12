@@ -1,90 +1,169 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ReadingListDBRow } from "../_lib/types";
+import { ReadingListDBRow, Book } from "../_lib/types";
+import { resolveCoverFromRecord } from "../_lib/coverImage";
+import FavoriteStarButton from "./Profile/FavoriteStarButton";
+import StatusSelect from "./ReadingList/StatusSelect";
+import { Button } from "@/components/ui/button";
 
-const ReadingListTableBody = async ({
+function toBook(books: ReadingListDBRow["books"]): Book {
+  return {
+    id: books.google_book_id,
+    volumeInfo: {
+      title: books.title,
+      authors: books.authors,
+      publisher: books.publisher ?? "",
+      publishedDate: books.published_date ?? "",
+      description: books.description ?? "",
+      pageCount: books.page_count ?? 0,
+      categories: books.categories ?? [],
+      previewLink: books.preview_link ?? "",
+      google_book_id: books.google_book_id,
+      imageLinks: {
+        thumbnail: books.thumbnail,
+        cover_image: books.cover_image,
+      },
+    },
+  };
+}
+
+const ReadingListCards = ({
   readingList,
+  favoriteBookIds = [],
+  viewMode = "grid",
 }: {
-  readingList: ReadingListDBRow[] | { data: []; error: unknown } | { data: [] };
+  readingList: ReadingListDBRow[];
+  favoriteBookIds?: string[];
+  viewMode?: "grid" | "list";
 }) => {
-  if (!Array.isArray(readingList)) {
-    console.error("Invalid reading list format:", readingList);
+  if (readingList.length === 0) {
     return (
-      <tbody className="bg-white divide-y divide-gray-200">
-        <tr>
-          <td colSpan={4} className="px-6 py-4 text-center text-gray-500">
-            Unable to load reading list.
-          </td>
-        </tr>
-      </tbody>
+      <div className="text-center py-16 text-muted-foreground">
+        <p className="text-lg font-medium mb-1">No books yet</p>
+        <p className="text-sm">
+          Search for books and add them to your reading list.
+        </p>
+      </div>
+    );
+  }
+
+  if (viewMode === "list") {
+    return (
+      <div className="flex flex-col gap-3">
+        {readingList.map((item: ReadingListDBRow) => {
+          const { books, status } = item;
+          const isFavorite = favoriteBookIds.includes(books?.id);
+          const bookForAction = toBook(books);
+
+          return (
+            <div
+              key={books?.id}
+              className="group glass-card-solid rounded-2xl transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
+            >
+              <div className="flex items-center gap-4 p-4">
+                <Link
+                  href={`/books/${books.google_book_id}`}
+                  className="flex-shrink-0"
+                >
+                  <Image
+                    src={resolveCoverFromRecord(books?.cover_image, books?.thumbnail)}
+                    alt={books?.title}
+                    width={48}
+                    height={72}
+                    className="rounded-lg object-cover shadow-sm transition-transform duration-300 group-hover:scale-[1.03]"
+                  />
+                </Link>
+
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-sm font-semibold text-foreground truncate">
+                    {books?.title}
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                    {books?.authors?.join(", ")}
+                  </p>
+                </div>
+
+                <div className="flex-shrink-0 hidden sm:block">
+                  <StatusSelect
+                    readingListId={item.readingListId}
+                    currentStatus={status}
+                  />
+                </div>
+
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  <FavoriteStarButton
+                    book={bookForAction}
+                    isFavorite={isFavorite}
+                  />
+                  <Button asChild variant="ghost" size="xs">
+                    <Link href={`/books/${books.google_book_id}`}>View</Link>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
     );
   }
 
   return (
-    <tbody className="bg-white divide-y divide-gray-200">
-      {readingList?.map((item: ReadingListDBRow) => {
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      {readingList.map((item: ReadingListDBRow) => {
         const { books, status } = item;
-        let statusTextColor: string = "";
-        switch (status) {
-          case "to_read":
-            statusTextColor = "bg-blue-100 text-blue-800";
-            break;
-          case "reading":
-            statusTextColor = "bg-yellow-100 text-yellow-800";
-            break;
-          case "completed":
-            statusTextColor = "bg-green-100 text-green-800";
-            break;
-          default:
-            statusTextColor = "bg-blue-100 text-blue-800";
-        }
+        const isFavorite = favoriteBookIds.includes(books?.id);
+        const bookForAction = toBook(books);
+
         return (
-          <tr key={books?.id} className="hover:bg-gray-50">
-            <td className="px-6 py-4 whitespace-nowrap">
-              <Image
-                src={
-                  books?.thumbnail ||
-                  process.env.NEXT_PUBLIC_IMG_NOT_FOUND ||
-                  ""
-                }
-                alt={books?.title}
-                width={50}
-                height={75}
-                className="object-cover rounded"
-              />
-            </td>
-            <td className="px-6 py-4 whitespace-nowrap">
-              <div className="text-sm font-medium text-gray-900">
-                {books?.title}
-              </div>
-              <div className="text-sm text-gray-500">
-                {books?.authors?.join(", ")}
-              </div>
-            </td>
-            <td className="hidden lg:block px-6 py-4 text-sm text-gray-500 line-clamp-2">
-              {books?.description.length > 200
-                ? books.description.slice(0, 200) + "..."
-                : books.description}
-            </td>
-            <td className="px-6 py-4 whitespace-nowrap">
-              <span
-                className={`px-2 py-1 capitalize inline-flex text-xs leading-5 font-semibold rounded-md ${statusTextColor}`}
-              >
-                {status === "to_read" ? "To Read" : status}
-              </span>
-            </td>
-            <td className="px-6 py-4 whitespace-nowrap">
+          <div
+            key={books?.id}
+            className="group glass-card-solid rounded-2xl transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
+          >
+            <div className="flex gap-4 p-5">
               <Link
                 href={`/books/${books.google_book_id}`}
-                className="text-sm bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition"
+                className="flex-shrink-0"
               >
-                View Book
+                <Image
+                  src={resolveCoverFromRecord(books?.cover_image, books?.thumbnail)}
+                  alt={books?.title}
+                  width={80}
+                  height={120}
+                  className="rounded-lg object-cover shadow-sm transition-transform duration-300 group-hover:scale-[1.03]"
+                />
               </Link>
-            </td>
-          </tr>
+
+              <div className="flex-1 min-w-0 flex flex-col">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <h3 className="text-sm font-semibold text-foreground truncate">
+                      {books?.title}
+                    </h3>
+                    <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                      {books?.authors?.join(", ")}
+                    </p>
+                  </div>
+                  <FavoriteStarButton
+                    book={bookForAction}
+                    isFavorite={isFavorite}
+                  />
+                </div>
+
+                <div className="mt-auto pt-3 flex items-center justify-between">
+                  <StatusSelect
+                    readingListId={item.readingListId}
+                    currentStatus={status}
+                  />
+                  <Button asChild variant="ghost" size="xs">
+                    <Link href={`/books/${books.google_book_id}`}>View</Link>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
         );
       })}
-    </tbody>
+    </div>
   );
 };
-export default ReadingListTableBody;
+export default ReadingListCards;

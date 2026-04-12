@@ -9,7 +9,7 @@ export async function Marquee3D() {
   const word = faker.word.noun();
 // book data
   const data = await getBooksByTitle(word);
-  const books: Book[] = data.items.slice(0, 20);
+  const books: Book[] = (data.items ?? []).slice(0, 20);
 // rows of books
   const firstRow = books.slice(0, books.length / 2);
   const secondRow = books.slice(books.length / 2);

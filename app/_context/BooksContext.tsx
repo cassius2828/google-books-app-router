@@ -11,86 +11,29 @@ import React, {
 
 const BooksContext = createContext<BookContextType | undefined>(undefined);
 const initialSearchObj: AdvancedSearchParams = {
-  // replace spaces with + -- q=example+here+you+go
-  fullText: {
-    value: "",
-    type: "query",
-  },
-  // add " " around words for eact phrase q="example"
-  exactPhrase: {
-    value: "",
-    type: "query",
-  },
-  // excludes text from search results -- q=-badguys
-  excludeText: {
-    value: "",
-    type: "query",
-  },
-  // separate words by pipe q=example|here
-  includesText: {
-    value: "",
-    type: "query",
-  },
-  // max value of results
-  maxResults: {
-    value: "",
-    type: "independent",
-  },
-  // langRestrict=en
-  langRestrict: {
-    value: "en",
-    type: "independent",
-  },
-  // orderBy=relevance
-  orderBy: {
-    value: "relevance",
-    type: "independent",
-  },
-  // printType=all
-  printType: {
-    value: "all",
-    type: "independent",
-  },
-  // will query by itself, replaces finalStr in fn
-  volumeId: {
-    value: "",
-    type: "independent",
-  },
-  // q=inauthor:Lemony+Snicket
-  author: {
-    value: "",
-    type: "query",
-  },
-  // &filter=ebooks
-  filter: {
-    value: "full",
-    type: "independent",
-  },
-  // q=intitle:Series+of+unfortunate+events
-  title: {
-    value: "",
-    type: "query",
-  },
-  // q=inpublisher:Tin+House
-  publisher: {
-    value: "",
-    type: "query",
-  },
-  // q=subject:finance|self-help
-  eitherSubject: {
-    value: "",
-    type: "query",
-  },
-  // q=subject:finance+subject:self-help
-  allSubjects: {
-    value: "",
-    type: "query",
-  },
+  fullText: { value: "", type: "query" },
+  exactPhrase: { value: "", type: "query" },
+  excludeText: { value: "", type: "query" },
+  includesText: { value: "", type: "query" },
+  maxResults: { value: "", type: "independent" },
+  langRestrict: { value: "en", type: "independent" },
+  orderBy: { value: "relevance", type: "independent" },
+  printType: { value: "all", type: "independent" },
+  filter: { value: "", type: "independent" },
+  volumeId: { value: "", type: "independent" },
+  author: { value: "", type: "query" },
+  title: { value: "", type: "query" },
+  publisher: { value: "", type: "query" },
+  isbn: { value: "", type: "query" },
+  eitherSubject: { value: "", type: "query" },
+  allSubjects: { value: "", type: "query" },
 };
 export const BooksProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [books, setBooks] = useState<Book[]>([]);
+  const [advancedSearchTotalItems, setAdvancedSearchTotalItems] = useState(0);
+  const [advancedSearchLastQuery, setAdvancedSearchLastQuery] = useState("");
   const advancedSearchResultsRef = useRef(null);
   const [advancedSearchFormData, setAdvancedSearchFormData] =
     useState<AdvancedSearchParams>(initialSearchObj);
@@ -115,6 +58,10 @@ export const BooksProvider: React.FC<{ children: ReactNode }> = ({
         initialSearchObj,
         advancedSearchResultsRef,
         scrollToSection,
+        advancedSearchTotalItems,
+        setAdvancedSearchTotalItems,
+        advancedSearchLastQuery,
+        setAdvancedSearchLastQuery,
       }}
     >
       {children}

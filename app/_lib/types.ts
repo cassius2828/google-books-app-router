@@ -1,25 +1,29 @@
 import { Dispatch, RefObject, SetStateAction } from "react";
 
 ///////////////////////////
+// Google Books API
+///////////////////////////
+export interface GoogleBooksVolumesResponse {
+  kind: string;
+  totalItems: number;
+  items?: GoogleBooksVolume[];
+}
+
+export interface GoogleBooksVolume {
+  id: string;
+  volumeInfo: VolumeInfo;
+}
+
+///////////////////////////
 // Books
 ///////////////////////////
 export type Book = {
   id: string;
   volumeInfo: VolumeInfo;
 };
-export type BookContextType = {
-  books: Book[];
-  setBooks: Dispatch<SetStateAction<Book[]>>;
-  advancedSearchFormData: AdvancedSearchParams;
-  setAdvancedSearchFormData: Dispatch<SetStateAction<AdvancedSearchParams>>;
-  breakpointColumnsObj: BreakpointColumns;
-  initialSearchObj: AdvancedSearchParams;
-  advancedSearchResultsRef: RefObject<HTMLElement | null>;
-  scrollToSection: (ref: RefObject<HTMLElement | null>) => void;
-};
 
-// single‐volume case
-interface VolumeInfo {
+export interface VolumeInfo {
+  id?: string;
   title: string;
   authors: string[];
   publisher: string;
@@ -29,16 +33,19 @@ interface VolumeInfo {
   categories: string[];
   previewLink: string;
   google_book_id?: string;
-  imageLinks: {
-    cover_image?: string;
-    extraLarge?: string;
-    large?: string;
-    medium?: string;
-    small?: string;
-    thumbnail?: string;
-    smallThumbnail?: string;
-  };
+  imageLinks: ImageLinks;
 }
+
+export interface ImageLinks {
+  cover_image?: string;
+  smallThumbnail?: string;
+  thumbnail?: string;
+  small?: string;
+  medium?: string;
+  large?: string;
+  extraLarge?: string;
+}
+
 export interface BookRecord {
   id: string;
   google_book_id: string;
@@ -52,8 +59,9 @@ export interface BookRecord {
   thumbnail: string;
   cover_image: string;
   preview_link: string;
-  created_at: string; // ISO timestamp from Postgres
+  created_at: string;
 }
+
 export type GalleryBookCardProps = {
   id: string;
   authors: string[];
@@ -66,20 +74,78 @@ export type GalleryBookCardProps = {
   title: string;
 };
 
+export interface FavoriteBook {
+  id: string;
+  google_book_id: string;
+  title: string;
+  authors: string[];
+  thumbnail: string;
+  cover_image: string;
+}
+
 ///////////////////////////
 // Reading List
 ///////////////////////////
+export type ReadingListStatus = "to_read" | "reading" | "completed";
 
 export interface ReadingListDBRow {
-  status: "to_read" | "reading" | "completed";
-  books: BookRecord; // nested under the `books` key by PostgREST
+  readingListId: string;
+  status: ReadingListStatus;
+  books: BookRecord;
+  notes: Array<{ id: string; content: string }>;
 }
+
 export interface ReadingListStatusAndId {
   id: string;
   user_id: string;
   book_id: string;
-  status: string;
+  status: ReadingListStatus;
 }
+
+///////////////////////////
+// Users
+///////////////////////////
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  image: string | null;
+  favoriteGenres: string[];
+  favoriteBooks: FavoriteBook[];
+  isProfilePublic: boolean;
+  createdAt: string;
+}
+
+export interface PublicUserResult {
+  id: string;
+  name: string;
+  image: string | null;
+  favoriteGenres: string[];
+  bookCount: number;
+}
+
+///////////////////////////
+// Pages
+///////////////////////////
+export type UserPageParams = { params: Promise<{ userId: string }> };
+
+///////////////////////////
+// Context
+///////////////////////////
+export type BookContextType = {
+  books: Book[];
+  setBooks: Dispatch<SetStateAction<Book[]>>;
+  advancedSearchFormData: AdvancedSearchParams;
+  setAdvancedSearchFormData: Dispatch<SetStateAction<AdvancedSearchParams>>;
+  breakpointColumnsObj: BreakpointColumns;
+  initialSearchObj: AdvancedSearchParams;
+  advancedSearchResultsRef: RefObject<HTMLElement | null>;
+  scrollToSection: (ref: RefObject<HTMLElement | null>) => void;
+  advancedSearchTotalItems: number;
+  setAdvancedSearchTotalItems: Dispatch<SetStateAction<number>>;
+  advancedSearchLastQuery: string;
+  setAdvancedSearchLastQuery: Dispatch<SetStateAction<string>>;
+};
 
 ///////////////////////////
 // Advanced Search
@@ -105,6 +171,7 @@ export interface AdvancedSearchParams {
   author: SearchParam;
   title: SearchParam;
   publisher: SearchParam;
+  isbn: SearchParam;
   allSubjects: SearchParam;
   eitherSubject: SearchParam;
 }
@@ -128,18 +195,6 @@ export interface AdvancedSearchInputParamsWithSetter {
 // Misc
 ///////////////////////////
 interface BreakpointColumns {
-  /** Fallback column count when no other breakpoint matches */
   default: number;
-  /** Any other numeric breakpoint → column count */
   [minWidth: number]: number;
-}
-
-interface ImageLinks {
-  cover_image?: string;
-  smallThumbnail?: string;
-  thumbnail?: string;
-  small?: string;
-  medium?: string;
-  large?: string;
-  extraLarge?: string;
 }

@@ -1,65 +1,57 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { Session } from "next-auth";
 
 import { signInWithGoogle, signOutAction } from "@/app/_lib/actions";
-import { auth } from "@/app/_lib/auth";
+import { Button } from "@/components/ui/button";
+import { NAV_LINKS } from "./navLinks";
 
-const DesktopNav = async ({ publicUserID }: { publicUserID: string }) => {
-  const session = await auth();
+interface DesktopNavProps {
+  publicUserID: string;
+  session: Session | null;
+}
 
+const DesktopNav = ({ publicUserID, session }: DesktopNavProps) => {
   return (
     <>
-      <nav className="hidden md:flex w-full max-w-[40rem] justify-around ">
-        <Link href="/" className="text-gray-600 hover:text-gray-900">
-          Home
-        </Link>
-        <Link href="/search" className="text-gray-600 hover:text-gray-900">
-          Search
-        </Link>
-        {publicUserID ? (
+      <nav className="hidden md:flex items-center gap-1">
+        {NAV_LINKS(publicUserID).map(({ href, label }) => (
           <Link
-            href={`/reading-list/${publicUserID}`}
-            className="text-gray-600 hover:text-gray-900"
+            key={href}
+            href={href}
+            className="px-3 py-1.5 text-sm font-medium text-muted-foreground rounded-lg transition-colors hover:text-foreground hover:bg-accent"
           >
-            My Reads
+            {label}
           </Link>
-        ) : (
-          <Link
-            href={`/reading-list`}
-            className="text-gray-600 hover:text-gray-900"
-          >
-            Reading List
-          </Link>
-        )}
-
-        <Link href="/contribute" className="text-gray-600 hover:text-gray-900">
-          Contribute
-        </Link>
+        ))}
       </nav>
-      <div className="hidden md:block">
+      <div className="hidden md:flex items-center">
         {session?.user ? (
-          <div className="flex items-center space-x-3">
-            <Image
-              src={session.user.image || "/default-avatar.png"}
-              alt={session.user.name!}
-              width={40}
-              height={40}
-              className="rounded-full"
-            />
-            <span className="text-gray-700">
-              Welcome, {session.user.name?.split(" ").slice(0, 1)}
-            </span>
+          <div className="flex items-center gap-3">
+            <Link
+              href={publicUserID ? `/profile/${publicUserID}` : "#"}
+              className="flex items-center gap-2.5 rounded-full py-1 pl-1 pr-3 transition-colors hover:bg-accent"
+            >
+              <Image
+                src={session.user.image || "/default-avatar.png"}
+                alt={session.user.name ?? "User"}
+                width={32}
+                height={32}
+                className="rounded-full ring-1 ring-black/[0.08]"
+              />
+              <span className="text-sm font-medium text-foreground">
+                {session.user.name?.split(" ").slice(0, 1)}
+              </span>
+            </Link>
             <form action={signOutAction}>
-              <button className="cursor-pointer ml-4 text-sm text-gray-600 hover:text-gray-900">
+              <Button variant="ghost" size="sm" className="text-muted-foreground">
                 Sign Out
-              </button>
+              </Button>
             </form>
           </div>
         ) : (
           <form action={signInWithGoogle}>
-            <button className="cursor-pointer text-sm text-blue-600 hover:text-blue-800">
-              Sign In
-            </button>
+            <Button size="sm">Sign In</Button>
           </form>
         )}
       </div>

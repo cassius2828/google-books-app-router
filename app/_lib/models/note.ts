@@ -3,6 +3,8 @@ import mongoose, { Schema, Model, Document, Types } from "mongoose";
 export interface NoteDoc extends Document {
   reading_list_id: Types.ObjectId;
   content: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const NoteSchema = new Schema<NoteDoc>(

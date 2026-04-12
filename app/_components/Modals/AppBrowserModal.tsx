@@ -26,7 +26,7 @@ export default function InAppBrowserModal() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg shadow-md max-w-sm text-center">
+        <div className="glass-card-solid p-6 rounded-xl shadow-lg max-w-sm text-center">
         <h2 className="text-lg font-semibold mb-2">Heads Up!</h2>
         <p className="mb-4">
           Google Sign-In may not work inside this in-app browser (like LinkedIn
