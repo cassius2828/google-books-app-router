@@ -5,7 +5,8 @@ import { auth, signIn, signOut } from "./auth";
 import { getPublicUserID, postAddBookToDB } from "./service";
 import { Book } from "./types";
 import { connectDB } from "./db";
-import { ReadingListModel, NoteModel } from "./models";
+import { ReadingListModel, NoteModel, UserModel } from "./models";
+import { GENRES } from "./genres";
 
 export const signInWithGoogle = async () => await signIn("google");
 export const signOutAction = async () => await signOut();
@@ -115,6 +116,71 @@ export const addNotesToBook = async (formData: FormData) => {
   }
 
   revalidatePath("/books/*");
+};
+
+export const updateFavoriteGenres = async (genres: string[]) => {
+  const session = await auth();
+  if (!session?.user?.email) return { error: "Not signed in" };
+
+  const valid = genres.filter((g) => (GENRES as readonly string[]).includes(g));
+  const userId = await getPublicUserID(session.user.email);
+  await connectDB();
+  await UserModel.findByIdAndUpdate(userId, { favoriteGenres: valid });
+  revalidatePath(`/profile/${userId}`);
+  return { success: true };
+};
+
+export const toggleFavoriteBook = async (book: Book) => {
+  const session = await auth();
+  if (!session?.user?.email) return { error: "Not signed in" };
+
+  const userId = await getPublicUserID(session.user.email);
+  const bookFromDB = await postAddBookToDB(book);
+  await connectDB();
+
+  const user = await UserModel.findById(userId);
+  if (!user) return { error: "User not found" };
+
+  const bookObjId = bookFromDB._id.toString();
+  const idx = user.favoriteBooks.findIndex((id) => id.toString() === bookObjId);
+
+  if (idx >= 0) {
+    user.favoriteBooks.splice(idx, 1);
+  } else {
+    user.favoriteBooks.push(bookFromDB._id);
+  }
+
+  await user.save();
+  revalidatePath(`/profile/${userId}`);
+  return { success: true, added: idx < 0 };
+};
+
+export const removeFavoriteBook = async (bookObjectId: string) => {
+  const session = await auth();
+  if (!session?.user?.email) return { error: "Not signed in" };
+
+  const userId = await getPublicUserID(session.user.email);
+  await connectDB();
+  await UserModel.findByIdAndUpdate(userId, {
+    $pull: { favoriteBooks: bookObjectId },
+  });
+  revalidatePath(`/profile/${userId}`);
+  return { success: true };
+};
+
+export const toggleProfileVisibility = async () => {
+  const session = await auth();
+  if (!session?.user?.email) return { error: "Not signed in" };
+
+  const userId = await getPublicUserID(session.user.email);
+  await connectDB();
+  const user = await UserModel.findById(userId);
+  if (!user) return { error: "User not found" };
+
+  user.isProfilePublic = !user.isProfilePublic;
+  await user.save();
+  revalidatePath(`/profile/${userId}`);
+  return { success: true, isPublic: user.isProfilePublic };
 };
 
 export const putChangeBookStatusAction = async (

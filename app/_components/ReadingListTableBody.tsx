@@ -1,18 +1,42 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ReadingListDBRow } from "../_lib/types";
+import { ReadingListDBRow, Book } from "../_lib/types";
+import FavoriteStarButton from "./Profile/FavoriteStarButton";
+
+function toBook(books: ReadingListDBRow["books"]): Book {
+  return {
+    id: books.google_book_id,
+    volumeInfo: {
+      title: books.title,
+      authors: books.authors,
+      publisher: books.publisher ?? "",
+      publishedDate: books.published_date ?? "",
+      description: books.description ?? "",
+      pageCount: books.page_count ?? 0,
+      categories: books.categories ?? [],
+      previewLink: books.preview_link ?? "",
+      google_book_id: books.google_book_id,
+      imageLinks: {
+        thumbnail: books.thumbnail,
+        cover_image: books.cover_image,
+      },
+    },
+  };
+}
 
 const ReadingListTableBody = async ({
   readingList,
+  favoriteBookIds = [],
 }: {
   readingList: ReadingListDBRow[] | { data: []; error: unknown } | { data: [] };
+  favoriteBookIds?: string[];
 }) => {
   if (!Array.isArray(readingList)) {
     console.error("Invalid reading list format:", readingList);
     return (
       <tbody className="bg-white divide-y divide-gray-200">
         <tr>
-          <td colSpan={4} className="px-6 py-4 text-center text-gray-500">
+          <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
             Unable to load reading list.
           </td>
         </tr>
@@ -38,8 +62,18 @@ const ReadingListTableBody = async ({
           default:
             statusTextColor = "bg-blue-100 text-blue-800";
         }
+
+        const isFavorite = favoriteBookIds.includes(books?.id);
+        const bookForAction = toBook(books);
+
         return (
           <tr key={books?.id} className="hover:bg-gray-50">
+            <td className="px-3 py-4 whitespace-nowrap text-center">
+              <FavoriteStarButton
+                book={bookForAction}
+                isFavorite={isFavorite}
+              />
+            </td>
             <td className="px-6 py-4 whitespace-nowrap">
               <Image
                 src={

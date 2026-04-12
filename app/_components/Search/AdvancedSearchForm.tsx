@@ -1,5 +1,6 @@
 "use client";
 import axios from "axios";
+import Link from "next/link";
 
 import { useBooksContext } from "@/app/_context/BooksContext";
 import { Book } from "@/app/_lib/types";
@@ -80,9 +81,20 @@ export default function AdvancedSearchForm() {
       onSubmit={handleSubmit}
       className="max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-md space-y-6 text-xs mt-4"
     >
-      <h2 className="text-2xl font-bold text-gray-800">
-        LibrisList | Advanced Search 🔎
-      </h2>
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <h2 className="text-2xl font-bold text-gray-800">
+          LibrisList | Advanced Search 🔎
+        </h2>
+        <Link
+          href="/search"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-800 transition"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to Search
+        </Link>
+      </div>
       {/* top section */}
       <div className="flex flex-col md:flex-row items-start max-w-4xl">
         <span className="md:mx-5 mb-5 text-sm w-32 font-bold mt-3">

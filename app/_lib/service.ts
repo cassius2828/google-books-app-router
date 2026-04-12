@@ -228,6 +228,109 @@ export const getIsBookInUsersList = async (
   };
 };
 
+export interface UserProfile {
+  id: string;
+  username: string;
+  email: string;
+  avatar: string | null;
+  favoriteGenres: string[];
+  favoriteBooks: Array<{
+    id: string;
+    google_book_id: string;
+    title: string;
+    authors: string[];
+    thumbnail: string;
+    cover_image: string;
+  }>;
+  isProfilePublic: boolean;
+  createdAt: string;
+}
+
+export const getUserProfile = async (
+  userId: string
+): Promise<UserProfile | null> => {
+  await connectDB();
+
+  const user = await UserModel.findById(userId)
+    .populate("favoriteBooks")
+    .lean();
+
+  if (!user) return null;
+
+  const books = (user.favoriteBooks ?? []) as unknown as BookDoc[];
+
+  return {
+    id: user._id.toString(),
+    username: user.username,
+    email: user.email,
+    avatar: user.avatar,
+    favoriteGenres: user.favoriteGenres ?? [],
+    favoriteBooks: books.map((b) => ({
+      id: b._id.toString(),
+      google_book_id: b.google_book_id,
+      title: b.title,
+      authors: b.authors,
+      thumbnail: b.thumbnail,
+      cover_image: b.cover_image,
+    })),
+    isProfilePublic: user.isProfilePublic ?? true,
+    createdAt: (user as unknown as { createdAt?: Date }).createdAt?.toISOString() ?? "",
+  };
+};
+
+export const checkNeedsOnboarding = async (
+  userId: string
+): Promise<boolean> => {
+  await connectDB();
+  const user = await UserModel.findById(userId).lean();
+  if (!user) return false;
+  if ((user.favoriteGenres ?? []).length > 0) return false;
+
+  const readingListCount = await ReadingListModel.countDocuments({
+    user_id: userId,
+  });
+  return readingListCount === 0;
+};
+
+export const getRecommendedBooks = async (
+  genres: string[],
+  maxPerGenre = 4
+): Promise<
+  Array<{
+    id: string;
+    title: string;
+    authors: string[];
+    thumbnail: string;
+    genre: string;
+  }>
+> => {
+  if (genres.length === 0) return [];
+
+  const results = await Promise.all(
+    genres.slice(0, 5).map(async (genre) => {
+      try {
+        const response = await axios.get(
+          `${BASE_VOL_URL}?q=subject:${encodeURIComponent(genre)}&orderBy=relevance&maxResults=${maxPerGenre}&key=${GOOGLE_API_KEY}`
+        );
+        const items = response.data.items ?? [];
+        return items.map(
+          (item: { id: string; volumeInfo: { title?: string; authors?: string[]; imageLinks?: { thumbnail?: string } } }) => ({
+            id: item.id,
+            title: item.volumeInfo?.title ?? "Untitled",
+            authors: item.volumeInfo?.authors ?? [],
+            thumbnail: item.volumeInfo?.imageLinks?.thumbnail ?? "",
+            genre,
+          })
+        );
+      } catch {
+        return [];
+      }
+    })
+  );
+
+  return results.flat();
+};
+
 export const getNote = async (readingListId: string) => {
   await connectDB();
 

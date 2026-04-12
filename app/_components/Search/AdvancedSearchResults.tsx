@@ -16,9 +16,7 @@ const AdvancedSearchResults = ({ books }: { books: Book[] }) => {
       {books === null ? (
         <Loader />
       ) : books.length === 0 ? (
-        <div className="h-screen">
-          <p className="text-gray-600">No results found.</p>
-        </div>
+        <p className="text-gray-600">No results found.</p>
       ) : (
         <Masonry
           breakpointCols={breakpointColumnsObj}

@@ -83,6 +83,7 @@ export default async function MobileNav({ publicUserID }: MobileNavProps) {
             Reading List
           </Link>
         )}
+
         <Link href="/contribute" className="text-gray-600 hover:text-gray-900">
           Contribute
         </Link>
@@ -90,16 +91,21 @@ export default async function MobileNav({ publicUserID }: MobileNavProps) {
         <div className="md:hidden mt-4 border-t border-gray-200 pt-4">
           {session?.user ? (
             <div className="flex items-center space-x-3">
-              <Image
-                src={session.user.image || "/default-avatar.png"}
-                alt={session.user.name || "User"}
-                width={32}
-                height={32}
-                className="rounded-full"
-              />
-              <span className="text-gray-700">
-                Welcome, {session.user.name?.split(" ")[0]}
-              </span>
+              <Link
+                href={publicUserID ? `/profile/${publicUserID}` : "#"}
+                className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
+              >
+                <Image
+                  src={session.user.image || "/default-avatar.png"}
+                  alt={session.user.name || "User"}
+                  width={32}
+                  height={32}
+                  className="rounded-full"
+                />
+                <span className="text-gray-700">
+                  Welcome, {session.user.name?.split(" ")[0]}
+                </span>
+              </Link>
               <form action={signOutAction} className="ml-auto">
                 <button
                   type="submit"

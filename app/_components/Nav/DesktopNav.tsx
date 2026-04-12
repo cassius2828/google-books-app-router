@@ -31,7 +31,6 @@ const DesktopNav = async ({ publicUserID }: { publicUserID: string }) => {
             Reading List
           </Link>
         )}
-
         <Link href="/contribute" className="text-gray-600 hover:text-gray-900">
           Contribute
         </Link>
@@ -39,16 +38,21 @@ const DesktopNav = async ({ publicUserID }: { publicUserID: string }) => {
       <div className="hidden md:block">
         {session?.user ? (
           <div className="flex items-center space-x-3">
-            <Image
-              src={session.user.image || "/default-avatar.png"}
-              alt={session.user.name!}
-              width={40}
-              height={40}
-              className="rounded-full"
-            />
-            <span className="text-gray-700">
-              Welcome, {session.user.name?.split(" ").slice(0, 1)}
-            </span>
+            <Link
+              href={publicUserID ? `/profile/${publicUserID}` : "#"}
+              className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
+            >
+              <Image
+                src={session.user.image || "/default-avatar.png"}
+                alt={session.user.name!}
+                width={40}
+                height={40}
+                className="rounded-full"
+              />
+              <span className="text-gray-700">
+                Welcome, {session.user.name?.split(" ").slice(0, 1)}
+              </span>
+            </Link>
             <form action={signOutAction}>
               <button className="cursor-pointer ml-4 text-sm text-gray-600 hover:text-gray-900">
                 Sign Out

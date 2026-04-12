@@ -1,6 +1,6 @@
 import Filter from "@/app/_components/ReadingList/Filter";
 import ReadingListTableBody from "@/app/_components/ReadingListTableBody";
-import { getUserReadingList } from "@/app/_lib/service";
+import { getUserReadingList, getUserProfile } from "@/app/_lib/service";
 import { ReadingListDBRow } from "@/app/_lib/types";
 import Loader from "@/app/loading";
 import { Suspense } from "react";
@@ -15,10 +15,12 @@ export default async function ReadingListPage(props: {
   const { userId } = await props.params;
   const { status } = await props.searchParams;
 
-  const readingList:
-    | ReadingListDBRow[]
-    | { data: []; error: unknown }
-    | { data: [] } = await getUserReadingList(userId, status);
+  const [readingList, profile] = await Promise.all([
+    getUserReadingList(userId, status),
+    getUserProfile(userId),
+  ]);
+
+  const favoriteBookIds = profile?.favoriteBooks.map((b) => b.id) ?? [];
 
   return (
     <div className="flex flex-col items-center">
@@ -27,6 +29,9 @@ export default async function ReadingListPage(props: {
         <table className="bg-white divide-y divide-gray-200 ">
           <thead className="bg-gray-50">
             <tr>
+              <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Fav
+              </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Cover
               </th>
@@ -45,7 +50,10 @@ export default async function ReadingListPage(props: {
             </tr>
           </thead>
           <Suspense fallback={<Loader />}>
-            <ReadingListTableBody readingList={readingList} />
+            <ReadingListTableBody
+              readingList={readingList}
+              favoriteBookIds={favoriteBookIds}
+            />
           </Suspense>
         </table>
       </div>
