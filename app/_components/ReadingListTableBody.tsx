@@ -34,7 +34,7 @@ const ReadingListTableBody = async ({
   if (!Array.isArray(readingList)) {
     console.error("Invalid reading list format:", readingList);
     return (
-      <tbody className="bg-white divide-y divide-gray-200">
+      <tbody className="divide-y divide-gray-200/60">
         <tr>
           <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
             Unable to load reading list.
@@ -45,7 +45,7 @@ const ReadingListTableBody = async ({
   }
 
   return (
-    <tbody className="bg-white divide-y divide-gray-200">
+    <tbody className="divide-y divide-gray-200/60">
       {readingList?.map((item: ReadingListDBRow) => {
         const { books, status } = item;
         let statusTextColor: string = "";

@@ -42,7 +42,7 @@ export default function GenreOnboardingModal({
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="glass-card-solid rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-8 text-white text-center">
           <BookOpen className="h-12 w-12 mx-auto mb-3 opacity-90" />
@@ -95,7 +95,7 @@ export default function GenreOnboardingModal({
         </div>
 
         {/* Footer */}
-        <div className="border-t border-gray-100 px-6 py-4 flex items-center justify-between bg-gray-50">
+        <div className="border-t border-blue-100/30 px-6 py-4 flex items-center justify-between bg-blue-50/30">
           <button
             onClick={handleSkip}
             className="text-sm text-gray-500 hover:text-gray-700 transition"

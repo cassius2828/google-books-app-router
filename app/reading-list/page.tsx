@@ -4,7 +4,7 @@ import { signInWithGoogle } from "../_lib/actions";
 
 export default function ReadingListOverviewPage() {
   return (
-    <div className="container mx-auto px-6 py-12 space-y-16">
+    <div className="container mx-auto px-6 py-12 space-y-16 max-w-5xl">
       {/* Hero Section */}
       <section className="text-center">
         <h1 className="text-5xl font-extrabold text-gray-900 mb-4">

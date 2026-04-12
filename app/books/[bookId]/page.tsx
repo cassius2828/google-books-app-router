@@ -162,8 +162,8 @@ export default function BookDetails() {
     process.env.NEXT_PUBLIC_IMG_NOT_FOUND!
   );
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row gap-12 items-center justify-center bg-gray-50 p-6 pb-32 relative">
-      <div className="max-w-4xl w-full bg-white shadow-md rounded-lg p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="min-h-screen flex flex-col lg:flex-row gap-12 items-center justify-center p-6 pb-32 relative">
+      <div className="max-w-4xl w-full glass-card-solid shadow-sm rounded-xl p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
         <Image
           src={coverSrc}
           alt={title}
@@ -252,7 +252,7 @@ export default function BookDetails() {
       {readingListObj.id && (
         <form
           action={handleAddNotesToBook}
-          className="bg-white p-6 pb-4 rounded-lg shadow-md mb-6 w-full md:w-[40rem]"
+          className="glass-card-solid p-6 pb-4 rounded-xl shadow-sm mb-6 w-full md:w-[40rem]"
         >
           <input type="hidden" name="readingListId" value={readingListObj.id} />
           <label

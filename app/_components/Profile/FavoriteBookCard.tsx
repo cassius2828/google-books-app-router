@@ -38,7 +38,7 @@ export default function FavoriteBookCard({
   };
 
   return (
-    <div className="group relative rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition overflow-hidden">
+    <div className="group relative rounded-xl border border-blue-100/30 glass-card-solid shadow-sm hover:shadow-md transition overflow-hidden">
       {isOwner && (
         <button
           onClick={handleRemove}

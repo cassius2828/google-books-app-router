@@ -79,7 +79,7 @@ export default function FavoriteBookSearch() {
       </div>
 
       {(isSearching || results.length > 0) && (
-        <div className="mt-2 rounded-xl border border-gray-200 bg-white shadow-lg max-h-80 overflow-y-auto">
+        <div className="mt-2 rounded-xl border border-blue-100/40 glass-card-solid shadow-lg max-h-80 overflow-y-auto">
           {isSearching && results.length === 0 && (
             <p className="text-sm text-gray-400 p-4 text-center">
               Searching...

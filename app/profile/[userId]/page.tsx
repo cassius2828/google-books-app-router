@@ -98,7 +98,7 @@ export default async function ProfilePage({ params }: { params: Params }) {
       </section>
 
       {/* Favorite Genres */}
-      <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <section className="glass-card-solid rounded-xl shadow-sm p-6">
         <h2 className="text-xl font-bold text-gray-800 mb-4">
           Favorite Genres
         </h2>
@@ -121,7 +121,7 @@ export default async function ProfilePage({ params }: { params: Params }) {
       </section>
 
       {/* Favorite Books */}
-      <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <section className="glass-card-solid rounded-xl shadow-sm p-6">
         <h2 className="text-xl font-bold text-gray-800 mb-4">
           Favorite Books
         </h2>
@@ -146,7 +146,7 @@ export default async function ProfilePage({ params }: { params: Params }) {
 
       {/* Recommended Books */}
       {Object.keys(recsByGenre).length > 0 && (
-        <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <section className="glass-card-solid rounded-xl shadow-sm p-6">
           <div className="flex items-center gap-2 mb-6">
             <Sparkles className="h-5 w-5 text-amber-500" />
             <h2 className="text-xl font-bold text-gray-800">
@@ -164,7 +164,7 @@ export default async function ProfilePage({ params }: { params: Params }) {
                     <Link
                       key={book.id}
                       href={`/books/${book.id}`}
-                      className="group rounded-xl border border-gray-100 bg-white hover:shadow-md transition overflow-hidden"
+                      className="group rounded-xl border border-blue-100/30 glass-card-solid hover:shadow-md transition overflow-hidden"
                     >
                       <div className="aspect-[2/3] relative bg-gray-100">
                         {book.thumbnail ? (

@@ -106,7 +106,7 @@ export const postAddBookToDB = async (book: Book) => {
       imageLinks,
     },
   } = book;
-  const formattedDescription = convert(description);
+  const formattedDescription = description ? convert(description) : "";
 
   if (book.volumeInfo.google_book_id) {
     const existingBook = await getBookFromDB(book.volumeInfo.google_book_id);
@@ -123,12 +123,12 @@ export const postAddBookToDB = async (book: Book) => {
     page_count: pageCount,
     categories,
     cover_image:
-      imageLinks.extraLarge ||
-      imageLinks.large ||
-      imageLinks.medium ||
-      imageLinks.small ||
+      imageLinks?.extraLarge ||
+      imageLinks?.large ||
+      imageLinks?.medium ||
+      imageLinks?.small ||
       "",
-    thumbnail: imageLinks.thumbnail || imageLinks.smallThumbnail || "",
+    thumbnail: imageLinks?.thumbnail || imageLinks?.smallThumbnail || "",
     preview_link: previewLink,
   });
 

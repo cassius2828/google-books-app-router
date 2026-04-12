@@ -26,7 +26,7 @@ export default function BookCard({
   const formattedDescription = convert(description);
 
   return (
-    <div className="max-w-80 bg-white rounded-lg shadow-md overflow-hidden">
+    <div className="max-w-80 glass-card-solid rounded-xl shadow-sm hover:shadow-md transition overflow-hidden">
       <div className="relative aspect-square">
         <Image
           src={coverSrc}

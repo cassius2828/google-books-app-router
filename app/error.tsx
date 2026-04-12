@@ -16,8 +16,8 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
-      <div className="bg-white p-8 rounded-lg shadow-md text-center">
+    <div className="min-h-screen flex items-center justify-center p-6">
+      <div className="glass-card-solid p-8 rounded-xl shadow-sm text-center">
         <h1 className="text-2xl font-bold text-red-600 mb-4">
           Oops! Something went wrong.
         </h1>

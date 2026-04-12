@@ -31,9 +31,7 @@ const DesktopNav = async ({ publicUserID }: { publicUserID: string }) => {
             Reading List
           </Link>
         )}
-        <Link href="/contribute" className="text-gray-600 hover:text-gray-900">
-          Contribute
-        </Link>
+
       </nav>
       <div className="hidden md:block">
         {session?.user ? (

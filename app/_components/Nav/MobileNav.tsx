@@ -16,7 +16,7 @@ export default async function MobileNav({ publicUserID }: MobileNavProps) {
       <input type="checkbox" id="nav-toggle" className="hidden peer" />
 
       {/* Navbar header with icons */}
-      <div className="flex justify-end items-center p-4 bg-white">
+      <div className="flex justify-end items-center p-4">
         {/* Hamburger icon (shown when unchecked) */}
         <label
           htmlFor="nav-toggle"
@@ -61,7 +61,7 @@ export default async function MobileNav({ publicUserID }: MobileNavProps) {
       </div>
 
       {/* Collapsible menu */}
-      <div className="hidden peer-checked:flex flex-col space-y-2 bg-white rounded-b-lg shadow-lg p-4 absolute top-full left-0 w-full z-50">
+      <div className="hidden peer-checked:flex flex-col space-y-2 glass-card-solid rounded-b-lg shadow-lg p-4 absolute top-full left-0 w-full z-50">
         <Link href="/" className="text-gray-600 hover:text-gray-900">
           Home
         </Link>
@@ -83,11 +83,6 @@ export default async function MobileNav({ publicUserID }: MobileNavProps) {
             Reading List
           </Link>
         )}
-
-        <Link href="/contribute" className="text-gray-600 hover:text-gray-900">
-          Contribute
-        </Link>
-
         <div className="md:hidden mt-4 border-t border-gray-200 pt-4">
           {session?.user ? (
             <div className="flex items-center space-x-3">

@@ -26,8 +26,8 @@ export default async function ReadingListPage(props: {
     <div className="flex flex-col items-center">
       <Filter />
       <div className="overflow-x-auto max-w-[80rem] mx-auto mt-12">
-        <table className="bg-white divide-y divide-gray-200 ">
-          <thead className="bg-gray-50">
+        <table className="glass-card-solid divide-y divide-gray-200/60 rounded-xl overflow-hidden shadow-sm">
+          <thead className="bg-blue-50/40">
             <tr>
               <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Fav

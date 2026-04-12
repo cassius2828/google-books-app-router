@@ -63,7 +63,7 @@ button {
 /* Style your items */
 .my-masonry-grid_column > div {
   /* change div to reference your elements you put in <Masonry> */
-  background: #fafafa;
+  background: transparent;
   margin-bottom: 30px;
 }
 
@@ -206,6 +206,35 @@ button {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    background: linear-gradient(
+      135deg,
+      #f8faff 0%,
+      #f0f4ff 25%,
+      #f5f3ff 50%,
+      #f0f4ff 75%,
+      #f8faff 100%
+    );
+    background-attachment: fixed;
+    min-height: 100vh;
   }
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.glass-card-solid {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.85) 0%,
+    rgba(248, 250, 255, 0.9) 50%,
+    rgba(245, 243, 255, 0.85) 100%
+  );
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(226, 232, 255, 0.5);
 }
