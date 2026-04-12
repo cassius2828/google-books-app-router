@@ -30,8 +30,7 @@ const MaxResultsSelect = ({ params, handleChange }: AdvancedSearchInputParams) =
         <SelectContent>
           <SelectItem value="12">12</SelectItem>
           <SelectItem value="24">24</SelectItem>
-          <SelectItem value="50">50</SelectItem>
-          <SelectItem value="100">100</SelectItem>
+          <SelectItem value="40">40</SelectItem>
         </SelectContent>
       </Select>
     </div>

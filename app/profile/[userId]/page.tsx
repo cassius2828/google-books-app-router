@@ -93,13 +93,13 @@ export default async function ProfilePage({ params }: { params: Params }) {
         </div>
         <div className="relative z-10 flex flex-col sm:flex-row items-center gap-6 w-full">
           <ProfileAvatar
-            src={(isOwner ? session?.user?.image : null) || profile.avatar}
-            alt={profile.username}
-            fallbackInitial={profile.username?.charAt(0)?.toUpperCase() ?? "?"}
+            src={(isOwner ? session?.user?.image : null) || profile.image}
+            alt={profile.name}
+            fallbackInitial={profile.name?.charAt(0)?.toUpperCase() ?? "?"}
           />
           <div className="text-center sm:text-left flex-1">
             <h1 className="text-3xl font-bold tracking-tight">
-              {profile.username}
+              {profile.name}
             </h1>
             {memberSince && (
               <p className="text-blue-200/60 text-sm mt-1">

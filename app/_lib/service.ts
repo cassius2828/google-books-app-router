@@ -82,9 +82,9 @@ export const getPublicUserID = async (email: string): Promise<string> => {
     throw new Error("No email found in session");
   }
   const newUser = await UserModel.create({
-    username: session?.user?.name ?? "Unknown",
+    name: session?.user?.name ?? "Unknown",
     email: sessionEmail,
-    avatar: session?.user?.image ?? null,
+    image: session?.user?.image ?? null,
   });
 
   return newUser._id.toString();
@@ -235,9 +235,9 @@ export const getIsBookInUsersList = async (
 
 export interface UserProfile {
   id: string;
-  username: string;
+  name: string;
   email: string;
-  avatar: string | null;
+  image: string | null;
   favoriteGenres: string[];
   favoriteBooks: Array<{
     id: string;
@@ -266,9 +266,9 @@ export const getUserProfile = async (
 
   return {
     id: user._id.toString(),
-    username: user.username,
+    name: user.name,
     email: user.email,
-    avatar: user.avatar,
+    image: user.image,
     favoriteGenres: user.favoriteGenres ?? [],
     favoriteBooks: books.map((b) => ({
       id: b._id.toString(),
@@ -355,8 +355,8 @@ export const getRecommendedBooks = async (
 
 export interface PublicUserResult {
   id: string;
-  username: string;
-  avatar: string | null;
+  name: string;
+  image: string | null;
   favoriteGenres: string[];
   bookCount: number;
 }
@@ -368,7 +368,7 @@ export const searchPublicUsers = async (
 
   const users = await UserModel.find({
     isProfilePublic: { $ne: false },
-    username: { $regex: query, $options: "i" },
+    name: { $regex: query, $options: "i" },
   })
     .limit(20)
     .lean();
@@ -386,8 +386,8 @@ export const searchPublicUsers = async (
 
   return users.map((u) => ({
     id: u._id.toString(),
-    username: u.username,
-    avatar: u.avatar,
+    name: u.name,
+    image: u.image,
     favoriteGenres: (u.favoriteGenres ?? []).slice(0, 3),
     bookCount: countMap.get(u._id.toString()) ?? 0,
   }));

@@ -1,25 +1,53 @@
-// app/api/books/volumes/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
 
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY!;
 const BASE_VOL_URL = process.env.BASE_VOL_URL!;
-// TODO: FInd a way to ensure the ? at the beginning of the search param is not present for the volumeId
-// TODO: or send it to a different URL
+const API_MAX_RESULTS = 40;
+
 export async function GET(request: NextRequest) {
-  const fullUrl = request.url;
+  const url = new URL(request.url);
+  const params = new URLSearchParams(url.search);
 
-  // 2) Extract just the query string (everything after '?')
-  const { search } = new URL(fullUrl);
-
-  const googleUrl = `${BASE_VOL_URL}${search}&key=${GOOGLE_API_KEY}`;
+  const requestedMax = parseInt(params.get("maxResults") || "10", 10);
+  const startIndex = parseInt(params.get("startIndex") || "0", 10);
 
   try {
-    const { data } = await axios.get(googleUrl);
-    return NextResponse.json({
-      items: data.items ?? [],
-      totalItems: data.totalItems ?? 0,
-    });
+    if (requestedMax <= API_MAX_RESULTS) {
+      const googleUrl = `${BASE_VOL_URL}${url.search}&key=${GOOGLE_API_KEY}`;
+      const { data } = await axios.get(googleUrl);
+      return NextResponse.json({
+        items: data.items ?? [],
+        totalItems: data.totalItems ?? 0,
+      });
+    }
+
+    // For requests > 40, batch into multiple calls
+    const allItems: unknown[] = [];
+    let totalItems = 0;
+    let currentIndex = startIndex;
+    let remaining = requestedMax;
+
+    while (remaining > 0) {
+      const batchSize = Math.min(remaining, API_MAX_RESULTS);
+      const batchParams = new URLSearchParams(params);
+      batchParams.set("maxResults", String(batchSize));
+      batchParams.set("startIndex", String(currentIndex));
+
+      const googleUrl = `${BASE_VOL_URL}?${batchParams.toString()}&key=${GOOGLE_API_KEY}`;
+      const { data } = await axios.get(googleUrl);
+
+      totalItems = data.totalItems ?? 0;
+      const items = data.items ?? [];
+      allItems.push(...items);
+
+      if (items.length < batchSize || allItems.length >= totalItems) break;
+
+      currentIndex += items.length;
+      remaining -= items.length;
+    }
+
+    return NextResponse.json({ items: allItems, totalItems });
   } catch (err) {
     console.error(err);
     return NextResponse.json(

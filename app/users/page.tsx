@@ -61,7 +61,7 @@ export default function UsersPage() {
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground/50 pointer-events-none" />
         <input
           type="text"
-          placeholder="Search by username..."
+          placeholder="Search by name..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="w-full h-12 pl-11 pr-4 rounded-xl bg-card border border-border shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-foreground placeholder-muted-foreground/50 text-sm font-medium transition-shadow"
@@ -92,23 +92,23 @@ export default function UsersPage() {
               href={`/profile/${user.id}`}
               className="flex items-center gap-4 p-4 rounded-2xl bg-card border border-border/50 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 hover:border-primary/20"
             >
-              {user.avatar ? (
+              {user.image ? (
                 <Image
-                  src={user.avatar}
-                  alt={user.username}
+                  src={user.image}
+                  alt={user.name}
                   width={48}
                   height={48}
                   className="rounded-full ring-1 ring-black/[0.06] flex-shrink-0"
                 />
               ) : (
                 <div className="size-12 rounded-full bg-primary/10 flex items-center justify-center text-lg font-bold text-primary flex-shrink-0">
-                  {user.username.charAt(0).toUpperCase()}
+                  {user.name.charAt(0).toUpperCase()}
                 </div>
               )}
 
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-foreground truncate">
-                  {user.username}
+                  {user.name}
                 </p>
                 <div className="flex items-center gap-3 mt-1">
                   <span className="flex items-center gap-1 text-xs text-muted-foreground">
