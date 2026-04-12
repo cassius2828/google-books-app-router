@@ -33,9 +33,10 @@ export default async function ProfilePage({ params }: { params: Params }) {
   }
 
   const isOwner = currentUserId === userId;
+  const RECS_PER_ROW = 4;
   const [allRecommendations, readingListIds] = await Promise.all([
     profile.favoriteGenres.length > 0
-      ? getRecommendedBooks(profile.favoriteGenres)
+      ? getRecommendedBooks(profile.favoriteGenres, RECS_PER_ROW * 3)
       : Promise.resolve([]),
     getUserReadingListGoogleIds(userId),
   ]);
@@ -44,12 +45,19 @@ export default async function ProfilePage({ params }: { params: Params }) {
     (book) => !readingListIds.has(book.id)
   );
 
-  const recsByGenre = recommendations.reduce<
-    Record<string, typeof recommendations>
-  >((acc, book) => {
-    (acc[book.genre] ??= []).push(book);
-    return acc;
-  }, {});
+  const recsByGenre = Object.fromEntries(
+    Object.entries(
+      recommendations.reduce<Record<string, typeof recommendations>>(
+        (acc, book) => {
+          (acc[book.genre] ??= []).push(book);
+          return acc;
+        },
+        {}
+      )
+    )
+      .map(([genre, books]) => [genre, books.slice(0, RECS_PER_ROW)])
+      .filter(([, books]) => (books as typeof recommendations).length > 0)
+  );
 
   if (!profile.isProfilePublic && !isOwner) {
     return (
@@ -81,13 +89,19 @@ export default async function ProfilePage({ params }: { params: Params }) {
           <div className="absolute bottom-4 right-4 w-56 h-56 bg-indigo-300 rounded-full blur-3xl" />
         </div>
         <div className="relative z-10 flex flex-col sm:flex-row items-center gap-6 w-full">
-          <Image
-            src={profile.avatar || "/default-avatar.png"}
-            alt={profile.username}
-            width={96}
-            height={96}
-            className="rounded-full border-4 border-white/30 shadow-lg"
-          />
+          {profile.avatar ? (
+            <Image
+              src={profile.avatar}
+              alt={profile.username}
+              width={96}
+              height={96}
+              className="rounded-full border-4 border-white/30 shadow-lg"
+            />
+          ) : (
+            <div className="w-24 h-24 rounded-full border-4 border-white/30 shadow-lg bg-white/20 flex items-center justify-center text-3xl font-bold text-white select-none">
+              {profile.username?.charAt(0)?.toUpperCase() ?? "?"}
+            </div>
+          )}
           <div className="text-center sm:text-left flex-1">
             <h1 className="text-3xl font-extrabold tracking-tight">
               {profile.username}
