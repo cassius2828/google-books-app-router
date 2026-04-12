@@ -4,12 +4,9 @@ import { getUserReadingList, getUserProfile } from "@/app/_lib/service";
 import Loader from "@/app/loading";
 import { Suspense } from "react";
 
-type Params = Promise<{ userId: string }>;
-type SearchParams = Promise<{ status: string }>;
-
 export default async function ReadingListPage(props: {
-  params: Params;
-  searchParams: SearchParams;
+  params: Promise<{ userId: string }>;
+  searchParams: Promise<{ status: string }>;
 }) {
   const { userId } = await props.params;
   const { status } = await props.searchParams;

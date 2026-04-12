@@ -31,19 +31,10 @@ const ReadingListCards = ({
   favoriteBookIds = [],
   viewMode = "grid",
 }: {
-  readingList: ReadingListDBRow[] | { data: []; error: unknown } | { data: [] };
+  readingList: ReadingListDBRow[];
   favoriteBookIds?: string[];
   viewMode?: "grid" | "list";
 }) => {
-  if (!Array.isArray(readingList)) {
-    console.error("Invalid reading list format:", readingList);
-    return (
-      <div className="text-center py-16 text-muted-foreground">
-        Unable to load reading list.
-      </div>
-    );
-  }
-
   if (readingList.length === 0) {
     return (
       <div className="text-center py-16 text-muted-foreground">

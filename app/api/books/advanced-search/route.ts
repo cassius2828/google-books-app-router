@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
+import {
+  GoogleBooksVolumesResponse,
+  GoogleBooksVolume,
+} from "@/app/_lib/types";
 
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY!;
 const BASE_VOL_URL = process.env.BASE_VOL_URL!;
@@ -15,15 +19,15 @@ export async function GET(request: NextRequest) {
   try {
     if (requestedMax <= API_MAX_RESULTS) {
       const googleUrl = `${BASE_VOL_URL}${url.search}&key=${GOOGLE_API_KEY}`;
-      const { data } = await axios.get(googleUrl);
+      const { data } =
+        await axios.get<GoogleBooksVolumesResponse>(googleUrl);
       return NextResponse.json({
         items: data.items ?? [],
         totalItems: data.totalItems ?? 0,
       });
     }
 
-    // For requests > 40, batch into multiple calls
-    const allItems: unknown[] = [];
+    const allItems: GoogleBooksVolume[] = [];
     let totalItems = 0;
     let currentIndex = startIndex;
     let remaining = requestedMax;
@@ -35,7 +39,8 @@ export async function GET(request: NextRequest) {
       batchParams.set("startIndex", String(currentIndex));
 
       const googleUrl = `${BASE_VOL_URL}?${batchParams.toString()}&key=${GOOGLE_API_KEY}`;
-      const { data } = await axios.get(googleUrl);
+      const { data } =
+        await axios.get<GoogleBooksVolumesResponse>(googleUrl);
 
       totalItems = data.totalItems ?? 0;
       const items = data.items ?? [];

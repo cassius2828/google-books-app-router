@@ -7,7 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Search, Users, BookOpen } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import type { PublicUserResult } from "@/app/_lib/service";
+import type { PublicUserResult } from "@/app/_lib/types";
 
 export default function UsersPage() {
   const [query, setQuery] = useState("");

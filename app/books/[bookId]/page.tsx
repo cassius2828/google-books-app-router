@@ -1,5 +1,9 @@
 "use client";
-import { Book, ReadingListStatusAndId } from "@/app/_lib/types";
+import {
+  Book,
+  ReadingListStatusAndId,
+  ReadingListStatus,
+} from "@/app/_lib/types";
 import { convert } from "html-to-text";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
@@ -169,7 +173,7 @@ export default function BookDetails() {
     });
   };
 
-  const handleChangeBookStatus = async (status: string) => {
+  const handleChangeBookStatus = async (status: ReadingListStatus) => {
     const result = await putChangeBookStatusAction(status, readingListObj.id);
     if (result?.error) {
       toast.error(result.error);
@@ -330,7 +334,7 @@ export default function BookDetails() {
                   </p>
                   <Select
                     value={readingListObj.status}
-                    onValueChange={handleChangeBookStatus}
+                    onValueChange={(v) => handleChangeBookStatus(v as ReadingListStatus)}
                   >
                     <SelectTrigger className="w-32 h-8 text-xs">
                       <SelectValue />

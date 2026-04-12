@@ -10,12 +10,12 @@ export default function ReadingListView({
   readingList,
   favoriteBookIds,
 }: {
-  readingList: ReadingListDBRow[] | { data: []; error: unknown } | { data: [] };
+  readingList: ReadingListDBRow[];
   favoriteBookIds: string[];
 }) {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  const showToggle = Array.isArray(readingList) && readingList.length > 0;
+  const showToggle = readingList.length > 0;
 
   return (
     <>

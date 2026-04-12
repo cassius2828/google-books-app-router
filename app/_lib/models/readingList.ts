@@ -4,6 +4,8 @@ export interface ReadingListDoc extends Document {
   user_id: Types.ObjectId;
   book_id: Types.ObjectId;
   status: "to_read" | "reading" | "completed";
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 const ReadingListSchema = new Schema<ReadingListDoc>(

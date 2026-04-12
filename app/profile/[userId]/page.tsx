@@ -8,6 +8,7 @@ import {
   getRecommendedBooks,
   getUserReadingListGoogleIds,
 } from "@/app/_lib/service";
+import { UserPageParams } from "@/app/_lib/types";
 import GenrePicker from "@/app/_components/Profile/GenrePicker";
 import FavoriteBookSearch from "@/app/_components/Profile/FavoriteBookSearch";
 import FavoriteBookCard from "@/app/_components/Profile/FavoriteBookCard";
@@ -17,9 +18,7 @@ import { Lock, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-type Params = Promise<{ userId: string }>;
-
-export default async function ProfilePage({ params }: { params: Params }) {
+export default async function ProfilePage({ params }: UserPageParams) {
   const { userId } = await params;
   const profile = await getUserProfile(userId);
 
@@ -48,19 +47,12 @@ export default async function ProfilePage({ params }: { params: Params }) {
     (book) => !readingListIds.has(book.id)
   );
 
-  const recsByGenre = Object.fromEntries(
-    Object.entries(
-      recommendations.reduce<Record<string, typeof recommendations>>(
-        (acc, book) => {
-          (acc[book.genre] ??= []).push(book);
-          return acc;
-        },
-        {}
-      )
-    )
-      .map(([genre, books]) => [genre, books.slice(0, RECS_PER_ROW)])
-      .filter(([, books]) => (books as typeof recommendations).length > 0)
-  );
+  type Rec = (typeof recommendations)[number];
+  const recsByGenre: Record<string, Rec[]> = {};
+  for (const book of recommendations) {
+    const list = (recsByGenre[book.genre] ??= []);
+    if (list.length < RECS_PER_ROW) list.push(book);
+  }
 
   if (!profile.isProfilePublic && !isOwner) {
     return (

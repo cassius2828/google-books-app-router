@@ -2,6 +2,7 @@
 
 import { useTransition, useState, useRef, useEffect } from "react";
 import { putChangeBookStatusAction } from "@/app/_lib/actions";
+import { ReadingListStatus } from "@/app/_lib/types";
 import toast from "react-hot-toast";
 import { ChevronDown } from "lucide-react";
 
@@ -9,9 +10,9 @@ const STATUS_OPTIONS = [
   { value: "to_read", label: "To Read", className: "bg-blue-100 text-blue-800" },
   { value: "reading", label: "Reading", className: "bg-yellow-100 text-yellow-800" },
   { value: "completed", label: "Completed", className: "bg-green-100 text-green-800" },
-] as const;
+] as const satisfies ReadonlyArray<{ value: ReadingListStatus; label: string; className: string }>;
 
-function getStatusOption(status: string) {
+function getStatusOption(status: ReadingListStatus) {
   return STATUS_OPTIONS.find((o) => o.value === status) ?? STATUS_OPTIONS[0];
 }
 
@@ -20,7 +21,7 @@ export default function StatusSelect({
   currentStatus,
 }: {
   readingListId: string;
-  currentStatus: string;
+  currentStatus: ReadingListStatus;
 }) {
   const [isPending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
@@ -36,7 +37,7 @@ export default function StatusSelect({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSelect = (newStatus: string) => {
+  const handleSelect = (newStatus: ReadingListStatus) => {
     setOpen(false);
     if (newStatus === currentStatus) return;
     startTransition(async () => {

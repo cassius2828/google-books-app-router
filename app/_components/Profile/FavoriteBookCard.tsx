@@ -4,17 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useTransition } from "react";
 import { removeFavoriteBook } from "@/app/_lib/actions";
+import { FavoriteBook } from "@/app/_lib/types";
 import toast from "react-hot-toast";
 import { X } from "lucide-react";
-
-interface FavoriteBook {
-  id: string;
-  google_book_id: string;
-  title: string;
-  authors: string[];
-  thumbnail: string;
-  cover_image: string;
-}
 
 interface FavoriteBookCardProps {
   book: FavoriteBook;

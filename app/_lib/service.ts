@@ -1,6 +1,14 @@
 import axios from "axios";
 import { convert } from "html-to-text";
-import { Book, ReadingListDBRow } from "./types";
+import {
+  Book,
+  ReadingListDBRow,
+  ReadingListStatusAndId,
+  UserProfile,
+  PublicUserResult,
+  FavoriteBook,
+  GoogleBooksVolumesResponse,
+} from "./types";
 import { auth } from "./auth";
 import { connectDB } from "./db";
 import {
@@ -22,7 +30,7 @@ export const getBooksByTitle = async (
   maxResults = 24
 ) => {
   try {
-    const response = await axios.get(
+    const response = await axios.get<GoogleBooksVolumesResponse>(
       `${BASE_VOL_URL}?q=${query}&key=${GOOGLE_API_KEY}&maxResults=${maxResults}&startIndex=${startIndex}`
     );
     return response.data;
@@ -149,7 +157,7 @@ export const getBookFromDB = async (
 export const getUserReadingList = async (
   userId: string,
   statusFilter?: string
-): Promise<ReadingListDBRow[] | { data: []; error?: unknown }> => {
+): Promise<ReadingListDBRow[]> => {
   if (!userId) {
     return [];
   }
@@ -162,7 +170,7 @@ export const getUserReadingList = async (
     }
 
     const entries = await ReadingListModel.find(query)
-      .populate("book_id")
+      .populate<{ book_id: BookDoc }>("book_id")
       .lean();
 
     const result: ReadingListDBRow[] = await Promise.all(
@@ -171,7 +179,7 @@ export const getUserReadingList = async (
           reading_list_id: entry._id,
         }).lean();
 
-        const book = entry.book_id as unknown as BookDoc;
+        const book = entry.book_id;
         return {
           readingListId: entry._id.toString(),
           status: entry.status,
@@ -188,30 +196,26 @@ export const getUserReadingList = async (
             thumbnail: book.thumbnail,
             cover_image: book.cover_image,
             preview_link: book.preview_link,
-            created_at: (book as unknown as { createdAt?: Date }).createdAt
-              ?.toISOString() ?? "",
+            created_at: book.createdAt?.toISOString() ?? "",
           },
-          notes: note ? [{ id: note._id.toString(), content: note.content }] : [],
-        } as unknown as ReadingListDBRow;
+          notes: note
+            ? [{ id: note._id.toString(), content: note.content }]
+            : [],
+        };
       })
     );
 
     return result;
   } catch (err) {
     console.error(err);
-    return { data: [] };
+    return [];
   }
 };
 
 export const getIsBookInUsersList = async (
   userId: string,
   bookId: string
-): Promise<{
-  id?: string;
-  user_id?: string;
-  book_id?: string;
-  status?: string;
-} | null> => {
+): Promise<ReadingListStatusAndId | null> => {
   if (!bookId || !userId) return null;
 
   if (!isValidReadingListLookupId(bookId)) return null;
@@ -233,36 +237,26 @@ export const getIsBookInUsersList = async (
   };
 };
 
-export interface UserProfile {
-  id: string;
-  name: string;
-  email: string;
-  image: string | null;
-  favoriteGenres: string[];
-  favoriteBooks: Array<{
-    id: string;
-    google_book_id: string;
-    title: string;
-    authors: string[];
-    thumbnail: string;
-    cover_image: string;
-  }>;
-  isProfilePublic: boolean;
-  createdAt: string;
-}
-
 export const getUserProfile = async (
   userId: string
 ): Promise<UserProfile | null> => {
   await connectDB();
 
   const user = await UserModel.findById(userId)
-    .populate("favoriteBooks")
+    .populate<{ favoriteBooks: BookDoc[] }>("favoriteBooks")
     .lean();
 
   if (!user) return null;
 
-  const books = (user.favoriteBooks ?? []) as unknown as BookDoc[];
+  const books = user.favoriteBooks ?? [];
+  const favoriteBooks: FavoriteBook[] = books.map((b) => ({
+    id: b._id.toString(),
+    google_book_id: b.google_book_id,
+    title: b.title,
+    authors: b.authors,
+    thumbnail: b.thumbnail,
+    cover_image: b.cover_image,
+  }));
 
   return {
     id: user._id.toString(),
@@ -270,16 +264,9 @@ export const getUserProfile = async (
     email: user.email,
     image: user.image,
     favoriteGenres: user.favoriteGenres ?? [],
-    favoriteBooks: books.map((b) => ({
-      id: b._id.toString(),
-      google_book_id: b.google_book_id,
-      title: b.title,
-      authors: b.authors,
-      thumbnail: b.thumbnail,
-      cover_image: b.cover_image,
-    })),
+    favoriteBooks,
     isProfilePublic: user.isProfilePublic ?? true,
-    createdAt: (user as unknown as { createdAt?: Date }).createdAt?.toISOString() ?? "",
+    createdAt: user.createdAt?.toISOString() ?? "",
   };
 };
 
@@ -308,8 +295,7 @@ export const getUserReadingListGoogleIds = async (
 
   const ids = new Set<string>();
   for (const entry of entries) {
-    const book = entry.book_id as unknown as BookDoc;
-    if (book?.google_book_id) ids.add(book.google_book_id);
+    if (entry.book_id?.google_book_id) ids.add(entry.book_id.google_book_id);
   }
   return ids;
 };
@@ -331,19 +317,17 @@ export const getRecommendedBooks = async (
   const results = await Promise.all(
     genres.slice(0, 5).map(async (genre) => {
       try {
-        const response = await axios.get(
+        const response = await axios.get<GoogleBooksVolumesResponse>(
           `${BASE_VOL_URL}?q=subject:${encodeURIComponent(genre)}&orderBy=relevance&maxResults=${maxPerGenre}&key=${GOOGLE_API_KEY}`
         );
         const items = response.data.items ?? [];
-        return items.map(
-          (item: { id: string; volumeInfo: { title?: string; authors?: string[]; imageLinks?: { thumbnail?: string } } }) => ({
-            id: item.id,
-            title: item.volumeInfo?.title ?? "Untitled",
-            authors: item.volumeInfo?.authors ?? [],
-            thumbnail: item.volumeInfo?.imageLinks?.thumbnail ?? "",
-            genre,
-          })
-        );
+        return items.map((item) => ({
+          id: item.id,
+          title: item.volumeInfo?.title ?? "Untitled",
+          authors: item.volumeInfo?.authors ?? [],
+          thumbnail: item.volumeInfo?.imageLinks?.thumbnail ?? "",
+          genre,
+        }));
       } catch {
         return [];
       }
@@ -352,14 +336,6 @@ export const getRecommendedBooks = async (
 
   return results.flat();
 };
-
-export interface PublicUserResult {
-  id: string;
-  name: string;
-  image: string | null;
-  favoriteGenres: string[];
-  bookCount: number;
-}
 
 export const searchPublicUsers = async (
   query: string

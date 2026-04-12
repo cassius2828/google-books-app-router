@@ -3,7 +3,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { auth, signIn, signOut } from "./auth";
 import { getPublicUserID, postAddBookToDB } from "./service";
-import { Book } from "./types";
+import { Book, ReadingListStatus } from "./types";
 import { connectDB } from "./db";
 import { ReadingListModel, NoteModel, UserModel } from "./models";
 import { GENRES } from "./genres";
@@ -89,8 +89,8 @@ export const addNotesToBook = async (formData: FormData) => {
   const session = await auth();
   if (!session) throw new Error("Must be signed in to add notes to a book");
 
-  const content = formData.get("content") as string;
-  const readingListId = formData.get("readingListId") as string;
+  const content = formData.get("content")?.toString() ?? "";
+  const readingListId = formData.get("readingListId")?.toString() ?? "";
 
   await connectDB();
 
@@ -122,7 +122,9 @@ export const updateFavoriteGenres = async (genres: string[]) => {
   const session = await auth();
   if (!session?.user?.email) return { error: "Not signed in" };
 
-  const valid = genres.filter((g) => (GENRES as readonly string[]).includes(g));
+  const valid = genres.filter((g): g is string =>
+    GENRES.includes(g as typeof GENRES[number])
+  );
   const userId = await getPublicUserID(session.user.email);
   await connectDB();
   await UserModel.findByIdAndUpdate(userId, { favoriteGenres: valid });
@@ -189,7 +191,7 @@ export const toggleProfileVisibility = async () => {
 };
 
 export const putChangeBookStatusAction = async (
-  status: string,
+  status: ReadingListStatus,
   id: string
 ) => {
   const session = await auth();

@@ -7,6 +7,8 @@ export interface UserDoc extends Document {
   favoriteGenres: string[];
   favoriteBooks: Types.ObjectId[];
   isProfilePublic: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 const UserSchema = new Schema<UserDoc>(

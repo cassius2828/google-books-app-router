@@ -12,6 +12,8 @@ export interface BookDoc extends Document {
   thumbnail: string;
   cover_image: string;
   preview_link: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 const BookSchema = new Schema<BookDoc>(
