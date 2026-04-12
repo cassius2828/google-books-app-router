@@ -12,38 +12,68 @@ const BooksGallery = () => {
   const { books, setBooks, breakpointColumnsObj } = useBooksContext();
   const [paginationIndex, setPaginiationIndex] = useState<number>(1);
   const [displayBooks, setDisplayBooks] = useState<Book[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams);
   const query = params.get("q");
 
   useEffect(() => {
+    if (!query) return;
+    let cancelled = false;
     const fetchBooks = async () => {
-      if (query) {
+      setIsLoading(true);
+      try {
         const response = await axios.get(
           `/api/books?q=${encodeURIComponent(query)}`
         );
+        if (cancelled) return;
         const data = response.data;
         if (data) {
           setBooks(data.items);
-          setDisplayBooks(data.items.slice(0, 10));
+          setDisplayBooks(data.items.slice(0, 12));
         } else {
           setBooks([]);
         }
+      } finally {
+        if (!cancelled) setIsLoading(false);
       }
     };
     fetchBooks();
+    return () => {
+      cancelled = true;
+    };
   }, [query]);
 
   const calculatePagination = (index: number, array: Book[]) => {
-    const num = index * 10;
-    const num2 = num + 10;
+    const num = index * 12;
+    const num2 = num + 12;
     setDisplayBooks(array.slice(0, num2));
   };
   useEffect(() => {
     calculatePagination(paginationIndex, books);
   }, []);
+  if (isLoading) {
+    return (
+      <div className="mt-20 w-full max-w-7xl mx-auto px-6">
+        <Masonry
+          breakpointCols={breakpointColumnsObj}
+          className="my-masonry-grid"
+          columnClassName="my-masonry-grid_column"
+        >
+          {Array.from({ length: 12 }).map((_, i) => (
+            <div
+              key={i}
+              className="rounded-xl bg-gray-200 animate-pulse mb-4"
+              style={{ height: `${200 + (i % 3) * 80}px` }}
+            />
+          ))}
+        </Masonry>
+      </div>
+    );
+  }
+
   return (
-    <div className="mt-20 w-full">
+    <div className="mt-20 w-full max-w-7xl mx-auto px-6">
       <Masonry
         breakpointCols={breakpointColumnsObj}
         className="my-masonry-grid"
@@ -83,11 +113,10 @@ const BooksGallery = () => {
             disabled={displayBooks.length === 40}
             onClick={() => {
               setPaginiationIndex((prev: number) => {
-                if (prev < 4) {
-                  return prev + 1;
-                } else return prev;
+                const next = prev + 1;
+                calculatePagination(next, books);
+                return next;
               });
-              calculatePagination(paginationIndex, books);
             }}
             className={`${
               displayBooks.length === 40

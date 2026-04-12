@@ -6,6 +6,7 @@ import {
   getPublicUserID,
   getUserProfile,
   getRecommendedBooks,
+  getUserReadingListGoogleIds,
 } from "@/app/_lib/service";
 import GenrePicker from "@/app/_components/Profile/GenrePicker";
 import FavoriteBookSearch from "@/app/_components/Profile/FavoriteBookSearch";
@@ -32,10 +33,16 @@ export default async function ProfilePage({ params }: { params: Params }) {
   }
 
   const isOwner = currentUserId === userId;
-  const recommendations =
+  const [allRecommendations, readingListIds] = await Promise.all([
     profile.favoriteGenres.length > 0
-      ? await getRecommendedBooks(profile.favoriteGenres)
-      : [];
+      ? getRecommendedBooks(profile.favoriteGenres)
+      : Promise.resolve([]),
+    getUserReadingListGoogleIds(userId),
+  ]);
+
+  const recommendations = allRecommendations.filter(
+    (book) => !readingListIds.has(book.id)
+  );
 
   const recsByGenre = recommendations.reduce<
     Record<string, typeof recommendations>

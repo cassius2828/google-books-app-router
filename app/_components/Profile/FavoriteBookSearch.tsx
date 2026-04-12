@@ -12,7 +12,7 @@ import { useEffect } from "react";
 
 export default function FavoriteBookSearch() {
   const [query, setQuery] = useState("");
-  const [debouncedQuery] = useDebounce(query, 400);
+  const [debouncedQuery] = useDebounce(query, 200);
   const [results, setResults] = useState<Book[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [isPending, startTransition] = useTransition();

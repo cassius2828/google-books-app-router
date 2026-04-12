@@ -292,6 +292,23 @@ export const checkNeedsOnboarding = async (
   return readingListCount === 0;
 };
 
+export const getUserReadingListGoogleIds = async (
+  userId: string
+): Promise<Set<string>> => {
+  await connectDB();
+
+  const entries = await ReadingListModel.find({ user_id: userId })
+    .populate<{ book_id: BookDoc }>("book_id", "google_book_id")
+    .lean();
+
+  const ids = new Set<string>();
+  for (const entry of entries) {
+    const book = entry.book_id as unknown as BookDoc;
+    if (book?.google_book_id) ids.add(book.google_book_id);
+  }
+  return ids;
+};
+
 export const getRecommendedBooks = async (
   genres: string[],
   maxPerGenre = 4

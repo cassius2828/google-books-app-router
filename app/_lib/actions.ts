@@ -138,21 +138,26 @@ export const toggleFavoriteBook = async (book: Book) => {
   const bookFromDB = await postAddBookToDB(book);
   await connectDB();
 
-  const user = await UserModel.findById(userId);
+  const user = await UserModel.findById(userId).lean();
   if (!user) return { error: "User not found" };
 
   const bookObjId = bookFromDB._id.toString();
-  const idx = user.favoriteBooks.findIndex((id) => id.toString() === bookObjId);
+  const alreadyFavorited = (user.favoriteBooks ?? []).some(
+    (id) => id.toString() === bookObjId
+  );
 
-  if (idx >= 0) {
-    user.favoriteBooks.splice(idx, 1);
+  if (alreadyFavorited) {
+    await UserModel.findByIdAndUpdate(userId, {
+      $pull: { favoriteBooks: bookFromDB._id },
+    });
   } else {
-    user.favoriteBooks.push(bookFromDB._id);
+    await UserModel.findByIdAndUpdate(userId, {
+      $addToSet: { favoriteBooks: bookFromDB._id },
+    });
   }
 
-  await user.save();
   revalidatePath(`/profile/${userId}`);
-  return { success: true, added: idx < 0 };
+  return { success: true, added: !alreadyFavorited };
 };
 
 export const removeFavoriteBook = async (bookObjectId: string) => {
