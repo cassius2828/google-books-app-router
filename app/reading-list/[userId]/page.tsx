@@ -1,7 +1,6 @@
 import Filter from "@/app/_components/ReadingList/Filter";
-import ReadingListTableBody from "@/app/_components/ReadingListTableBody";
+import ReadingListCards from "@/app/_components/ReadingListTableBody";
 import { getUserReadingList, getUserProfile } from "@/app/_lib/service";
-import { ReadingListDBRow } from "@/app/_lib/types";
 import Loader from "@/app/loading";
 import { Suspense } from "react";
 
@@ -23,40 +22,23 @@ export default async function ReadingListPage(props: {
   const favoriteBookIds = profile?.favoriteBooks.map((b) => b.id) ?? [];
 
   return (
-    <div className="flex flex-col items-center">
-      <Filter />
-      <div className="overflow-x-auto max-w-[80rem] mx-auto mt-12">
-        <table className="glass-card-solid divide-y divide-gray-200/60 rounded-xl overflow-hidden shadow-sm">
-          <thead className="bg-blue-50/40">
-            <tr>
-              <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Fav
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Cover
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Title & Author
-              </th>
-              <th className="hidden lg:block px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Description
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Book Details
-              </th>
-            </tr>
-          </thead>
-          <Suspense fallback={<Loader />}>
-            <ReadingListTableBody
-              readingList={readingList}
-              favoriteBookIds={favoriteBookIds}
-            />
-          </Suspense>
-        </table>
+    <div className="container mx-auto px-6 py-12 max-w-6xl">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-10">
+        <div>
+          <h1 className="heading-section text-foreground">My Reading List</h1>
+          <p className="text-muted-foreground mt-1 text-sm">
+            Track your reading progress and manage your collection.
+          </p>
+        </div>
+        <Filter />
       </div>
+
+      <Suspense fallback={<Loader />}>
+        <ReadingListCards
+          readingList={readingList}
+          favoriteBookIds={favoriteBookIds}
+        />
+      </Suspense>
     </div>
   );
 }

@@ -2,38 +2,41 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
+const statuses = [
+  { value: "all", label: "All" },
+  { value: "to_read", label: "To Read" },
+  { value: "reading", label: "Reading" },
+  { value: "completed", label: "Completed" },
+];
+
 const Filter = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  const current = searchParams.get("status") || "all";
 
   const handleFilter = (status: string) => {
     const params = new URLSearchParams(searchParams);
     params.set("status", status);
     router.replace(`${pathname}?${params.toString()}`);
-
   };
 
   return (
-    <form className="mt-12 flex flex-col sm:flex-row sm:items-center sm:space-x-4">
-      <label
-        htmlFor="filterStatus"
-        className="mb-2 sm:mb-0 text-sm font-medium text-gray-700"
-      >
-        Filter by Status:
-      </label>
-      <select
-        id="filterStatus"
-        name="filterStatus"
-        onChange={(e) => handleFilter(e.target.value)}
-        className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-      >
-        <option value="all">All</option>
-        <option value="to_read">To Read</option>
-        <option value="reading">Reading</option>
-        <option value="completed">Completed</option>
-      </select>
-    </form>
+    <div className="flex items-center gap-1 p-1 rounded-full bg-secondary/80 backdrop-blur-sm">
+      {statuses.map(({ value, label }) => (
+        <button
+          key={value}
+          onClick={() => handleFilter(value)}
+          className={`px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-200 ${
+            current === value
+              ? "bg-white text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
   );
 };
 export default Filter;

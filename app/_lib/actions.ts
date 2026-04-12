@@ -183,7 +183,7 @@ export const toggleProfileVisibility = async () => {
   if (!user) return { error: "User not found" };
 
   user.isProfilePublic = !user.isProfilePublic;
-  await user.save();
+  await user.save({ validateModifiedOnly: true });
   revalidatePath(`/profile/${userId}`);
   return { success: true, isPublic: user.isProfilePublic };
 };

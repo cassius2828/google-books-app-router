@@ -13,6 +13,8 @@ import FavoriteBookSearch from "@/app/_components/Profile/FavoriteBookSearch";
 import FavoriteBookCard from "@/app/_components/Profile/FavoriteBookCard";
 import ProfileVisibilityToggle from "@/app/_components/Profile/ProfileVisibilityToggle";
 import { Lock, Sparkles } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 type Params = Promise<{ userId: string }>;
 
@@ -62,11 +64,11 @@ export default async function ProfilePage({ params }: { params: Params }) {
   if (!profile.isProfilePublic && !isOwner) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center">
-        <Lock className="h-16 w-16 text-gray-300 mb-4" />
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">
+        <Lock className="size-16 text-muted-foreground/30 mb-4" />
+        <h1 className="text-2xl font-bold text-foreground mb-2">
           This profile is private
         </h1>
-        <p className="text-gray-500 max-w-md">
+        <p className="text-muted-foreground max-w-md">
           This user has chosen to keep their profile private.
         </p>
       </div>
@@ -81,12 +83,12 @@ export default async function ProfilePage({ params }: { params: Params }) {
     : null;
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-10 space-y-10">
+    <div className="max-w-5xl mx-auto px-4 py-12 space-y-10">
       {/* Header */}
-      <section className="flex flex-col sm:flex-row items-center gap-6 bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-600 rounded-2xl p-8 text-white relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-4 left-4 w-40 h-40 bg-white rounded-full blur-3xl" />
-          <div className="absolute bottom-4 right-4 w-56 h-56 bg-indigo-300 rounded-full blur-3xl" />
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 p-8 md:p-10 text-white">
+        <div className="absolute inset-0 opacity-15">
+          <div className="absolute top-4 left-4 w-40 h-40 bg-indigo-400 rounded-full blur-[80px]" />
+          <div className="absolute bottom-4 right-4 w-56 h-56 bg-violet-400 rounded-full blur-[100px]" />
         </div>
         <div className="relative z-10 flex flex-col sm:flex-row items-center gap-6 w-full">
           {profile.avatar ? (
@@ -95,19 +97,19 @@ export default async function ProfilePage({ params }: { params: Params }) {
               alt={profile.username}
               width={96}
               height={96}
-              className="rounded-full border-4 border-white/30 shadow-lg"
+              className="rounded-full ring-2 ring-white/20 shadow-xl"
             />
           ) : (
-            <div className="w-24 h-24 rounded-full border-4 border-white/30 shadow-lg bg-white/20 flex items-center justify-center text-3xl font-bold text-white select-none">
+            <div className="w-24 h-24 rounded-full ring-2 ring-white/20 shadow-xl bg-white/10 flex items-center justify-center text-3xl font-bold text-white select-none">
               {profile.username?.charAt(0)?.toUpperCase() ?? "?"}
             </div>
           )}
           <div className="text-center sm:text-left flex-1">
-            <h1 className="text-3xl font-extrabold tracking-tight">
+            <h1 className="text-3xl font-bold tracking-tight">
               {profile.username}
             </h1>
             {memberSince && (
-              <p className="text-blue-100 text-sm mt-1">
+              <p className="text-indigo-200/60 text-sm mt-1">
                 Member since {memberSince}
               </p>
             )}
@@ -119,104 +121,109 @@ export default async function ProfilePage({ params }: { params: Params }) {
       </section>
 
       {/* Favorite Genres */}
-      <section className="glass-card-solid rounded-xl shadow-sm p-6">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">
-          Favorite Genres
-        </h2>
-        {isOwner ? (
-          <GenrePicker selectedGenres={profile.favoriteGenres} />
-        ) : profile.favoriteGenres.length > 0 ? (
-          <div className="flex flex-wrap gap-2">
-            {profile.favoriteGenres.map((genre) => (
-              <span
-                key={genre}
-                className="px-3 py-1.5 rounded-full bg-blue-50 text-blue-700 text-sm font-medium"
-              >
-                {genre}
-              </span>
-            ))}
-          </div>
-        ) : (
-          <p className="text-gray-400 text-sm">No favorite genres yet.</p>
-        )}
-      </section>
+      <Card className="border-border/50">
+        <CardHeader>
+          <CardTitle className="text-lg">Favorite Genres</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {isOwner ? (
+            <GenrePicker selectedGenres={profile.favoriteGenres} />
+          ) : profile.favoriteGenres.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {profile.favoriteGenres.map((genre) => (
+                <Badge key={genre} variant="secondary">
+                  {genre}
+                </Badge>
+              ))}
+            </div>
+          ) : (
+            <p className="text-muted-foreground text-sm">
+              No favorite genres yet.
+            </p>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Favorite Books */}
-      <section className="glass-card-solid rounded-xl shadow-sm p-6">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">
-          Favorite Books
-        </h2>
-        {isOwner && <FavoriteBookSearch />}
-        {profile.favoriteBooks.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4">
-            {profile.favoriteBooks.map((book) => (
-              <FavoriteBookCard
-                key={book.id}
-                book={book}
-                isOwner={isOwner}
-              />
-            ))}
-          </div>
-        ) : (
-          <p className="text-gray-400 text-sm mt-4">
-            No favorite books yet.{" "}
-            {isOwner && "Search above to add some!"}
-          </p>
-        )}
-      </section>
+      <Card className="border-border/50">
+        <CardHeader>
+          <CardTitle className="text-lg">Favorite Books</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {isOwner && <FavoriteBookSearch />}
+          {profile.favoriteBooks.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4">
+              {profile.favoriteBooks.map((book) => (
+                <FavoriteBookCard
+                  key={book.id}
+                  book={book}
+                  isOwner={isOwner}
+                />
+              ))}
+            </div>
+          ) : (
+            <p className="text-muted-foreground text-sm mt-4">
+              No favorite books yet.{" "}
+              {isOwner && "Search above to add some!"}
+            </p>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Recommended Books */}
       {Object.keys(recsByGenre).length > 0 && (
-        <section className="glass-card-solid rounded-xl shadow-sm p-6">
-          <div className="flex items-center gap-2 mb-6">
-            <Sparkles className="h-5 w-5 text-amber-500" />
-            <h2 className="text-xl font-bold text-gray-800">
+        <Card className="border-border/50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Sparkles className="size-5 text-amber-500" />
               Recommended for You
-            </h2>
-          </div>
-          <div className="space-y-8">
-            {Object.entries(recsByGenre).map(([genre, books]) => (
-              <div key={genre}>
-                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                  {genre}
-                </h3>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                  {books.map((book) => (
-                    <Link
-                      key={book.id}
-                      href={`/books/${book.id}`}
-                      className="group rounded-xl border border-blue-100/30 glass-card-solid hover:shadow-md transition overflow-hidden"
-                    >
-                      <div className="aspect-[2/3] relative bg-gray-100">
-                        {book.thumbnail ? (
-                          <Image
-                            src={book.thumbnail}
-                            alt={book.title}
-                            fill
-                            sizes="(max-width: 640px) 50vw, 25vw"
-                            className="object-cover"
-                          />
-                        ) : (
-                          <div className="flex items-center justify-center h-full text-gray-300 text-xs">
-                            No Cover
-                          </div>
-                        )}
-                      </div>
-                      <div className="p-3">
-                        <p className="text-sm font-medium text-gray-800 line-clamp-2 leading-snug group-hover:text-blue-600 transition">
-                          {book.title}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-1 truncate">
-                          {book.authors.join(", ") || "Unknown"}
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-8">
+              {Object.entries(recsByGenre).map(([genre, books]) => (
+                <div key={genre}>
+                  <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                    {genre}
+                  </h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    {books.map((book) => (
+                      <Link
+                        key={book.id}
+                        href={`/books/${book.id}`}
+                        className="group rounded-2xl border border-border/50 bg-card overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
+                      >
+                        <div className="aspect-[2/3] relative bg-secondary">
+                          {book.thumbnail ? (
+                            <Image
+                              src={book.thumbnail}
+                              alt={book.title}
+                              fill
+                              sizes="(max-width: 640px) 50vw, 25vw"
+                              className="object-cover transition-transform duration-500 group-hover:scale-105"
+                            />
+                          ) : (
+                            <div className="flex items-center justify-center h-full text-muted-foreground/40 text-xs">
+                              No Cover
+                            </div>
+                          )}
+                        </div>
+                        <div className="p-3">
+                          <p className="text-sm font-medium text-foreground line-clamp-2 leading-snug group-hover:text-primary transition-colors">
+                            {book.title}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1 truncate">
+                            {book.authors.join(", ") || "Unknown"}
+                          </p>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </section>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       )}
     </div>
   );

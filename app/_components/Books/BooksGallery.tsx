@@ -7,6 +7,7 @@ import axios from "axios";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Masonry from "react-masonry-css";
 import { ArrowUp, LayoutGrid, List } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const BooksGallery = () => {
   const { books, setBooks, breakpointColumnsObj } = useBooksContext();
@@ -61,34 +62,32 @@ const BooksGallery = () => {
     const num2 = num + 12;
     setDisplayBooks(array.slice(0, num2));
   };
+
   useEffect(() => {
     calculatePagination(paginationIndex, books);
   }, []);
+
   const viewToggle = (
-    <div className="flex justify-end mb-4">
-      <div className="inline-flex rounded-lg border border-gray-200 overflow-hidden">
-        <button
+    <div className="flex justify-end mb-6">
+      <div className="inline-flex rounded-full p-1 bg-secondary/80 backdrop-blur-sm">
+        <Button
+          variant={viewMode === "grid" ? "default" : "ghost"}
+          size="icon-xs"
           onClick={() => setViewMode("grid")}
-          className={`p-2 transition ${
-            viewMode === "grid"
-              ? "bg-blue-600 text-white"
-              : "bg-white text-gray-500 hover:bg-gray-50"
-          }`}
+          className="rounded-full"
           aria-label="Grid view"
         >
-          <LayoutGrid className="h-4 w-4" />
-        </button>
-        <button
+          <LayoutGrid className="size-3.5" />
+        </Button>
+        <Button
+          variant={viewMode === "list" ? "default" : "ghost"}
+          size="icon-xs"
           onClick={() => setViewMode("list")}
-          className={`p-2 transition ${
-            viewMode === "list"
-              ? "bg-blue-600 text-white"
-              : "bg-white text-gray-500 hover:bg-gray-50"
-          }`}
+          className="rounded-full"
           aria-label="List view"
         >
-          <List className="h-4 w-4" />
-        </button>
+          <List className="size-3.5" />
+        </Button>
       </div>
     </div>
   );
@@ -122,13 +121,14 @@ const BooksGallery = () => {
   };
 
   const scrollTopButton = showScrollTop && (
-    <button
+    <Button
       onClick={scrollToTop}
-      className="fixed bottom-6 right-6 z-50 p-3 rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-700 transition-all hover:scale-105"
+      size="icon"
+      className="fixed bottom-6 right-6 z-50 rounded-full shadow-lg"
       aria-label="Scroll to top"
     >
-      <ArrowUp className="h-5 w-5" />
-    </button>
+      <ArrowUp className="size-4" />
+    </Button>
   );
 
   if (isLoading) {
@@ -149,7 +149,7 @@ const BooksGallery = () => {
               {Array.from({ length: 12 }).map((_, i) => (
                 <div
                   key={i}
-                  className="rounded-xl bg-gray-200 animate-pulse mb-4"
+                  className="rounded-2xl bg-secondary animate-pulse mb-4"
                   style={{ height: `${200 + (i % 3) * 80}px` }}
                 />
               ))}
@@ -159,7 +159,7 @@ const BooksGallery = () => {
               {Array.from({ length: 6 }).map((_, i) => (
                 <div
                   key={i}
-                  className="rounded-xl bg-gray-200 animate-pulse h-40"
+                  className="rounded-2xl bg-secondary animate-pulse h-40"
                 />
               ))}
             </div>
@@ -194,7 +194,8 @@ const BooksGallery = () => {
 
         <div className="w-full flex justify-center">
           {!!displayBooks.length && (
-            <button
+            <Button
+              variant="outline"
               disabled={displayBooks.length === 40}
               onClick={() => {
                 setPaginiationIndex((prev: number) => {
@@ -203,14 +204,10 @@ const BooksGallery = () => {
                   return next;
                 });
               }}
-              className={`${
-                displayBooks.length === 40
-                  ? "opacity-50 pointer-events-none"
-                  : "hover:bg-gray-700 hover:text-gray-50"
-              } border border-gray-700 rounded-md px-3 py-2 mt-12 mb-6 transition-colors duration-200`}
+              className="rounded-full px-8 mt-10 mb-6"
             >
               {displayBooks.length === 40 ? "Max Results" : "Load More"}
-            </button>
+            </Button>
           )}
         </div>
       </div>

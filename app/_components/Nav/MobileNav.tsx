@@ -1,5 +1,6 @@
 import { signInWithGoogle, signOutAction } from "@/app/_lib/actions";
 import { auth } from "@/app/_lib/auth";
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -11,113 +12,102 @@ export default async function MobileNav({ publicUserID }: MobileNavProps) {
   const session = await auth();
 
   return (
-    <div className="md:hidden relative w-full">
-      {/* hidden checkbox for toggle state */}
+    <div className="md:hidden relative">
       <input type="checkbox" id="nav-toggle" className="hidden peer" />
 
-      {/* Navbar header with icons */}
-      <div className="flex justify-end items-center p-4">
-        {/* Hamburger icon (shown when unchecked) */}
-        <label
-          htmlFor="nav-toggle"
-          className="cursor-pointer p-2 text-gray-700 hover:text-gray-900 peer-checked:hidden"
+      <label
+        htmlFor="nav-toggle"
+        className="cursor-pointer p-2 text-foreground/70 hover:text-foreground rounded-lg transition-colors hover:bg-accent peer-checked:hidden"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M4 6h16M4 12h16M4 18h16"
-            />
-          </svg>
-        </label>
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M4 6h16M4 12h16M4 18h16"
+          />
+        </svg>
+      </label>
 
-        {/* Close icon (shown when checked) */}
-        <label
-          htmlFor="nav-toggle"
-          className="cursor-pointer p-2 text-gray-700 hover:text-gray-900 hidden peer-checked:flex"
+      <label
+        htmlFor="nav-toggle"
+        className="cursor-pointer p-2 text-foreground/70 hover:text-foreground rounded-lg transition-colors hover:bg-accent hidden peer-checked:flex"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </label>
-      </div>
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </label>
 
-      {/* Collapsible menu */}
-      <div className="hidden peer-checked:flex flex-col space-y-2 glass-card-solid rounded-b-lg shadow-lg p-4 absolute top-full left-0 w-full z-50">
-        <Link href="/" className="text-gray-600 hover:text-gray-900">
-          Home
-        </Link>
-        <Link href="/search" className="text-gray-600 hover:text-gray-900">
-          Search
-        </Link>
-        {publicUserID ? (
+      <div className="hidden peer-checked:flex flex-col gap-1 bg-white/90 backdrop-blur-xl border border-black/[0.06] rounded-2xl shadow-lg p-3 absolute top-full right-0 mt-2 w-56 z-50">
+        {[
+          { href: "/", label: "Home" },
+          { href: "/search", label: "Search" },
+          {
+            href: publicUserID
+              ? `/reading-list/${publicUserID}`
+              : "/reading-list",
+            label: publicUserID ? "My Reads" : "Reading List",
+          },
+        ].map(({ href, label }) => (
           <Link
-            href={`/reading-list/${publicUserID}`}
-            className="text-gray-600 hover:text-gray-900"
+            key={href}
+            href={href}
+            className="px-3 py-2 text-sm font-medium text-foreground/80 rounded-lg transition-colors hover:bg-accent hover:text-foreground"
           >
-            My Reads
+            {label}
           </Link>
-        ) : (
-          <Link
-            href="/reading-list"
-            className="text-gray-600 hover:text-gray-900"
-          >
-            Reading List
-          </Link>
-        )}
-        <div className="md:hidden mt-4 border-t border-gray-200 pt-4">
+        ))}
+
+        <div className="mt-2 pt-2 border-t border-border">
           {session?.user ? (
-            <div className="flex items-center space-x-3">
+            <div className="space-y-2">
               <Link
                 href={publicUserID ? `/profile/${publicUserID}` : "#"}
-                className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
+                className="flex items-center gap-2.5 px-3 py-2 rounded-lg transition-colors hover:bg-accent"
               >
                 <Image
                   src={session.user.image || "/default-avatar.png"}
                   alt={session.user.name || "User"}
-                  width={32}
-                  height={32}
-                  className="rounded-full"
+                  width={28}
+                  height={28}
+                  className="rounded-full ring-1 ring-black/[0.08]"
                 />
-                <span className="text-gray-700">
-                  Welcome, {session.user.name?.split(" ")[0]}
+                <span className="text-sm font-medium text-foreground">
+                  {session.user.name?.split(" ")[0]}
                 </span>
               </Link>
-              <form action={signOutAction} className="ml-auto">
-                <button
-                  type="submit"
-                  className="text-sm text-gray-600 hover:text-gray-900"
+              <form action={signOutAction}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full justify-start text-muted-foreground"
                 >
                   Sign Out
-                </button>
+                </Button>
               </form>
             </div>
           ) : (
             <form action={signInWithGoogle}>
-              <button
-                type="submit"
-                className="w-full text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
-              >
+              <Button size="sm" className="w-full">
                 Sign In
-              </button>
+              </Button>
             </form>
           )}
         </div>

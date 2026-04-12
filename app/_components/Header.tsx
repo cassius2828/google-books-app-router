@@ -1,6 +1,5 @@
-// components/Header.tsx
-
 import Image from "next/image";
+import Link from "next/link";
 import { auth } from "../_lib/auth";
 import { getPublicUserID } from "../_lib/service";
 import DesktopNav from "./Nav/DesktopNav";
@@ -15,15 +14,18 @@ export default async function Header() {
   }
 
   return (
-    <header className="glass-card-solid shadow-sm relative z-50 border-b border-blue-100/40">
-      <div className="container mx-auto flex items-center justify-between px-6 py-4">
-        <div className="text-2xl font-semibold text-gray-800 flex gap-2 items-center relative z-50">
-          LibrisList
-          <Image src={logo} alt="LibrisList Logo" width={40} height={40} />
-        </div>
-        {/* desktop */}
+    <header className="sticky top-0 z-50 w-full border-b border-black/[0.06] bg-white/70 backdrop-blur-xl backdrop-saturate-[180%]">
+      <div className="container mx-auto flex items-center justify-between px-6 py-3">
+        <Link
+          href="/"
+          className="flex items-center gap-2.5 transition-opacity hover:opacity-70"
+        >
+          <Image src={logo} alt="LibrisList Logo" width={36} height={36} />
+          <span className="text-xl font-semibold tracking-tight text-foreground">
+            LibrisList
+          </span>
+        </Link>
         <DesktopNav publicUserID={publicUserID || ""} />
-        {/* mobile */}
         <MobileNav publicUserID={publicUserID || ""} />
       </div>
     </header>

@@ -2,6 +2,8 @@ import { GalleryBookCardProps } from "@/app/_lib/types";
 import { convert } from "html-to-text";
 import Image from "next/image";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 export default function BookCard({
   id,
@@ -28,58 +30,56 @@ export default function BookCard({
 
   if (variant === "list") {
     return (
-      <div className="glass-card-solid rounded-xl shadow-sm hover:shadow-md transition overflow-hidden flex gap-4 p-4">
-        <div className="relative w-28 min-h-40 flex-shrink-0 rounded-lg overflow-hidden">
+      <div className="group glass-card-solid rounded-2xl overflow-hidden flex gap-4 p-4 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
+        <Link
+          href={`/books/${id}`}
+          className="relative w-24 min-h-36 flex-shrink-0 rounded-xl overflow-hidden"
+        >
           <Image
             src={coverSrc}
             alt={title}
             fill
-            sizes="112px"
-            className="object-cover object-top"
+            sizes="96px"
+            className="object-cover object-top transition-transform duration-300 group-hover:scale-105"
           />
-        </div>
+        </Link>
         <div className="flex-1 min-w-0 flex flex-col justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900 mb-1 truncate">
-              {title}
-            </h2>
-            <p className="text-sm text-gray-700 mb-1">
-              By {authors.join(", ")}
+            <Link href={`/books/${id}`}>
+              <h2 className="text-base font-semibold text-foreground mb-1 truncate group-hover:text-primary transition-colors">
+                {title}
+              </h2>
+            </Link>
+            <p className="text-sm text-muted-foreground mb-1.5">
+              {authors.join(", ")}
             </p>
-            <p className="text-gray-600 text-sm mb-2 line-clamp-3">
+            <p className="text-muted-foreground text-sm mb-2 line-clamp-2 leading-relaxed">
               {formattedDescription}
             </p>
             <div className="flex flex-wrap gap-1.5 mb-2">
-              {categories.map((cat: string) => (
-                <span
-                  key={cat}
-                  className="text-xs font-medium bg-blue-100 text-blue-800 px-2 py-0.5 rounded"
-                >
+              {categories.slice(0, 3).map((cat: string) => (
+                <Badge key={cat} variant="secondary" className="text-[11px]">
                   {cat}
-                </span>
+                </Badge>
               ))}
             </div>
           </div>
           <div className="flex items-center justify-between">
-            <div className="text-xs text-gray-500 space-x-3">
-              <span>{pageCount} pages</span>
-              <span>
-                {new Date(publishedDate).toLocaleDateString()}
-              </span>
+            <div className="text-xs text-muted-foreground space-x-3">
+              {pageCount > 0 && <span>{pageCount} pages</span>}
+              {publishedDate && (
+                <span>{new Date(publishedDate).toLocaleDateString()}</span>
+              )}
             </div>
             <div className="flex gap-2">
-              <Link
-                className="bg-blue-600 text-gray-50 px-3 py-1 rounded-md text-sm"
-                href={`/books/${id}`}
-              >
-                Details
-              </Link>
-              <Link
-                className="bg-blue-600 text-gray-50 px-3 py-1 rounded-md text-sm"
-                href={previewLink}
-              >
-                Preview
-              </Link>
+              <Button asChild variant="default" size="xs">
+                <Link href={`/books/${id}`}>Details</Link>
+              </Button>
+              <Button asChild variant="outline" size="xs">
+                <Link href={previewLink} target="_blank" rel="noopener noreferrer">
+                  Preview
+                </Link>
+              </Button>
             </div>
           </div>
         </div>
@@ -88,53 +88,55 @@ export default function BookCard({
   }
 
   return (
-    <div className="w-full glass-card-solid rounded-xl shadow-sm hover:shadow-md transition overflow-hidden">
-      <div className="relative aspect-square">
-        <Image
-          src={coverSrc}
-          alt={title}
-          fill
-          sizes="(max-width: 768px) 75vw, 20vw"
-          className="w-full object-cover object-top"
-        />
-      </div>
+    <div className="group glass-card-solid rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+      <Link href={`/books/${id}`} className="block">
+        <div className="relative aspect-square overflow-hidden">
+          <Image
+            src={coverSrc}
+            alt={title}
+            fill
+            sizes="(max-width: 768px) 75vw, 20vw"
+            className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
+          />
+        </div>
+      </Link>
       <div className="p-4">
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">{title}</h2>
-        <p className="text-sm text-gray-700 mb-2">By {authors.join(", ")}</p>
-        <p className="text-gray-600 mb-2">
+        <Link href={`/books/${id}`}>
+          <h2 className="text-base font-semibold text-foreground mb-1 truncate group-hover:text-primary transition-colors">
+            {title}
+          </h2>
+        </Link>
+        <p className="text-sm text-muted-foreground mb-2">
+          {authors.join(", ")}
+        </p>
+        <p className="text-sm text-muted-foreground mb-3 line-clamp-2 leading-relaxed">
           {formattedDescription.length > 100
             ? `${formattedDescription.slice(0, 100)}...`
             : formattedDescription}
         </p>
-        <div className="flex flex-wrap gap-2 mb-2">
-          {categories.map((cat: string) => (
-            <span
-              key={cat}
-              className="text-xs font-medium bg-blue-100 text-blue-800 px-2 py-1 rounded"
-            >
+        <div className="flex flex-wrap gap-1.5 mb-3">
+          {categories.slice(0, 3).map((cat: string) => (
+            <Badge key={cat} variant="secondary" className="text-[11px]">
               {cat}
-            </span>
+            </Badge>
           ))}
         </div>
-        <p className="text-sm text-gray-800">Page Count: {pageCount}</p>
-        <p className="text-sm text-gray-800">
-          Published Date: {new Date(publishedDate).toLocaleDateString()}
-        </p>
+        <div className="text-xs text-muted-foreground mb-3 space-x-2">
+          {pageCount > 0 && <span>{pageCount} pages</span>}
+          {publishedDate && (
+            <span>{new Date(publishedDate).toLocaleDateString()}</span>
+          )}
+        </div>
       </div>
-      <div className="flex justify-center gap-4 pb-4 ">
-        <Link
-          className="bg-blue-600 text-gray-50 px-3 py-1 rounded-md"
-          href={`/books/${id}`}
-        >
-          Book Details
-        </Link>
-
-        <Link
-          className="bg-blue-600 text-gray-50 px-3 py-1 rounded-md"
-          href={previewLink}
-        >
-          Preview link
-        </Link>
+      <div className="flex justify-center gap-3 px-4 pb-4">
+        <Button asChild size="sm" className="flex-1">
+          <Link href={`/books/${id}`}>Details</Link>
+        </Button>
+        <Button asChild variant="outline" size="sm" className="flex-1">
+          <Link href={previewLink} target="_blank" rel="noopener noreferrer">
+            Preview
+          </Link>
+        </Button>
       </div>
     </div>
   );

@@ -1,10 +1,17 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "./_components/Header";
 import Footer from "./_components/Footer";
 import { auth } from "./_lib/auth";
 import { getPublicUserID, checkNeedsOnboarding } from "./_lib/service";
 import GenreOnboardingModal from "./_components/Profile/GenreOnboardingModal";
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-sans",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -35,7 +42,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className="antialiased min-h-screen flex flex-col">
+      <body className={`${inter.variable} antialiased min-h-screen flex flex-col`}>
         <Header />
         {showOnboarding && <GenreOnboardingModal profileId={profileId} />}
         <main className="flex-1">{children}</main>

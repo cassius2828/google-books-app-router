@@ -79,15 +79,15 @@ export default function AdvancedSearchForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="max-w-6xl mx-auto p-6 glass-card-solid rounded-xl shadow-sm space-y-6 text-xs mt-4"
+      className="max-w-6xl mx-auto p-6 md:p-8 glass-card-solid rounded-2xl space-y-6 text-xs mt-4"
     >
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <h2 className="text-2xl font-bold text-gray-800">
-          LibrisList | Advanced Search 🔎
+        <h2 className="text-2xl font-bold text-foreground">
+          Advanced Search
         </h2>
         <Link
           href="/search"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-800 transition"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />

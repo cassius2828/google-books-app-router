@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ReadingListDBRow, Book } from "../_lib/types";
 import FavoriteStarButton from "./Profile/FavoriteStarButton";
-import StatusSelect from "./ReadingList/StatusSelect";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 function toBook(books: ReadingListDBRow["books"]): Book {
   return {
@@ -25,7 +26,22 @@ function toBook(books: ReadingListDBRow["books"]): Book {
   };
 }
 
-const ReadingListTableBody = async ({
+const statusConfig: Record<string, { label: string; className: string }> = {
+  to_read: {
+    label: "To Read",
+    className: "bg-blue-50 text-blue-700 border-blue-200",
+  },
+  reading: {
+    label: "Reading",
+    className: "bg-amber-50 text-amber-700 border-amber-200",
+  },
+  completed: {
+    label: "Completed",
+    className: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  },
+};
+
+const ReadingListCards = async ({
   readingList,
   favoriteBookIds = [],
 }: {
@@ -35,76 +51,89 @@ const ReadingListTableBody = async ({
   if (!Array.isArray(readingList)) {
     console.error("Invalid reading list format:", readingList);
     return (
-      <tbody className="divide-y divide-gray-200/60">
-        <tr>
-          <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
-            Unable to load reading list.
-          </td>
-        </tr>
-      </tbody>
+      <div className="text-center py-16 text-muted-foreground">
+        Unable to load reading list.
+      </div>
+    );
+  }
+
+  if (readingList.length === 0) {
+    return (
+      <div className="text-center py-16 text-muted-foreground">
+        <p className="text-lg font-medium mb-1">No books yet</p>
+        <p className="text-sm">
+          Search for books and add them to your reading list.
+        </p>
+      </div>
     );
   }
 
   return (
-    <tbody className="divide-y divide-gray-200/60">
-      {readingList?.map((item: ReadingListDBRow) => {
-        const { readingListId, books, status } = item;
-
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      {readingList.map((item: ReadingListDBRow) => {
+        const { books, status } = item;
         const isFavorite = favoriteBookIds.includes(books?.id);
         const bookForAction = toBook(books);
+        const statusInfo = statusConfig[status] ?? statusConfig.to_read;
 
         return (
-          <tr key={books?.id} className="hover:bg-gray-50">
-            <td className="px-3 py-4 whitespace-nowrap text-center">
-              <FavoriteStarButton
-                book={bookForAction}
-                isFavorite={isFavorite}
-              />
-            </td>
-            <td className="px-6 py-4 whitespace-nowrap">
-              <Image
-                src={
-                  books?.thumbnail ||
-                  process.env.NEXT_PUBLIC_IMG_NOT_FOUND ||
-                  ""
-                }
-                alt={books?.title}
-                width={50}
-                height={75}
-                className="object-cover rounded"
-              />
-            </td>
-            <td className="px-6 py-4 whitespace-nowrap">
-              <div className="text-sm font-medium text-gray-900">
-                {books?.title}
-              </div>
-              <div className="text-sm text-gray-500">
-                {books?.authors?.join(", ")}
-              </div>
-            </td>
-            <td className="hidden lg:block px-6 py-4 text-sm text-gray-500 line-clamp-2">
-              {books?.description.length > 200
-                ? books.description.slice(0, 200) + "..."
-                : books.description}
-            </td>
-            <td className="px-6 py-4 whitespace-nowrap">
-              <StatusSelect
-                readingListId={readingListId}
-                currentStatus={status}
-              />
-            </td>
-            <td className="px-6 py-4 whitespace-nowrap">
+          <div
+            key={books?.id}
+            className="group glass-card-solid rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
+          >
+            <div className="flex gap-4 p-5">
               <Link
                 href={`/books/${books.google_book_id}`}
-                className="text-sm bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition"
+                className="flex-shrink-0"
               >
-                View Book
+                <Image
+                  src={
+                    books?.thumbnail ||
+                    process.env.NEXT_PUBLIC_IMG_NOT_FOUND ||
+                    ""
+                  }
+                  alt={books?.title}
+                  width={80}
+                  height={120}
+                  className="rounded-lg object-cover shadow-sm transition-transform duration-300 group-hover:scale-[1.03]"
+                />
               </Link>
-            </td>
-          </tr>
+
+              <div className="flex-1 min-w-0 flex flex-col">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <h3 className="text-sm font-semibold text-foreground truncate">
+                      {books?.title}
+                    </h3>
+                    <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                      {books?.authors?.join(", ")}
+                    </p>
+                  </div>
+                  <FavoriteStarButton
+                    book={bookForAction}
+                    isFavorite={isFavorite}
+                  />
+                </div>
+
+                <div className="mt-auto pt-3 flex items-center justify-between">
+                  <Badge
+                    variant="outline"
+                    className={`text-[11px] font-medium ${statusInfo.className}`}
+                  >
+                    {statusInfo.label}
+                  </Badge>
+                  <Button asChild variant="ghost" size="xs">
+                    <Link href={`/books/${books.google_book_id}`}>
+                      View
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
         );
       })}
-    </tbody>
+    </div>
   );
 };
-export default ReadingListTableBody;
+export default ReadingListCards;
