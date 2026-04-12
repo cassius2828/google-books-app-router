@@ -85,10 +85,10 @@ export default async function ProfilePage({ params }: { params: Params }) {
   return (
     <div className="max-w-5xl mx-auto px-4 py-12 space-y-10">
       {/* Header */}
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 p-8 md:p-10 text-white">
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 p-8 md:p-10 text-white">
         <div className="absolute inset-0 opacity-15">
-          <div className="absolute top-4 left-4 w-40 h-40 bg-indigo-400 rounded-full blur-[80px]" />
-          <div className="absolute bottom-4 right-4 w-56 h-56 bg-violet-400 rounded-full blur-[100px]" />
+          <div className="absolute top-4 left-4 w-40 h-40 bg-blue-400 rounded-full blur-[80px]" />
+          <div className="absolute bottom-4 right-4 w-56 h-56 bg-blue-500 rounded-full blur-[100px]" />
         </div>
         <div className="relative z-10 flex flex-col sm:flex-row items-center gap-6 w-full">
           {profile.avatar ? (
@@ -109,7 +109,7 @@ export default async function ProfilePage({ params }: { params: Params }) {
               {profile.username}
             </h1>
             {memberSince && (
-              <p className="text-indigo-200/60 text-sm mt-1">
+              <p className="text-blue-200/60 text-sm mt-1">
                 Member since {memberSince}
               </p>
             )}

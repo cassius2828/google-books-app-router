@@ -201,10 +201,10 @@ export default function BookDetails() {
       </div>
 
       {/* Hero section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-indigo-950 to-slate-900 mt-4">
+      <section className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-blue-950 to-slate-900 mt-4">
         <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-10 left-1/4 w-96 h-96 bg-indigo-500 rounded-full blur-[120px]" />
-          <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-violet-500 rounded-full blur-[100px]" />
+          <div className="absolute top-10 left-1/4 w-96 h-96 bg-blue-500 rounded-full blur-[120px]" />
+          <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-blue-400 rounded-full blur-[100px]" />
         </div>
 
         <div className="relative z-10 container mx-auto px-6 py-16 md:py-24">
@@ -222,7 +222,7 @@ export default function BookDetails() {
             <div className="flex-1 text-center md:text-left">
               <h1 className="heading-display text-white mb-4">{title}</h1>
               {authors && (
-                <p className="text-lg text-indigo-200/80 mb-6">
+                <p className="text-lg text-blue-200/80 mb-6">
                   by {authors.join(", ")}
                 </p>
               )}

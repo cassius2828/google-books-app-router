@@ -9,10 +9,12 @@ import Masonry from "react-masonry-css";
 import { ArrowUp, LayoutGrid, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+const PAGE_SIZE = 12;
+
 const BooksGallery = () => {
   const { books, setBooks, breakpointColumnsObj } = useBooksContext();
-  const [paginationIndex, setPaginiationIndex] = useState<number>(1);
-  const [displayBooks, setDisplayBooks] = useState<Book[]>([]);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [totalItems, setTotalItems] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -42,10 +44,12 @@ const BooksGallery = () => {
         if (cancelled) return;
         const data = response.data;
         if (data) {
-          setBooks(data.items);
-          setDisplayBooks(data.items.slice(0, 12));
+          setBooks(data.items || []);
+          setTotalItems(data.totalItems || 0);
+          setVisibleCount(PAGE_SIZE);
         } else {
           setBooks([]);
+          setTotalItems(0);
         }
       } finally {
         if (!cancelled) setIsLoading(false);
@@ -57,19 +61,33 @@ const BooksGallery = () => {
     };
   }, [query]);
 
-  const calculatePagination = (index: number, array: Book[]) => {
-    const num = index * 12;
-    const num2 = num + 12;
-    setDisplayBooks(array.slice(0, num2));
+  const displayBooks = books.slice(0, visibleCount);
+  const hasMore = visibleCount < books.length;
+
+  const handleLoadMore = () => {
+    setVisibleCount((prev) => Math.min(prev + PAGE_SIZE, books.length));
   };
 
-  useEffect(() => {
-    calculatePagination(paginationIndex, books);
-  }, []);
-
   const viewToggle = (
-    <div className="flex justify-end mb-6">
-      <div className="inline-flex rounded-full p-1 bg-secondary/80 backdrop-blur-sm">
+    <div className="flex items-center justify-between mb-6">
+      {books.length > 0 && (
+        <p className="text-sm text-muted-foreground">
+          Showing{" "}
+          <span className="font-medium text-foreground">
+            {displayBooks.length}
+          </span>{" "}
+          of{" "}
+          <span className="font-medium text-foreground">{books.length}</span>
+          {" "}loaded
+          {totalItems > books.length && (
+            <span className="text-muted-foreground/70">
+              {" "}
+              ({totalItems.toLocaleString()} found)
+            </span>
+          )}
+        </p>
+      )}
+      <div className="inline-flex rounded-full p-1 bg-secondary/80 backdrop-blur-sm ml-auto">
         <Button
           variant={viewMode === "grid" ? "default" : "ghost"}
           size="icon-xs"
@@ -193,20 +211,14 @@ const BooksGallery = () => {
         )}
 
         <div className="w-full flex justify-center">
-          {!!displayBooks.length && (
+          {displayBooks.length > 0 && (
             <Button
               variant="outline"
-              disabled={displayBooks.length === 40}
-              onClick={() => {
-                setPaginiationIndex((prev: number) => {
-                  const next = prev + 1;
-                  calculatePagination(next, books);
-                  return next;
-                });
-              }}
+              disabled={!hasMore}
+              onClick={handleLoadMore}
               className="rounded-full px-8 mt-10 mb-6"
             >
-              {displayBooks.length === 40 ? "Max Results" : "Load More"}
+              {hasMore ? "Load More" : "All Results Loaded"}
             </Button>
           )}
         </div>
