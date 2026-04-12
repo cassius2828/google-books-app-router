@@ -1,9 +1,7 @@
-// app/api/books/volumes/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
-
-const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY!;
-const BASE_VOL_URL = process.env.BASE_VOL_URL!;
+import { GoogleBooksVolume } from "@/app/_lib/types";
+import { GOOGLE_API_KEY, BASE_VOL_URL } from "@/app/_lib/google-books";
 
 export async function GET(
   request: NextRequest,
@@ -14,7 +12,7 @@ export async function GET(
   const googleUrl = `${BASE_VOL_URL}/${volumeId}?key=${GOOGLE_API_KEY}`;
 
   try {
-    const { data } = await axios.get(googleUrl);
+    const { data } = await axios.get<GoogleBooksVolume>(googleUrl);
     return NextResponse.json([data]);
   } catch (err) {
     console.error(err);

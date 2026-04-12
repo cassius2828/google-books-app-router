@@ -1,12 +1,8 @@
 import { AdvancedSearchParams } from "./types";
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+export { cn } from "@/lib/utils";
 
-export const buildAdvancedSearchUrl = (params: AdvancedSearchParams) => {
+export const buildAdvancedSearchUrl = (params: AdvancedSearchParams): string => {
   if (params.volumeId.value) {
     return `${encodeURIComponent(params.volumeId.value)}`;
   }
@@ -66,7 +62,7 @@ export const buildAdvancedSearchUrl = (params: AdvancedSearchParams) => {
   return sp.toString();
 };
 
-export const isInAppBrowser = () => {
+export const isInAppBrowser = (): boolean => {
   const ua = navigator.userAgent;
   return /FBAN|FBAV|Instagram|LinkedIn|Line|Twitter/i.test(ua);
 };

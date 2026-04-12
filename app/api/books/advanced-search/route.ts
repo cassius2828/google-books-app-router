@@ -4,16 +4,21 @@ import {
   GoogleBooksVolumesResponse,
   GoogleBooksVolume,
 } from "@/app/_lib/types";
-
-const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY!;
-const BASE_VOL_URL = process.env.BASE_VOL_URL!;
-const API_MAX_RESULTS = 40;
+import {
+  GOOGLE_API_KEY,
+  BASE_VOL_URL,
+  API_MAX_RESULTS,
+} from "@/app/_lib/google-books";
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const params = new URLSearchParams(url.search);
 
-  const requestedMax = parseInt(params.get("maxResults") || "10", 10);
+  const MAX_ALLOWED = 100;
+  const requestedMax = Math.min(
+    parseInt(params.get("maxResults") || "10", 10),
+    MAX_ALLOWED
+  );
   const startIndex = parseInt(params.get("startIndex") || "0", 10);
 
   try {

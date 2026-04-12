@@ -23,6 +23,7 @@ export type Book = {
 };
 
 export interface VolumeInfo {
+  id?: string;
   title: string;
   authors: string[];
   publisher: string;

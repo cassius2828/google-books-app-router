@@ -1,4 +1,5 @@
 import { AdvancedSearchInputParams } from "@/app/_lib/types";
+import { SEARCH_INPUT_CLASS } from "./inputStyles";
 
 const InputQueriesContainer = ({ params, handleChange }: AdvancedSearchInputParams) => {
   const fields = [
@@ -28,7 +29,7 @@ const InputQueriesContainer = ({ params, handleChange }: AdvancedSearchInputPara
             value={params[field.name].value}
             onChange={handleChange}
             placeholder="Search terms..."
-            className="flex h-9 w-full rounded-lg border border-border bg-background px-3 py-1 text-sm text-foreground shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className={SEARCH_INPUT_CLASS}
           />
         </div>
       ))}

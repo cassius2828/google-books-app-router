@@ -62,7 +62,7 @@ export default function BookDetails() {
     if (!bookId) return;
     async function load() {
       try {
-        const { data: bookData } = await axios.get(`/api/books/${bookId}`);
+        const { data: bookData } = await axios.get<Book>(`/api/books/${bookId}`);
         setBook(bookData);
         const bookDbId = bookData?.volumeInfo?.id;
         if (bookDbId) {
@@ -164,7 +164,7 @@ export default function BookDetails() {
       if (result?.newNoteError) {
         toast.error(result.newNoteError);
       } else {
-        const saved = formData.get("content") as string;
+        const saved = formData.get("content")?.toString() ?? "";
         setNote(saved);
         setDraftNote(saved);
         setIsEditingNote(false);

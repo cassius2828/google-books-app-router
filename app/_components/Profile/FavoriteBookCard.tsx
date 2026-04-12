@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useTransition } from "react";
 import { removeFavoriteBook } from "@/app/_lib/actions";
 import { FavoriteBook } from "@/app/_lib/types";
+import { resolveCoverFromRecord } from "@/app/_lib/coverImage";
 import toast from "react-hot-toast";
 import { X } from "lucide-react";
 
@@ -18,8 +19,7 @@ export default function FavoriteBookCard({
   isOwner,
 }: FavoriteBookCardProps) {
   const [isPending, startTransition] = useTransition();
-  const imgSrc =
-    book.cover_image || book.thumbnail || process.env.NEXT_PUBLIC_IMG_NOT_FOUND || "";
+  const imgSrc = resolveCoverFromRecord(book.cover_image, book.thumbnail);
 
   const handleRemove = () => {
     startTransition(async () => {

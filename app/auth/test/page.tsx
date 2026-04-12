@@ -1,7 +1,10 @@
+import { notFound } from "next/navigation";
 import { connectDB } from "@/app/_lib/db";
 import { UserModel } from "@/app/_lib/models";
 
 export default async function Page() {
+  if (process.env.NODE_ENV !== "development") notFound();
+
   try {
     await connectDB();
     const user = await UserModel.findOne().select("_id").lean();

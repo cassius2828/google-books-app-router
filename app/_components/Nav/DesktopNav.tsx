@@ -1,27 +1,21 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { Session } from "next-auth";
 
 import { signInWithGoogle, signOutAction } from "@/app/_lib/actions";
-import { auth } from "@/app/_lib/auth";
 import { Button } from "@/components/ui/button";
+import { NAV_LINKS } from "./navLinks";
 
-const DesktopNav = async ({ publicUserID }: { publicUserID: string }) => {
-  const session = await auth();
+interface DesktopNavProps {
+  publicUserID: string;
+  session: Session | null;
+}
 
+const DesktopNav = ({ publicUserID, session }: DesktopNavProps) => {
   return (
     <>
       <nav className="hidden md:flex items-center gap-1">
-        {[
-          { href: "/", label: "Home" },
-          { href: "/search", label: "Search" },
-          { href: "/users", label: "Community" },
-          {
-            href: publicUserID
-              ? `/reading-list/${publicUserID}`
-              : "/reading-list",
-            label: publicUserID ? "My Reads" : "Reading List",
-          },
-        ].map(({ href, label }) => (
+        {NAV_LINKS(publicUserID).map(({ href, label }) => (
           <Link
             key={href}
             href={href}
@@ -40,7 +34,7 @@ const DesktopNav = async ({ publicUserID }: { publicUserID: string }) => {
             >
               <Image
                 src={session.user.image || "/default-avatar.png"}
-                alt={session.user.name!}
+                alt={session.user.name ?? "User"}
                 width={32}
                 height={32}
                 className="rounded-full ring-1 ring-black/[0.08]"

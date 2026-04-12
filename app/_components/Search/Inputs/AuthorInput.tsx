@@ -1,4 +1,5 @@
 import { AdvancedSearchInputParams } from "@/app/_lib/types";
+import { SEARCH_INPUT_CLASS } from "./inputStyles";
 
 const AuthorInput = ({ params, handleChange }: AdvancedSearchInputParams) => {
   return (
@@ -16,7 +17,7 @@ const AuthorInput = ({ params, handleChange }: AdvancedSearchInputParams) => {
         value={params.author.value}
         onChange={handleChange}
         placeholder="Author name"
-        className="flex h-9 w-full rounded-lg border border-border bg-background px-3 py-1 text-sm text-foreground shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className={SEARCH_INPUT_CLASS}
       />
     </div>
   );

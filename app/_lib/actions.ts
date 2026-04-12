@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import { auth, signIn, signOut } from "./auth";
 import { getPublicUserID, postAddBookToDB } from "./service";
 import { Book, ReadingListStatus } from "./types";
-import { connectDB } from "./db";
 import { ReadingListModel, NoteModel, UserModel } from "./models";
 import { GENRES } from "./genres";
 
@@ -30,8 +29,6 @@ export const addBookToListAction = async (
 
   const publicUserID = await getPublicUserID(session.user.email);
   const bookFromDB = await postAddBookToDB(book);
-
-  await connectDB();
 
   const existingEntry = await ReadingListModel.findOne({
     book_id: bookFromDB._id,
@@ -71,8 +68,6 @@ export const removeBookFromListAction = async (bookId: string) => {
 
   const userId = await getPublicUserID(session?.user?.email || "");
 
-  await connectDB();
-
   const result = await ReadingListModel.deleteOne({
     user_id: userId,
     book_id: bookId,
@@ -87,12 +82,18 @@ export const removeBookFromListAction = async (bookId: string) => {
 
 export const addNotesToBook = async (formData: FormData) => {
   const session = await auth();
-  if (!session) throw new Error("Must be signed in to add notes to a book");
+  if (!session?.user?.email)
+    throw new Error("Must be signed in to add notes to a book");
 
   const content = formData.get("content")?.toString() ?? "";
   const readingListId = formData.get("readingListId")?.toString() ?? "";
 
-  await connectDB();
+  const userId = await getPublicUserID(session.user.email);
+
+  const entry = await ReadingListModel.findById(readingListId).lean();
+  if (!entry || entry.user_id.toString() !== userId) {
+    return { newNoteError: "Not authorized to add notes to this entry" };
+  }
 
   const existingNote = await NoteModel.findOne({
     reading_list_id: readingListId,
@@ -126,7 +127,6 @@ export const updateFavoriteGenres = async (genres: string[]) => {
     GENRES.includes(g as typeof GENRES[number])
   );
   const userId = await getPublicUserID(session.user.email);
-  await connectDB();
   await UserModel.findByIdAndUpdate(userId, { favoriteGenres: valid });
   revalidatePath(`/profile/${userId}`);
   return { success: true };
@@ -138,7 +138,6 @@ export const toggleFavoriteBook = async (book: Book) => {
 
   const userId = await getPublicUserID(session.user.email);
   const bookFromDB = await postAddBookToDB(book);
-  await connectDB();
 
   const user = await UserModel.findById(userId).lean();
   if (!user) return { error: "User not found" };
@@ -167,7 +166,6 @@ export const removeFavoriteBook = async (bookObjectId: string) => {
   if (!session?.user?.email) return { error: "Not signed in" };
 
   const userId = await getPublicUserID(session.user.email);
-  await connectDB();
   await UserModel.findByIdAndUpdate(userId, {
     $pull: { favoriteBooks: bookObjectId },
   });
@@ -180,7 +178,6 @@ export const toggleProfileVisibility = async () => {
   if (!session?.user?.email) return { error: "Not signed in" };
 
   const userId = await getPublicUserID(session.user.email);
-  await connectDB();
   const user = await UserModel.findById(userId);
   if (!user) return { error: "User not found" };
 
@@ -195,8 +192,16 @@ export const putChangeBookStatusAction = async (
   id: string
 ) => {
   const session = await auth();
+  if (!session?.user?.email) {
+    return { error: "Not signed in" };
+  }
 
-  await connectDB();
+  const userId = await getPublicUserID(session.user.email);
+
+  const entry = await ReadingListModel.findById(id).lean();
+  if (!entry || entry.user_id.toString() !== userId) {
+    return { error: "Not authorized to update this entry" };
+  }
 
   const result = await ReadingListModel.findByIdAndUpdate(id, { status });
 
@@ -207,5 +212,5 @@ export const putChangeBookStatusAction = async (
     };
   }
 
-  revalidatePath(`/reading-list/${session?.user?.id}`);
+  revalidatePath(`/reading-list/${userId}`);
 };

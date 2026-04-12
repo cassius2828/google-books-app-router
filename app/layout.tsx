@@ -45,7 +45,7 @@ export default async function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} antialiased min-h-screen flex flex-col`}>
         <TooltipProvider>
-          <Header />
+          <Header session={session} profileId={profileId} />
           {showOnboarding && <GenreOnboardingModal profileId={profileId} />}
           <main className="flex-1">{children}</main>
           <Footer />

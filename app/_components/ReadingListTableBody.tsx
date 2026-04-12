@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ReadingListDBRow, Book } from "../_lib/types";
+import { resolveCoverFromRecord } from "../_lib/coverImage";
 import FavoriteStarButton from "./Profile/FavoriteStarButton";
 import StatusSelect from "./ReadingList/StatusSelect";
 import { Button } from "@/components/ui/button";
@@ -65,11 +66,7 @@ const ReadingListCards = ({
                   className="flex-shrink-0"
                 >
                   <Image
-                    src={
-                      books?.thumbnail ||
-                      process.env.NEXT_PUBLIC_IMG_NOT_FOUND ||
-                      ""
-                    }
+                    src={resolveCoverFromRecord(books?.cover_image, books?.thumbnail)}
                     alt={books?.title}
                     width={48}
                     height={72}
@@ -128,11 +125,7 @@ const ReadingListCards = ({
                 className="flex-shrink-0"
               >
                 <Image
-                  src={
-                    books?.thumbnail ||
-                    process.env.NEXT_PUBLIC_IMG_NOT_FOUND ||
-                    ""
-                  }
+                  src={resolveCoverFromRecord(books?.cover_image, books?.thumbnail)}
                   alt={books?.title}
                   width={80}
                   height={120}

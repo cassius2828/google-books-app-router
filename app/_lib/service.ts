@@ -3,10 +3,12 @@ import { convert } from "html-to-text";
 import {
   Book,
   ReadingListDBRow,
+  ReadingListStatus,
   ReadingListStatusAndId,
   UserProfile,
   PublicUserResult,
   FavoriteBook,
+  GoogleBooksVolume,
   GoogleBooksVolumesResponse,
 } from "./types";
 import { auth } from "./auth";
@@ -19,16 +21,17 @@ import {
   type BookDoc,
 } from "./models";
 import { isValidReadingListLookupId } from "./readingListIds";
-
-const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
-const BASE_VOL_URL = process.env.BASE_VOL_URL;
-const BASE_VOL_URL_BY_ID = `https://www.googleapis.com/books/v1/volumes/`;
+import {
+  GOOGLE_API_KEY,
+  BASE_VOL_URL,
+  BASE_VOL_URL_BY_ID,
+} from "./google-books";
 
 export const getBooksByTitle = async (
   query: string,
   startIndex = 0,
   maxResults = 24
-) => {
+): Promise<GoogleBooksVolumesResponse> => {
   try {
     const response = await axios.get<GoogleBooksVolumesResponse>(
       `${BASE_VOL_URL}?q=${query}&key=${GOOGLE_API_KEY}&maxResults=${maxResults}&startIndex=${startIndex}`
@@ -40,11 +43,12 @@ export const getBooksByTitle = async (
   }
 };
 
-export const getBookById = async (id: string) => {
+export const getBookById = async (id: string): Promise<GoogleBooksVolume> => {
   try {
     const existingBook = await getBookFromDB(id);
     if (existingBook) {
       return {
+        id: existingBook.google_book_id,
         volumeInfo: {
           id: existingBook._id.toString(),
           title: existingBook.title,
@@ -65,7 +69,7 @@ export const getBookById = async (id: string) => {
       };
     }
 
-    const response = await axios.get(
+    const response = await axios.get<GoogleBooksVolume>(
       `${BASE_VOL_URL_BY_ID}${id}?key=${GOOGLE_API_KEY}`
     );
     return response.data;
@@ -98,7 +102,7 @@ export const getPublicUserID = async (email: string): Promise<string> => {
   return newUser._id.toString();
 };
 
-export const postAddBookToDB = async (book: Book) => {
+export const postAddBookToDB = async (book: Book): Promise<BookDoc> => {
   if (!book) {
     throw new Error("Missing Book");
   }
@@ -156,7 +160,7 @@ export const getBookFromDB = async (
 
 export const getUserReadingList = async (
   userId: string,
-  statusFilter?: string
+  statusFilter?: ReadingListStatus | "all"
 ): Promise<ReadingListDBRow[]> => {
   if (!userId) {
     return [];
@@ -342,9 +346,11 @@ export const searchPublicUsers = async (
 ): Promise<PublicUserResult[]> => {
   await connectDB();
 
+  const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
   const users = await UserModel.find({
     isProfilePublic: { $ne: false },
-    name: { $regex: query, $options: "i" },
+    name: { $regex: escaped, $options: "i" },
   })
     .limit(20)
     .lean();
@@ -369,7 +375,7 @@ export const searchPublicUsers = async (
   }));
 };
 
-export const getNote = async (readingListId: string) => {
+export const getNote = async (readingListId: string): Promise<string> => {
   await connectDB();
 
   const note = await NoteModel.findOne({

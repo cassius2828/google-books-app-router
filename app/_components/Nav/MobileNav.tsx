@@ -1,16 +1,16 @@
 import { signInWithGoogle, signOutAction } from "@/app/_lib/actions";
-import { auth } from "@/app/_lib/auth";
 import { Button } from "@/components/ui/button";
+import type { Session } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
+import { NAV_LINKS } from "./navLinks";
 
 interface MobileNavProps {
-  publicUserID?: string;
+  publicUserID: string;
+  session: Session | null;
 }
 
-export default async function MobileNav({ publicUserID }: MobileNavProps) {
-  const session = await auth();
-
+export default function MobileNav({ publicUserID, session }: MobileNavProps) {
   return (
     <div className="md:hidden relative">
       <input type="checkbox" id="nav-toggle" className="hidden peer" />
@@ -56,17 +56,7 @@ export default async function MobileNav({ publicUserID }: MobileNavProps) {
       </label>
 
       <div className="hidden peer-checked:flex flex-col gap-1 bg-white/90 backdrop-blur-xl border border-black/[0.06] rounded-2xl shadow-lg p-3 absolute top-full right-0 mt-2 w-56 z-50">
-        {[
-          { href: "/", label: "Home" },
-          { href: "/search", label: "Search" },
-          { href: "/users", label: "Community" },
-          {
-            href: publicUserID
-              ? `/reading-list/${publicUserID}`
-              : "/reading-list",
-            label: publicUserID ? "My Reads" : "Reading List",
-          },
-        ].map(({ href, label }) => (
+        {NAV_LINKS(publicUserID).map(({ href, label }) => (
           <Link
             key={href}
             href={href}
@@ -85,7 +75,7 @@ export default async function MobileNav({ publicUserID }: MobileNavProps) {
               >
                 <Image
                   src={session.user.image || "/default-avatar.png"}
-                  alt={session.user.name || "User"}
+                  alt={session.user.name ?? "User"}
                   width={28}
                   height={28}
                   className="rounded-full ring-1 ring-black/[0.08]"

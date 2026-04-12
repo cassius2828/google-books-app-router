@@ -10,7 +10,11 @@ export async function GET(request: NextRequest) {
   try {
     const users = await searchPublicUsers(q);
     return NextResponse.json(users);
-  } catch {
-    return NextResponse.json([], { status: 500 });
+  } catch (err) {
+    console.error("GET /api/users/search error:", err);
+    return NextResponse.json(
+      { error: "Failed to search users" },
+      { status: 500 }
+    );
   }
 }

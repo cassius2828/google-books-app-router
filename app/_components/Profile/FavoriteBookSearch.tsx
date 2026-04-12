@@ -5,6 +5,7 @@ import { useDebounce } from "use-debounce";
 import axios from "axios";
 import Image from "next/image";
 import { Book } from "@/app/_lib/types";
+import { resolveCoverImageSrc } from "@/app/_lib/coverImage";
 import { toggleFavoriteBook } from "@/app/_lib/actions";
 import toast, { Toaster } from "react-hot-toast";
 import { Search, Plus, X } from "lucide-react";
@@ -86,10 +87,7 @@ export default function FavoriteBookSearch() {
             </p>
           )}
           {results.map((book) => {
-            const thumb =
-              book.volumeInfo.imageLinks?.thumbnail ||
-              book.volumeInfo.imageLinks?.smallThumbnail ||
-              "";
+            const thumb = resolveCoverImageSrc(book.volumeInfo.imageLinks);
             return (
               <div
                 key={book.id}

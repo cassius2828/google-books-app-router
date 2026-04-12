@@ -1,4 +1,5 @@
 import { GalleryBookCardProps } from "@/app/_lib/types";
+import { resolveCoverImageSrc } from "@/app/_lib/coverImage";
 import { convert } from "html-to-text";
 import Image from "next/image";
 import Link from "next/link";
@@ -17,15 +18,7 @@ export default function BookCard({
   publishedDate,
   variant = "grid",
 }: GalleryBookCardProps & { variant?: "grid" | "list" }) {
-  const coverSrc =
-    imageLinks?.cover_image ??
-    imageLinks?.extraLarge ??
-    imageLinks?.large ??
-    imageLinks?.medium ??
-    imageLinks?.small ??
-    imageLinks?.thumbnail ??
-    imageLinks?.smallThumbnail ??
-    process.env.NEXT_PUBLIC_IMG_NOT_FOUND!;
+  const coverSrc = resolveCoverImageSrc(imageLinks);
   const formattedDescription = convert(description);
 
   if (variant === "list") {
