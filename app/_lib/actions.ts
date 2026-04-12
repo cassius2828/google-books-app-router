@@ -48,7 +48,7 @@ export const addBookToListAction = async (
   const newEntry = await ReadingListModel.create({
     user_id: publicUserID,
     book_id: bookFromDB._id,
-    status: "reading",
+    status: "to_read",
   });
 
   if (!newEntry) {

@@ -1,8 +1,17 @@
+import { redirect } from "next/navigation";
+import { auth } from "../_lib/auth";
+import { getPublicUserID } from "../_lib/service";
 import PreviewImagesDesktop from "../_components/ReadingList/PreviewImagesDesktop";
 import PreviewImagesMobile from "../_components/ReadingList/PreviewImagesMobile";
 import { signInWithGoogle } from "../_lib/actions";
 
-export default function ReadingListOverviewPage() {
+export default async function ReadingListOverviewPage() {
+  const session = await auth();
+  if (session?.user?.email) {
+    const userId = await getPublicUserID(session.user.email);
+    redirect(`/reading-list/${userId}`);
+  }
+
   return (
     <div className="container mx-auto px-6 py-12 space-y-16 max-w-5xl">
       {/* Hero Section */}

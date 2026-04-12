@@ -169,6 +169,7 @@ export const getUserReadingList = async (
 
         const book = entry.book_id as unknown as BookDoc;
         return {
+          readingListId: entry._id.toString(),
           status: entry.status,
           books: {
             id: book._id.toString(),

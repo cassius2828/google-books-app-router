@@ -71,8 +71,9 @@ export type GalleryBookCardProps = {
 ///////////////////////////
 
 export interface ReadingListDBRow {
+  readingListId: string;
   status: "to_read" | "reading" | "completed";
-  books: BookRecord; // nested under the `books` key by PostgREST
+  books: BookRecord;
 }
 export interface ReadingListStatusAndId {
   id: string;
