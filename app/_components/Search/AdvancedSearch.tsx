@@ -9,16 +9,16 @@ const AdvancedSearchResults = lazy(() => import("./AdvancedSearchResults"));
 export default function AdvancedSearch() {
   const { books, setBooks } = useBooksContext();
 
-  // reset books when user navigates to this page
   useEffect(() => {
     setBooks([]);
   }, []);
+
   return (
-    <>
+    <div className="section-padding">
       <AdvancedSearchForm />
       <Suspense fallback={<Loader />}>
         <AdvancedSearchResults books={books} />
       </Suspense>
-    </>
+    </div>
   );
 }

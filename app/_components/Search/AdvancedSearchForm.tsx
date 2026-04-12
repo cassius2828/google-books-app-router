@@ -1,15 +1,17 @@
 "use client";
 import axios from "axios";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 import { useBooksContext } from "@/app/_context/BooksContext";
-import { Book } from "@/app/_lib/types";
+import { AdvancedSearchParams, Book } from "@/app/_lib/types";
 import { buildAdvancedSearchUrl } from "@/app/_lib/utils";
 
 import AuthorInput from "./Inputs/AuthorInput";
 import ContentRadios from "./Inputs/ContentRadios";
 import FilterContentSelect from "./Inputs/FilterContentSelect";
 import InputQueriesContainer from "./Inputs/InputQueriesContainer";
+import IsbnInput from "./Inputs/IsbnInput";
 import LanguageSelect from "./Inputs/LanguageSelect";
 import MaxResultsSelect from "./Inputs/MaxResultsSelect";
 import OrderByRadios from "./Inputs/OrderByRadios";
@@ -18,20 +20,39 @@ import SubjectInputContainer from "./Inputs/Subjects/SubjectInputContainer";
 import TitleInput from "./Inputs/TitleInput";
 import VolumeIdInput from "./Inputs/VolumeIdInput";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import BtnContainer from "./Buttons/BtnContainer";
+import { Separator } from "@/components/ui/separator";
+
+const hasAnyQueryValue = (params: AdvancedSearchParams): boolean => {
+  const queryFields: (keyof AdvancedSearchParams)[] = [
+    "fullText",
+    "exactPhrase",
+    "includesText",
+    "excludeText",
+    "author",
+    "title",
+    "publisher",
+    "isbn",
+    "allSubjects",
+    "eitherSubject",
+    "volumeId",
+  ];
+  return queryFields.some((key) => params[key].value.trim() !== "");
+};
 
 export default function AdvancedSearchForm() {
-  // books context
   const {
     setBooks,
     advancedSearchFormData,
     setAdvancedSearchFormData,
     scrollToSection,
     advancedSearchResultsRef,
+    setAdvancedSearchTotalItems,
+    setAdvancedSearchLastQuery,
   } = useBooksContext();
-  // transition
   const [isPendingBooks, startBooksTransition] = useTransition();
+  const [validationError, setValidationError] = useState("");
 
   const fetchBooks = async () => {
     const { volumeId } = advancedSearchFormData;
@@ -40,31 +61,30 @@ export default function AdvancedSearchForm() {
     const query = buildAdvancedSearchUrl(advancedSearchFormData);
 
     try {
-      const { data: resp } = await axios.get<Book[]>(
-        // solves issue of leading "?" when searching for vol by id
+      const { data: resp } = await axios.get(
         `/api/books/advanced-search${isVolumeIDSearch ? "/" : "?"}${query}`
       );
-      setBooks(resp);
-      // scroll to results
+      const items: Book[] = resp.items ?? resp;
+      const totalItems: number = resp.totalItems ?? items.length;
+      setBooks(items);
+      setAdvancedSearchTotalItems(totalItems);
+      setAdvancedSearchLastQuery(query);
       scrollToSection(advancedSearchResultsRef);
     } catch (err) {
       console.error(err);
       setBooks([]);
+      setAdvancedSearchTotalItems(0);
     }
   };
-
-  ///////////////////////////
-  // Handlers
-  ///////////////////////////
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+    setValidationError("");
     setAdvancedSearchFormData((prev) => ({
       ...prev,
       [name]: {
-        // take whatever was in prev[name] (the whole SearchParam)
         ...prev[name as keyof typeof prev],
         value,
       },
@@ -73,91 +93,131 @@ export default function AdvancedSearchForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!hasAnyQueryValue(advancedSearchFormData)) {
+      setValidationError("Please fill in at least one search field.");
+      return;
+    }
+    setValidationError("");
     startBooksTransition(async () => await fetchBooks());
   };
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="max-w-6xl mx-auto p-6 md:p-8 glass-card-solid rounded-2xl space-y-6 text-xs mt-4"
+      className="max-w-5xl mx-auto mt-8 md:mt-12 space-y-8"
     >
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <h2 className="text-2xl font-bold text-foreground">
-          Advanced Search
-        </h2>
+        <h1 className="heading-section text-foreground">Advanced Search</h1>
         <Link
           href="/search"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
+          <ArrowLeft className="size-4" />
           Back to Search
         </Link>
       </div>
-      {/* top section */}
-      <div className="flex flex-col md:flex-row items-start max-w-4xl">
-        <span className="md:mx-5 mb-5 text-sm w-32 font-bold mt-3">
-          Find results
-        </span>
+
+      {/* Find results section */}
+      <div className="glass-card-solid rounded-2xl p-6 md:p-8 space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider">
+            Find results
+          </h2>
+          <MaxResultsSelect
+            params={advancedSearchFormData}
+            handleChange={handleChange}
+          />
+        </div>
 
         <InputQueriesContainer
           params={advancedSearchFormData}
           handleChange={handleChange}
         />
-
-        <MaxResultsSelect
-          params={advancedSearchFormData}
-          handleChange={handleChange}
-        />
       </div>
-      {/* bottom section */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 max-w-4xl gap-4">
-        <ContentRadios
-          params={advancedSearchFormData}
-          handleChange={handleChange}
-        />
 
-        <LanguageSelect
-          params={advancedSearchFormData}
-          handleChange={handleChange}
-        />
+      {/* Narrow your results section */}
+      <div className="glass-card-solid rounded-2xl p-6 md:p-8 space-y-6">
+        <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider">
+          Narrow your results by
+        </h2>
 
-        <OrderByRadios
-          params={advancedSearchFormData}
-          handleChange={handleChange}
-        />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <TitleInput
+            params={advancedSearchFormData}
+            handleChange={handleChange}
+          />
+          <AuthorInput
+            params={advancedSearchFormData}
+            handleChange={handleChange}
+          />
+          <PublisherInput
+            params={advancedSearchFormData}
+            handleChange={handleChange}
+          />
+          <IsbnInput
+            params={advancedSearchFormData}
+            handleChange={handleChange}
+          />
+          <LanguageSelect
+            params={advancedSearchFormData}
+            handleChange={handleChange}
+          />
+        </div>
 
-        <FilterContentSelect
-          params={advancedSearchFormData}
-          handleChange={handleChange}
-        />
+        <Separator />
 
-        <VolumeIdInput
-          params={advancedSearchFormData}
-          handleChange={handleChange}
-        />
-
-        <AuthorInput
-          params={advancedSearchFormData}
-          handleChange={handleChange}
-        />
-
-        <TitleInput
-          params={advancedSearchFormData}
-          handleChange={handleChange}
-        />
-
-        <PublisherInput
-          params={advancedSearchFormData}
-          handleChange={handleChange}
-        />
         <SubjectInputContainer
           handleChange={handleChange}
           params={advancedSearchFormData}
           setParams={setAdvancedSearchFormData}
         />
       </div>
+
+      {/* Search options section */}
+      <div className="glass-card-solid rounded-2xl p-6 md:p-8 space-y-6">
+        <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider">
+          Search options
+        </h2>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <ContentRadios
+            params={advancedSearchFormData}
+            handleChange={handleChange}
+          />
+          <OrderByRadios
+            params={advancedSearchFormData}
+            handleChange={handleChange}
+          />
+          <FilterContentSelect
+            params={advancedSearchFormData}
+            handleChange={handleChange}
+          />
+        </div>
+      </div>
+
+      {/* Volume ID lookup section */}
+      <div className="glass-card-solid rounded-2xl p-6 md:p-8 space-y-4">
+        <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider">
+          Direct volume lookup
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Search by a specific Google Books volume ID. This bypasses all other
+          search fields above.
+        </p>
+        <div className="max-w-sm">
+          <VolumeIdInput
+            params={advancedSearchFormData}
+            handleChange={handleChange}
+          />
+        </div>
+      </div>
+
+      {validationError && (
+        <p className="text-sm text-destructive text-center font-medium">
+          {validationError}
+        </p>
+      )}
+
       <BtnContainer isPending={isPendingBooks} />
     </form>
   );

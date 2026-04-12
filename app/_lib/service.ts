@@ -16,10 +16,14 @@ const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 const BASE_VOL_URL = process.env.BASE_VOL_URL;
 const BASE_VOL_URL_BY_ID = `https://www.googleapis.com/books/v1/volumes/`;
 
-export const getBooksByTitle = async (query: string) => {
+export const getBooksByTitle = async (
+  query: string,
+  startIndex = 0,
+  maxResults = 24
+) => {
   try {
     const response = await axios.get(
-      `${BASE_VOL_URL}?q=${query}&key=${GOOGLE_API_KEY}&maxResults=40`
+      `${BASE_VOL_URL}?q=${query}&key=${GOOGLE_API_KEY}&maxResults=${maxResults}&startIndex=${startIndex}`
     );
     return response.data;
   } catch (err) {
@@ -347,6 +351,46 @@ export const getRecommendedBooks = async (
   );
 
   return results.flat();
+};
+
+export interface PublicUserResult {
+  id: string;
+  username: string;
+  avatar: string | null;
+  favoriteGenres: string[];
+  bookCount: number;
+}
+
+export const searchPublicUsers = async (
+  query: string
+): Promise<PublicUserResult[]> => {
+  await connectDB();
+
+  const users = await UserModel.find({
+    isProfilePublic: { $ne: false },
+    username: { $regex: query, $options: "i" },
+  })
+    .limit(20)
+    .lean();
+
+  const userIds = users.map((u) => u._id.toString());
+  const counts = await ReadingListModel.aggregate<{
+    _id: string;
+    count: number;
+  }>([
+    { $match: { user_id: { $in: userIds } } },
+    { $group: { _id: "$user_id", count: { $sum: 1 } } },
+  ]);
+
+  const countMap = new Map(counts.map((c) => [c._id, c.count]));
+
+  return users.map((u) => ({
+    id: u._id.toString(),
+    username: u.username,
+    avatar: u.avatar,
+    favoriteGenres: (u.favoriteGenres ?? []).slice(0, 3),
+    bookCount: countMap.get(u._id.toString()) ?? 0,
+  }));
 };
 
 export const getNote = async (readingListId: string) => {

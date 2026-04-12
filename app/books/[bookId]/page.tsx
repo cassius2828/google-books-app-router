@@ -16,7 +16,7 @@ import Loader from "@/app/loading";
 import axios from "axios";
 import Link from "next/link";
 import toast, { Toaster } from "react-hot-toast";
-import { ArrowLeft, ExternalLink } from "lucide-react";
+import { ArrowLeft, ExternalLink, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -41,6 +41,8 @@ export default function BookDetails() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [book, setBook] = useState<Book | null>(null);
   const [note, setNote] = useState<string>("");
+  const [draftNote, setDraftNote] = useState<string>("");
+  const [isEditingNote, setIsEditingNote] = useState(false);
   const [readingListObj, setReadingListObj] = useState<ReadingListStatusAndId>({
     id: "",
     user_id: "",
@@ -69,6 +71,7 @@ export default function BookDetails() {
               `/api/notes/${exists.id}`
             );
             setNote(noteData);
+            setDraftNote(noteData);
           }
         }
       } catch (err) {
@@ -156,7 +159,13 @@ export default function BookDetails() {
       const result = await addNotesToBook(formData);
       if (result?.newNoteError) {
         toast.error(result.newNoteError);
-      } else toast.success("Note saved");
+      } else {
+        const saved = formData.get("content") as string;
+        setNote(saved);
+        setDraftNote(saved);
+        setIsEditingNote(false);
+        toast.success("Note saved");
+      }
     });
   };
 
@@ -261,14 +270,13 @@ export default function BookDetails() {
                     {isPendingRemoveBook ? "Removing..." : "Remove From List"}
                   </Button>
                 ) : (
-                  <Button
-                    variant="outline"
-                    className="rounded-full px-6 border-white/20 text-white hover:bg-white/10 hover:text-white"
+                  <button
                     disabled={isPendingAddBook}
                     onClick={handleAddBookToMyList}
+                    className="inline-flex items-center justify-center rounded-full px-6 h-9 text-sm font-medium text-white border border-white/25 hover:bg-white/10 transition-colors disabled:opacity-50 disabled:pointer-events-none"
                   >
                     {isPendingAddBook ? "Adding..." : "Add To My List"}
-                  </Button>
+                  </button>
                 )}
               </div>
             </div>
@@ -357,42 +365,79 @@ export default function BookDetails() {
         <section className="container mx-auto px-6 mt-12 md:mt-16">
           <div className="max-w-3xl mx-auto">
             <Card className="border-border/50">
-              <CardHeader>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                 <CardTitle className="text-lg">Your Notes</CardTitle>
+                {!isEditingNote && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => { setDraftNote(note); setIsEditingNote(true); }}
+                    className="text-muted-foreground hover:text-foreground gap-1.5"
+                  >
+                    <Pencil className="size-3.5" />
+                    {note ? "Edit" : "Add note"}
+                  </Button>
+                )}
               </CardHeader>
               <CardContent>
-                <form action={handleAddNotesToBook}>
-                  <input
-                    type="hidden"
-                    name="readingListId"
-                    value={readingListObj.id}
-                  />
-                  <Textarea
-                    name="content"
-                    id="content"
-                    rows={8}
-                    onChange={(e) => setNote(e.target.value)}
-                    value={note}
-                    placeholder="Write your thoughts, quotes, or reflections..."
-                    className="resize-none mb-4"
-                  />
-                  <div className="flex justify-end gap-3">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setNote("");
-                      }}
-                    >
-                      Clear
-                    </Button>
-                    <Button type="submit" size="sm" disabled={isPendingNotes}>
-                      {isPendingNotes ? "Saving..." : "Save"}
-                    </Button>
-                  </div>
-                </form>
+                {isEditingNote ? (
+                  <form action={handleAddNotesToBook}>
+                    <input
+                      type="hidden"
+                      name="readingListId"
+                      value={readingListObj.id}
+                    />
+                    <Textarea
+                      name="content"
+                      id="content"
+                      rows={6}
+                      onChange={(e) => setDraftNote(e.target.value)}
+                      value={draftNote}
+                      placeholder="Write your thoughts, quotes, or reflections..."
+                      className="resize-none mb-4"
+                      autoFocus
+                    />
+                    <div className="flex items-center justify-end gap-3">
+                      {draftNote !== note && (
+                        <span className="text-xs text-muted-foreground mr-auto">
+                          Unsaved changes
+                        </span>
+                      )}
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setDraftNote(note);
+                          setIsEditingNote(false);
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        type="submit"
+                        size="sm"
+                        disabled={isPendingNotes || draftNote === note}
+                      >
+                        {isPendingNotes ? "Saving..." : "Save"}
+                      </Button>
+                    </div>
+                  </form>
+                ) : note ? (
+                  <p
+                    className="text-muted-foreground leading-relaxed whitespace-pre-wrap cursor-pointer rounded-lg p-3 -m-3 transition-colors hover:bg-accent/50"
+                    onClick={() => { setDraftNote(note); setIsEditingNote(true); }}
+                  >
+                    {note}
+                  </p>
+                ) : (
+                  <p
+                    className="text-muted-foreground/50 italic cursor-pointer rounded-lg p-3 -m-3 transition-colors hover:bg-accent/50"
+                    onClick={() => { setDraftNote(""); setIsEditingNote(true); }}
+                  >
+                    Click to add your thoughts, quotes, or reflections...
+                  </p>
+                )}
               </CardContent>
             </Card>
           </div>

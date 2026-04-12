@@ -16,6 +16,10 @@ export type BookContextType = {
   initialSearchObj: AdvancedSearchParams;
   advancedSearchResultsRef: RefObject<HTMLElement | null>;
   scrollToSection: (ref: RefObject<HTMLElement | null>) => void;
+  advancedSearchTotalItems: number;
+  setAdvancedSearchTotalItems: Dispatch<SetStateAction<number>>;
+  advancedSearchLastQuery: string;
+  setAdvancedSearchLastQuery: Dispatch<SetStateAction<string>>;
 };
 
 // single‐volume case
@@ -106,6 +110,7 @@ export interface AdvancedSearchParams {
   author: SearchParam;
   title: SearchParam;
   publisher: SearchParam;
+  isbn: SearchParam;
   allSubjects: SearchParam;
   eitherSubject: SearchParam;
 }

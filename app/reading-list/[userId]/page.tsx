@@ -1,5 +1,5 @@
 import Filter from "@/app/_components/ReadingList/Filter";
-import ReadingListCards from "@/app/_components/ReadingListTableBody";
+import ReadingListView from "@/app/_components/ReadingList/ReadingListView";
 import { getUserReadingList, getUserProfile } from "@/app/_lib/service";
 import Loader from "@/app/loading";
 import { Suspense } from "react";
@@ -34,7 +34,7 @@ export default async function ReadingListPage(props: {
       </div>
 
       <Suspense fallback={<Loader />}>
-        <ReadingListCards
+        <ReadingListView
           readingList={readingList}
           favoriteBookIds={favoriteBookIds}
         />

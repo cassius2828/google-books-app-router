@@ -1,20 +1,20 @@
 import { useBooksContext } from "@/app/_context/BooksContext";
+import { Button } from "@/components/ui/button";
 
 const ClearSearchBtn = () => {
   const { setAdvancedSearchFormData, initialSearchObj } = useBooksContext();
   return (
-    <div className="text-right">
-      <button
-        onClick={(e) => {
-          e.preventDefault();
-          setAdvancedSearchFormData(initialSearchObj);
-        }}
-        type="button"
-        className="px-6 py-2 w-32 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition"
-      >
-        Clear
-      </button>
-    </div>
+    <Button
+      variant="outline"
+      onClick={(e) => {
+        e.preventDefault();
+        setAdvancedSearchFormData(initialSearchObj);
+      }}
+      type="button"
+      className="w-28"
+    >
+      Clear
+    </Button>
   );
 };
 export default ClearSearchBtn;

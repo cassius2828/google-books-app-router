@@ -6,6 +6,7 @@ import Footer from "./_components/Footer";
 import { auth } from "./_lib/auth";
 import { getPublicUserID, checkNeedsOnboarding } from "./_lib/service";
 import GenreOnboardingModal from "./_components/Profile/GenreOnboardingModal";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -43,10 +44,12 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} antialiased min-h-screen flex flex-col`}>
-        <Header />
-        {showOnboarding && <GenreOnboardingModal profileId={profileId} />}
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <TooltipProvider>
+          <Header />
+          {showOnboarding && <GenreOnboardingModal profileId={profileId} />}
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </TooltipProvider>
       </body>
     </html>
   );

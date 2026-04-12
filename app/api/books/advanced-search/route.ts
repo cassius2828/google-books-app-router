@@ -16,11 +16,14 @@ export async function GET(request: NextRequest) {
 
   try {
     const { data } = await axios.get(googleUrl);
-    return NextResponse.json(data.items);
+    return NextResponse.json({
+      items: data.items ?? [],
+      totalItems: data.totalItems ?? 0,
+    });
   } catch (err) {
     console.error(err);
     return NextResponse.json(
-      { error: "Failed to proxy to Google Books" },
+      { error: "Failed to proxy to Google Books", items: [], totalItems: 0 },
       { status: 502 }
     );
   }

@@ -59,6 +59,7 @@ export default async function MobileNav({ publicUserID }: MobileNavProps) {
         {[
           { href: "/", label: "Home" },
           { href: "/search", label: "Search" },
+          { href: "/users", label: "Community" },
           {
             href: publicUserID
               ? `/reading-list/${publicUserID}`

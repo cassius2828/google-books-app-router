@@ -4,7 +4,6 @@ import { Suspense } from "react";
 import BooksGalleryProviderWrapper from "../_components/Books/BooksProviderWrapper";
 import Loader from "../loading";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { SlidersHorizontal } from "lucide-react";
 
 export const metadata = {
@@ -39,19 +38,13 @@ export default function SearchPage() {
               <SearchInput />
             </Suspense>
 
-            <Button
-              asChild
-              variant="outline"
-              className="w-full rounded-full border-white/20 text-white hover:bg-white/10 hover:text-white backdrop-blur-sm h-11"
+            <Link
+              href="/search/advanced"
+              className="flex items-center justify-center gap-2 w-full h-11 rounded-full border border-white/25 text-white text-sm font-medium hover:bg-white/10 backdrop-blur-sm transition-colors"
             >
-              <Link
-                href="/search/advanced"
-                className="flex items-center justify-center gap-2"
-              >
-                <SlidersHorizontal className="size-4" />
-                Advanced Search
-              </Link>
-            </Button>
+              <SlidersHorizontal className="size-4" />
+              Advanced Search
+            </Link>
           </div>
         </div>
       </section>

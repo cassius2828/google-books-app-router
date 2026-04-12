@@ -6,18 +6,19 @@ import { Book } from "@/app/_lib/types";
 import axios from "axios";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Masonry from "react-masonry-css";
-import { ArrowUp, LayoutGrid, List } from "lucide-react";
+import { ArrowUp, LayoutGrid, List, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 24;
 
 const BooksGallery = () => {
   const { books, setBooks, breakpointColumnsObj } = useBooksContext();
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [totalItems, setTotalItems] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams);
@@ -39,18 +40,15 @@ const BooksGallery = () => {
       setIsLoading(true);
       try {
         const response = await axios.get(
-          `/api/books?q=${encodeURIComponent(query)}`
+          `/api/books?q=${encodeURIComponent(query)}&startIndex=0&maxResults=${PAGE_SIZE}`
         );
         if (cancelled) return;
         const data = response.data;
-        if (data) {
-          setBooks(data.items || []);
-          setTotalItems(data.totalItems || 0);
-          setVisibleCount(PAGE_SIZE);
-        } else {
-          setBooks([]);
-          setTotalItems(0);
-        }
+        const items = data?.items || [];
+        const total = data?.totalItems || 0;
+        setBooks(items);
+        setTotalItems(total);
+        setHasMore(items.length > 0 && items.length < total);
       } finally {
         if (!cancelled) setIsLoading(false);
       }
@@ -61,11 +59,31 @@ const BooksGallery = () => {
     };
   }, [query]);
 
-  const displayBooks = books.slice(0, visibleCount);
-  const hasMore = visibleCount < books.length;
+  const handleLoadMore = async () => {
+    if (!query || isLoadingMore) return;
+    setIsLoadingMore(true);
+    try {
+      const response = await axios.get(
+        `/api/books?q=${encodeURIComponent(query)}&startIndex=${books.length}&maxResults=${PAGE_SIZE}`
+      );
+      const data = response.data;
+      const newItems: Book[] = data?.items || [];
 
-  const handleLoadMore = () => {
-    setVisibleCount((prev) => Math.min(prev + PAGE_SIZE, books.length));
+      const existingIds = new Set(books.map((b) => b.id));
+      const uniqueNew = newItems.filter((b) => !existingIds.has(b.id));
+
+      if (uniqueNew.length > 0) {
+        const merged = [...books, ...uniqueNew];
+        setBooks(merged);
+        setHasMore(newItems.length > 0 && merged.length < totalItems);
+      } else {
+        setHasMore(false);
+      }
+    } catch {
+      setHasMore(false);
+    } finally {
+      setIsLoadingMore(false);
+    }
   };
 
   const viewToggle = (
@@ -73,16 +91,11 @@ const BooksGallery = () => {
       {books.length > 0 && (
         <p className="text-sm text-muted-foreground">
           Showing{" "}
-          <span className="font-medium text-foreground">
-            {displayBooks.length}
-          </span>{" "}
-          of{" "}
           <span className="font-medium text-foreground">{books.length}</span>
-          {" "}loaded
-          {totalItems > books.length && (
+          {totalItems > 0 && (
             <span className="text-muted-foreground/70">
               {" "}
-              ({totalItems.toLocaleString()} found)
+              of {totalItems.toLocaleString()} found
             </span>
           )}
         </p>
@@ -167,18 +180,59 @@ const BooksGallery = () => {
               {Array.from({ length: 12 }).map((_, i) => (
                 <div
                   key={i}
-                  className="rounded-2xl bg-secondary animate-pulse mb-4"
-                  style={{ height: `${200 + (i % 3) * 80}px` }}
-                />
+                  className="rounded-2xl bg-card border border-border overflow-hidden mb-4"
+                >
+                  <div className="aspect-square bg-muted-foreground/20 animate-pulse" />
+                  <div className="p-4 space-y-3">
+                    <div className="h-4 w-3/4 bg-muted-foreground/20 animate-pulse rounded" />
+                    <div className="h-3 w-1/2 bg-muted-foreground/20 animate-pulse rounded" />
+                    <div className="space-y-1.5">
+                      <div className="h-3 w-full bg-muted-foreground/20 animate-pulse rounded" />
+                      <div className="h-3 w-4/5 bg-muted-foreground/20 animate-pulse rounded" />
+                    </div>
+                    <div className="flex gap-1.5">
+                      <div className="h-5 w-14 bg-muted-foreground/20 animate-pulse rounded-full" />
+                      <div className="h-5 w-16 bg-muted-foreground/20 animate-pulse rounded-full" />
+                    </div>
+                    <div className="h-3 w-1/3 bg-muted-foreground/20 animate-pulse rounded" />
+                  </div>
+                  <div className="flex gap-3 px-4 pb-4">
+                    <div className="h-8 flex-1 bg-muted-foreground/20 animate-pulse rounded-md" />
+                    <div className="h-8 flex-1 bg-muted-foreground/20 animate-pulse rounded-md" />
+                  </div>
+                </div>
               ))}
             </Masonry>
           ) : (
             <div className="flex flex-col gap-4">
-              {Array.from({ length: 6 }).map((_, i) => (
+              {Array.from({ length: 12 }).map((_, i) => (
                 <div
                   key={i}
-                  className="rounded-2xl bg-secondary animate-pulse h-40"
-                />
+                  className="rounded-2xl bg-card border border-border overflow-hidden flex gap-4 p-4"
+                >
+                  <div className="w-24 min-h-36 flex-shrink-0 rounded-xl bg-muted-foreground/20 animate-pulse" />
+                  <div className="flex-1 min-w-0 flex flex-col justify-between">
+                    <div className="space-y-2">
+                      <div className="h-4 w-3/5 bg-muted-foreground/20 animate-pulse rounded" />
+                      <div className="h-3 w-2/5 bg-muted-foreground/20 animate-pulse rounded" />
+                      <div className="space-y-1.5">
+                        <div className="h-3 w-full bg-muted-foreground/20 animate-pulse rounded" />
+                        <div className="h-3 w-4/5 bg-muted-foreground/20 animate-pulse rounded" />
+                      </div>
+                      <div className="flex gap-1.5">
+                        <div className="h-5 w-14 bg-muted-foreground/20 animate-pulse rounded-full" />
+                        <div className="h-5 w-16 bg-muted-foreground/20 animate-pulse rounded-full" />
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between mt-2">
+                      <div className="h-3 w-24 bg-muted-foreground/20 animate-pulse rounded" />
+                      <div className="flex gap-2">
+                        <div className="h-7 w-16 bg-muted-foreground/20 animate-pulse rounded-md" />
+                        <div className="h-7 w-16 bg-muted-foreground/20 animate-pulse rounded-md" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           )}
@@ -202,23 +256,32 @@ const BooksGallery = () => {
             className="my-masonry-grid"
             columnClassName="my-masonry-grid_column"
           >
-            {displayBooks?.map(renderBook)}
+            {books.map(renderBook)}
           </Masonry>
         ) : (
           <div className="flex flex-col gap-4">
-            {displayBooks?.map(renderBook)}
+            {books.map(renderBook)}
           </div>
         )}
 
         <div className="w-full flex justify-center">
-          {displayBooks.length > 0 && (
+          {books.length > 0 && (
             <Button
               variant="outline"
-              disabled={!hasMore}
+              disabled={!hasMore || isLoadingMore}
               onClick={handleLoadMore}
               className="rounded-full px-8 mt-10 mb-6"
             >
-              {hasMore ? "Load More" : "All Results Loaded"}
+              {isLoadingMore ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  Loading...
+                </>
+              ) : hasMore ? (
+                "Load More"
+              ) : (
+                "All Results Loaded"
+              )}
             </Button>
           )}
         </div>

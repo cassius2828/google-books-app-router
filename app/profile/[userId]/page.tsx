@@ -12,6 +12,7 @@ import GenrePicker from "@/app/_components/Profile/GenrePicker";
 import FavoriteBookSearch from "@/app/_components/Profile/FavoriteBookSearch";
 import FavoriteBookCard from "@/app/_components/Profile/FavoriteBookCard";
 import ProfileVisibilityToggle from "@/app/_components/Profile/ProfileVisibilityToggle";
+import ProfileAvatar from "@/app/_components/Profile/ProfileAvatar";
 import { Lock, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -91,19 +92,11 @@ export default async function ProfilePage({ params }: { params: Params }) {
           <div className="absolute bottom-4 right-4 w-56 h-56 bg-blue-500 rounded-full blur-[100px]" />
         </div>
         <div className="relative z-10 flex flex-col sm:flex-row items-center gap-6 w-full">
-          {profile.avatar ? (
-            <Image
-              src={profile.avatar}
-              alt={profile.username}
-              width={96}
-              height={96}
-              className="rounded-full ring-2 ring-white/20 shadow-xl"
-            />
-          ) : (
-            <div className="w-24 h-24 rounded-full ring-2 ring-white/20 shadow-xl bg-white/10 flex items-center justify-center text-3xl font-bold text-white select-none">
-              {profile.username?.charAt(0)?.toUpperCase() ?? "?"}
-            </div>
-          )}
+          <ProfileAvatar
+            src={(isOwner ? session?.user?.image : null) || profile.avatar}
+            alt={profile.username}
+            fallbackInitial={profile.username?.charAt(0)?.toUpperCase() ?? "?"}
+          />
           <div className="text-center sm:text-left flex-1">
             <h1 className="text-3xl font-bold tracking-tight">
               {profile.username}

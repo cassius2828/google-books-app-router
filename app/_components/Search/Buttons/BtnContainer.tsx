@@ -3,7 +3,7 @@ import SearchBtn from "./SearchBtn";
 
 const BtnContainer = ({ isPending }: { isPending: boolean }) => {
   return (
-    <div className="flex gap-4 items-center justify-end">
+    <div className="flex gap-3 items-center justify-end">
       <ClearSearchBtn />
       <SearchBtn isPending={isPending} />
     </div>

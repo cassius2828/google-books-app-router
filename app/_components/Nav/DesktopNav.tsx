@@ -14,6 +14,7 @@ const DesktopNav = async ({ publicUserID }: { publicUserID: string }) => {
         {[
           { href: "/", label: "Home" },
           { href: "/search", label: "Search" },
+          { href: "/users", label: "Community" },
           {
             href: publicUserID
               ? `/reading-list/${publicUserID}`

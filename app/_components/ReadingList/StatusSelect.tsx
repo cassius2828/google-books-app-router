@@ -60,7 +60,7 @@ export default function StatusSelect({
       </button>
 
       {open && (
-        <div className="absolute left-0 z-50 mt-1.5 min-w-[130px] rounded-xl bg-white border border-gray-200/60 shadow-lg shadow-black/8 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-150">
+        <div className="absolute left-0 z-[100] mt-1.5 min-w-[130px] rounded-xl bg-white border border-gray-200/60 shadow-lg shadow-black/8 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-150">
           {STATUS_OPTIONS.map((opt) => (
             <button
               key={opt.value}

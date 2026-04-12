@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ReadingListDBRow, Book } from "../_lib/types";
 import FavoriteStarButton from "./Profile/FavoriteStarButton";
-import { Badge } from "@/components/ui/badge";
+import StatusSelect from "./ReadingList/StatusSelect";
 import { Button } from "@/components/ui/button";
 
 function toBook(books: ReadingListDBRow["books"]): Book {
@@ -26,27 +26,14 @@ function toBook(books: ReadingListDBRow["books"]): Book {
   };
 }
 
-const statusConfig: Record<string, { label: string; className: string }> = {
-  to_read: {
-    label: "To Read",
-    className: "bg-blue-50 text-blue-700 border-blue-200",
-  },
-  reading: {
-    label: "Reading",
-    className: "bg-amber-50 text-amber-700 border-amber-200",
-  },
-  completed: {
-    label: "Completed",
-    className: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  },
-};
-
-const ReadingListCards = async ({
+const ReadingListCards = ({
   readingList,
   favoriteBookIds = [],
+  viewMode = "grid",
 }: {
   readingList: ReadingListDBRow[] | { data: []; error: unknown } | { data: [] };
   favoriteBookIds?: string[];
+  viewMode?: "grid" | "list";
 }) => {
   if (!Array.isArray(readingList)) {
     console.error("Invalid reading list format:", readingList);
@@ -68,18 +55,81 @@ const ReadingListCards = async ({
     );
   }
 
+  if (viewMode === "list") {
+    return (
+      <div className="flex flex-col gap-3">
+        {readingList.map((item: ReadingListDBRow) => {
+          const { books, status } = item;
+          const isFavorite = favoriteBookIds.includes(books?.id);
+          const bookForAction = toBook(books);
+
+          return (
+            <div
+              key={books?.id}
+              className="group glass-card-solid rounded-2xl transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
+            >
+              <div className="flex items-center gap-4 p-4">
+                <Link
+                  href={`/books/${books.google_book_id}`}
+                  className="flex-shrink-0"
+                >
+                  <Image
+                    src={
+                      books?.thumbnail ||
+                      process.env.NEXT_PUBLIC_IMG_NOT_FOUND ||
+                      ""
+                    }
+                    alt={books?.title}
+                    width={48}
+                    height={72}
+                    className="rounded-lg object-cover shadow-sm transition-transform duration-300 group-hover:scale-[1.03]"
+                  />
+                </Link>
+
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-sm font-semibold text-foreground truncate">
+                    {books?.title}
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                    {books?.authors?.join(", ")}
+                  </p>
+                </div>
+
+                <div className="flex-shrink-0 hidden sm:block">
+                  <StatusSelect
+                    readingListId={item.readingListId}
+                    currentStatus={status}
+                  />
+                </div>
+
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  <FavoriteStarButton
+                    book={bookForAction}
+                    isFavorite={isFavorite}
+                  />
+                  <Button asChild variant="ghost" size="xs">
+                    <Link href={`/books/${books.google_book_id}`}>View</Link>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
       {readingList.map((item: ReadingListDBRow) => {
         const { books, status } = item;
         const isFavorite = favoriteBookIds.includes(books?.id);
         const bookForAction = toBook(books);
-        const statusInfo = statusConfig[status] ?? statusConfig.to_read;
 
         return (
           <div
             key={books?.id}
-            className="group glass-card-solid rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
+            className="group glass-card-solid rounded-2xl transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
           >
             <div className="flex gap-4 p-5">
               <Link
@@ -116,16 +166,12 @@ const ReadingListCards = async ({
                 </div>
 
                 <div className="mt-auto pt-3 flex items-center justify-between">
-                  <Badge
-                    variant="outline"
-                    className={`text-[11px] font-medium ${statusInfo.className}`}
-                  >
-                    {statusInfo.label}
-                  </Badge>
+                  <StatusSelect
+                    readingListId={item.readingListId}
+                    currentStatus={status}
+                  />
                   <Button asChild variant="ghost" size="xs">
-                    <Link href={`/books/${books.google_book_id}`}>
-                      View
-                    </Link>
+                    <Link href={`/books/${books.google_book_id}`}>View</Link>
                   </Button>
                 </div>
               </div>
