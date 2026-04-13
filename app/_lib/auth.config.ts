@@ -6,7 +6,8 @@ import Google from "next-auth/providers/google";
  * Used by middleware and as the base for the full server-side config.
  */
 export const authConfig = {
-  secret: process.env.NEXTAUTH_SECRET,
+  /** NextAuth v5 prefers AUTH_SECRET; NEXTAUTH_SECRET kept for older env files */
+  secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
   },

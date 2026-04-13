@@ -35,10 +35,11 @@ jobs:
       GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
       BASE_VOL_URL: ${{ secrets.BASE_VOL_URL }}
       MONGODB_URI: ${{ secrets.MONGODB_URI }}
+      # Session/JWT signing (random string). Not the same as AUTH_GOOGLE_SECRET.
       AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
       AUTH_TRUST_HOST: "true"
-      AUTH_GOOGLE_ID: "unused-in-e2e"
-      AUTH_GOOGLE_SECRET: "unused-in-e2e"
+      AUTH_GOOGLE_ID: ${{ vars.AUTH_GOOGLE_ID }}
+      AUTH_GOOGLE_SECRET: ${{ secrets.AUTH_GOOGLE_SECRET }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
