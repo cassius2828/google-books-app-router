@@ -8,6 +8,10 @@ on:
     # Avoid pull_request "closed" (merge): merge already triggers push to main, so e2e would run twice
     types: [opened, synchronize, reopened, ready_for_review]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lint-and-test:
     runs-on: ubuntu-latest
