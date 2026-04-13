@@ -1,7 +1,7 @@
 import { GalleryBookCardProps } from "@/app/_lib/types";
 import { resolveCoverImageSrc } from "@/app/_lib/coverImage";
 import { convert } from "html-to-text";
-import Image from "next/image";
+import BookCoverImage from "@/app/_components/BookCoverImage";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -28,7 +28,7 @@ export default function BookCard({
           href={`/books/${id}`}
           className="relative w-24 min-h-36 flex-shrink-0 rounded-xl overflow-hidden"
         >
-          <Image
+          <BookCoverImage
             src={coverSrc}
             alt={title}
             fill
@@ -84,7 +84,7 @@ export default function BookCard({
     <div className="group glass-card-solid rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
       <Link href={`/books/${id}`} className="block">
         <div className="relative aspect-square overflow-hidden">
-          <Image
+          <BookCoverImage
             src={coverSrc}
             alt={title}
             fill

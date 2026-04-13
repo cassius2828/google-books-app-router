@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useDebounce } from "use-debounce";
 import axios from "axios";
-import Image from "next/image";
+import BookCoverImage from "@/app/_components/BookCoverImage";
 import { Book } from "@/app/_lib/types";
 import { resolveCoverImageSrc } from "@/app/_lib/coverImage";
 import { toggleFavoriteBook } from "@/app/_lib/actions";
@@ -94,7 +94,7 @@ export default function FavoriteBookSearch() {
                 className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
               >
                 {thumb ? (
-                  <Image
+                  <BookCoverImage
                     src={thumb}
                     alt={book.volumeInfo.title}
                     width={36}

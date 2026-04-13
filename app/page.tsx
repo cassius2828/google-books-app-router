@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { Marquee3D } from "./_components/Marquee3D";
 import InAppBrowserModal from "./_components/Modals/AppBrowserModal";
 import { Button } from "@/components/ui/button";
@@ -14,7 +15,11 @@ export default function Home() {
   return (
     <>
       <div className="absolute w-screen min-h-screen top-0">
-        <Marquee3D />
+        <Suspense fallback={null}>
+          <div className="animate-fade-in">
+            <Marquee3D />
+          </div>
+        </Suspense>
       </div>
 
       <main className="flex flex-col items-center justify-center pb-20 px-4 h-screen">

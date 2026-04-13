@@ -30,12 +30,13 @@ import {
 export const getBooksByTitle = async (
   query: string,
   startIndex = 0,
-  maxResults = 24
+  maxResults = 24,
 ): Promise<GoogleBooksVolumesResponse> => {
   try {
     const response = await axios.get<GoogleBooksVolumesResponse>(
-      `${BASE_VOL_URL}?q=${query}&key=${GOOGLE_API_KEY}&maxResults=${maxResults}&startIndex=${startIndex}`
+      `${BASE_VOL_URL}?q=${encodeURIComponent(query)}&key=${GOOGLE_API_KEY}&maxResults=${maxResults}&startIndex=${startIndex}`,
     );
+console.log("response", response.data.items?.length);
     return response.data;
   } catch (err) {
     console.error(err);
@@ -70,7 +71,7 @@ export const getBookById = async (id: string): Promise<GoogleBooksVolume> => {
     }
 
     const response = await axios.get<GoogleBooksVolume>(
-      `${BASE_VOL_URL_BY_ID}${id}?key=${GOOGLE_API_KEY}`
+      `${BASE_VOL_URL_BY_ID}${id}?key=${GOOGLE_API_KEY}`,
     );
     return response.data;
   } catch (err) {
@@ -152,7 +153,7 @@ export const postAddBookToDB = async (book: Book): Promise<BookDoc> => {
 };
 
 export const getBookFromDB = async (
-  bookId: string
+  bookId: string,
 ): Promise<BookDoc | null> => {
   await connectDB();
   return BookModel.findOne({ google_book_id: bookId }).lean<BookDoc>();
@@ -160,7 +161,7 @@ export const getBookFromDB = async (
 
 export const getUserReadingList = async (
   userId: string,
-  statusFilter?: ReadingListStatus | "all"
+  statusFilter?: ReadingListStatus | "all",
 ): Promise<ReadingListDBRow[]> => {
   if (!userId) {
     return [];
@@ -206,7 +207,7 @@ export const getUserReadingList = async (
             ? [{ id: note._id.toString(), content: note.content }]
             : [],
         };
-      })
+      }),
     );
 
     return result;
@@ -218,7 +219,7 @@ export const getUserReadingList = async (
 
 export const getIsBookInUsersList = async (
   userId: string,
-  bookId: string
+  bookId: string,
 ): Promise<ReadingListStatusAndId | null> => {
   if (!bookId || !userId) return null;
 
@@ -242,7 +243,7 @@ export const getIsBookInUsersList = async (
 };
 
 export const getUserProfile = async (
-  userId: string
+  userId: string,
 ): Promise<UserProfile | null> => {
   await connectDB();
 
@@ -275,7 +276,7 @@ export const getUserProfile = async (
 };
 
 export const checkNeedsOnboarding = async (
-  userId: string
+  userId: string,
 ): Promise<boolean> => {
   await connectDB();
   const user = await UserModel.findById(userId).lean();
@@ -289,7 +290,7 @@ export const checkNeedsOnboarding = async (
 };
 
 export const getUserReadingListGoogleIds = async (
-  userId: string
+  userId: string,
 ): Promise<Set<string>> => {
   await connectDB();
 
@@ -306,7 +307,7 @@ export const getUserReadingListGoogleIds = async (
 
 export const getRecommendedBooks = async (
   genres: string[],
-  maxPerGenre = 4
+  maxPerGenre = 4,
 ): Promise<
   Array<{
     id: string;
@@ -322,7 +323,7 @@ export const getRecommendedBooks = async (
     genres.slice(0, 5).map(async (genre) => {
       try {
         const response = await axios.get<GoogleBooksVolumesResponse>(
-          `${BASE_VOL_URL}?q=subject:${encodeURIComponent(genre)}&orderBy=relevance&maxResults=${maxPerGenre}&key=${GOOGLE_API_KEY}`
+          `${BASE_VOL_URL}?q=subject:${encodeURIComponent(genre)}&orderBy=relevance&maxResults=${maxPerGenre}&key=${GOOGLE_API_KEY}`,
         );
         const items = response.data.items ?? [];
         return items.map((item) => ({
@@ -335,14 +336,14 @@ export const getRecommendedBooks = async (
       } catch {
         return [];
       }
-    })
+    }),
   );
 
   return results.flat();
 };
 
 export const searchPublicUsers = async (
-  query: string
+  query: string,
 ): Promise<PublicUserResult[]> => {
   await connectDB();
 

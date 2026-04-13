@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import BookCoverImage from "@/app/_components/BookCoverImage";
 import Link from "next/link";
 import { useTransition } from "react";
 import { removeFavoriteBook } from "@/app/_lib/actions";
@@ -44,7 +44,7 @@ export default function FavoriteBookCard({
       <Link href={`/books/${book.google_book_id}`}>
         <div className="aspect-[2/3] relative bg-gray-100">
           {imgSrc ? (
-            <Image
+            <BookCoverImage
               src={imgSrc}
               alt={book.title}
               fill

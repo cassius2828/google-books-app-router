@@ -5,8 +5,8 @@ import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import Filter from "@/app/_components/ReadingList/Filter";
 import ReadingListView from "@/app/_components/ReadingList/ReadingListView";
-import Loader from "@/app/loading";
 import { ReadingListDBRow } from "@/app/_lib/types";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   getCache,
   setCache,
@@ -94,9 +94,10 @@ export default function ReadingListPageContent({
     fetchList();
   }, [userId, isOwner]);
 
-  if (isLoading || !readingList) return <Loader />;
-
-  const filtered = filterByStatus(readingList, statusFilter);
+  const filtered =
+    isLoading || !readingList
+      ? []
+      : filterByStatus(readingList, statusFilter);
 
   return (
     <div className="container mx-auto px-6 py-12 max-w-6xl">
@@ -116,11 +117,36 @@ export default function ReadingListPageContent({
         {isOwner && <Filter />}
       </div>
 
-      <ReadingListView
-        readingList={filtered}
-        favoriteBookIds={favoriteBookIds}
-        onStatusChangeSuccess={isOwner ? refetchReadingList : undefined}
-      />
+      {isLoading || !readingList ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div
+              key={i}
+              className="glass-card-solid rounded-2xl overflow-hidden"
+            >
+              <div className="flex gap-4 p-5">
+                <Skeleton className="w-20 h-[120px] rounded-lg flex-shrink-0 bg-muted-foreground/20" />
+                <div className="flex-1 min-w-0 flex flex-col">
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-3/4 bg-muted-foreground/20" />
+                    <Skeleton className="h-3 w-1/2 bg-muted-foreground/20" />
+                  </div>
+                  <div className="mt-auto pt-3 flex items-center justify-between">
+                    <Skeleton className="h-8 w-28 rounded-md bg-muted-foreground/20" />
+                    <Skeleton className="h-7 w-12 rounded-md bg-muted-foreground/20" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <ReadingListView
+          readingList={filtered}
+          favoriteBookIds={favoriteBookIds}
+          onStatusChangeSuccess={isOwner ? refetchReadingList : undefined}
+        />
+      )}
     </div>
   );
 }
