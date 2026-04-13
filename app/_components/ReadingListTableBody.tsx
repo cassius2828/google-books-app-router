@@ -31,10 +31,12 @@ const ReadingListCards = ({
   readingList,
   favoriteBookIds = [],
   viewMode = "grid",
+  onStatusChangeSuccess,
 }: {
   readingList: ReadingListDBRow[];
   favoriteBookIds?: string[];
   viewMode?: "grid" | "list";
+  onStatusChangeSuccess?: () => void | Promise<void>;
 }) => {
   if (readingList.length === 0) {
     return (
@@ -87,6 +89,8 @@ const ReadingListCards = ({
                   <StatusSelect
                     readingListId={item.readingListId}
                     currentStatus={status}
+                    googleBookId={books.google_book_id}
+                    onStatusUpdated={onStatusChangeSuccess}
                   />
                 </div>
 
@@ -153,6 +157,8 @@ const ReadingListCards = ({
                   <StatusSelect
                     readingListId={item.readingListId}
                     currentStatus={status}
+                    googleBookId={books.google_book_id}
+                    onStatusUpdated={onStatusChangeSuccess}
                   />
                   <Button asChild variant="ghost" size="xs">
                     <Link href={`/books/${books.google_book_id}`}>View</Link>
