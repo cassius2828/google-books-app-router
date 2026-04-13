@@ -77,7 +77,8 @@ export const removeBookFromListAction = async (bookId: string) => {
     return { error: "Unable to remove book from users list", status: 500 };
   }
 
-  redirect(`/reading-list/${userId}`);
+  revalidatePath(`/reading-list/${userId}`);
+  return { success: true as const, userId };
 };
 
 export const addNotesToBook = async (formData: FormData) => {

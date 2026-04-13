@@ -14,7 +14,8 @@ import FavoriteBookSearch from "@/app/_components/Profile/FavoriteBookSearch";
 import FavoriteBookCard from "@/app/_components/Profile/FavoriteBookCard";
 import ProfileVisibilityToggle from "@/app/_components/Profile/ProfileVisibilityToggle";
 import ProfileAvatar from "@/app/_components/Profile/ProfileAvatar";
-import { Lock, Sparkles } from "lucide-react";
+import ClearCacheButton from "@/app/_components/Profile/ClearCacheButton";
+import { Lock, Settings, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -206,6 +207,31 @@ export default async function ProfilePage({ params }: UserPageParams) {
                   </div>
                 </div>
               ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Settings */}
+      {isOwner && (
+        <Card className="border-border/50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Settings className="size-5 text-muted-foreground" />
+              Settings
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-foreground">
+                  Clear cached data
+                </p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Remove locally stored book and reading list data from this browser.
+                </p>
+              </div>
+              <ClearCacheButton />
             </div>
           </CardContent>
         </Card>

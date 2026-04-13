@@ -3,6 +3,12 @@
 import { useTransition, useState, useRef, useEffect } from "react";
 import { putChangeBookStatusAction } from "@/app/_lib/actions";
 import { ReadingListStatus } from "@/app/_lib/types";
+import {
+  bookCacheKey,
+  invalidateCache,
+  invalidateCacheByPrefix,
+  READING_LIST_KEY_PREFIX,
+} from "@/app/_lib/cache";
 import toast from "react-hot-toast";
 import { ChevronDown } from "lucide-react";
 
@@ -19,9 +25,13 @@ function getStatusOption(status: ReadingListStatus) {
 export default function StatusSelect({
   readingListId,
   currentStatus,
+  googleBookId,
+  onStatusUpdated,
 }: {
   readingListId: string;
   currentStatus: ReadingListStatus;
+  googleBookId?: string;
+  onStatusUpdated?: () => void | Promise<void>;
 }) {
   const [isPending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
@@ -42,7 +52,15 @@ export default function StatusSelect({
     if (newStatus === currentStatus) return;
     startTransition(async () => {
       const result = await putChangeBookStatusAction(newStatus, readingListId);
-      if (result?.error) toast.error(result.error);
+      if (result?.error) {
+        toast.error(result.error);
+      } else {
+        invalidateCacheByPrefix(READING_LIST_KEY_PREFIX);
+        if (googleBookId) {
+          invalidateCache(bookCacheKey(googleBookId));
+        }
+        await onStatusUpdated?.();
+      }
     });
   };
 

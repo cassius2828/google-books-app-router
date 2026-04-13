@@ -9,9 +9,11 @@ import { ReadingListDBRow } from "@/app/_lib/types";
 export default function ReadingListView({
   readingList,
   favoriteBookIds,
+  onStatusChangeSuccess,
 }: {
   readingList: ReadingListDBRow[];
   favoriteBookIds: string[];
+  onStatusChangeSuccess?: () => void | Promise<void>;
 }) {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
@@ -53,6 +55,7 @@ export default function ReadingListView({
         readingList={readingList}
         favoriteBookIds={favoriteBookIds}
         viewMode={viewMode}
+        onStatusChangeSuccess={onStatusChangeSuccess}
       />
     </>
   );

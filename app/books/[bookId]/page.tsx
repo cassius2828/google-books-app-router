@@ -15,6 +15,15 @@ import {
   putChangeBookStatusAction,
   removeBookFromListAction,
 } from "@/app/_lib/actions";
+import {
+  getCache,
+  setCache,
+  invalidateCache,
+  invalidateCacheByPrefix,
+  bookCacheKey,
+  BOOK_TTL_MS,
+  READING_LIST_KEY_PREFIX,
+} from "@/app/_lib/cache";
 import { resolveCoverImageSrc } from "@/app/_lib/coverImage";
 import Loader from "@/app/loading";
 import axios from "axios";
@@ -62,7 +71,15 @@ export default function BookDetails() {
     if (!bookId) return;
     async function load() {
       try {
-        const { data: bookData } = await axios.get<Book>(`/api/books/${bookId}`);
+        const cacheKey = bookCacheKey(String(bookId));
+        let bookData = getCache<Book>(cacheKey, BOOK_TTL_MS);
+
+        if (!bookData) {
+          const res = await axios.get<Book>(`/api/books/${bookId}`);
+          bookData = res.data;
+          setCache(cacheKey, bookData);
+        }
+
         setBook(bookData);
         const bookDbId = bookData?.volumeInfo?.id;
         if (bookDbId) {
@@ -117,10 +134,13 @@ export default function BookDetails() {
           if (result.error) {
             toast.error(result.error);
             return;
-          } else {
-            toast.success(`Removed ${title} from your reading list`);
-            return;
           }
+          invalidateCacheByPrefix(READING_LIST_KEY_PREFIX);
+          toast.success(`Removed ${title} from your reading list`);
+          if ("userId" in result && result.userId) {
+            router.push(`/reading-list/${result.userId}`);
+          }
+          return;
         }
         toast.error("Cannot remove book since no book id was found");
         return;
@@ -144,6 +164,7 @@ export default function BookDetails() {
         } else if ("insertError" in result) {
           toast.error(result.insertError);
         } else {
+          invalidateCacheByPrefix(READING_LIST_KEY_PREFIX);
           toast.success("Book added to your reading list");
           setTimeout(() => {
             router.push(`/reading-list/${readingListObj.user_id}`);
@@ -178,6 +199,8 @@ export default function BookDetails() {
     if (result?.error) {
       toast.error(result.error);
     } else {
+      invalidateCacheByPrefix(READING_LIST_KEY_PREFIX);
+      invalidateCache(bookCacheKey(String(bookId)));
       toast.success("Status updated");
       setReadingListObj((prev) => ({ ...prev, status }));
     }
