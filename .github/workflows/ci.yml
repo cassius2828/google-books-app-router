@@ -2,9 +2,11 @@ name: CI
 
 on:
   push:
-    branches: [main, master, dev]
+    branches: [main, dev]
   pull_request:
-    branches: [main, master, dev]
+    branches: [main, dev]
+    # Avoid pull_request "closed" (merge): merge already triggers push to main, so e2e would run twice
+    types: [opened, synchronize, reopened, ready_for_review]
 
 jobs:
   lint-and-test:
@@ -30,6 +32,11 @@ jobs:
 
   e2e:
     needs: lint-and-test
+    # PR updates: only pull_request (feature-branch pushes do not match push.branches above).
+    # Default-branch work: push to main or dev (includes post-merge), not duplicated with PR "closed".
+    if: |
+      github.event_name == 'pull_request' ||
+      (github.event_name == 'push' && (github.ref_name == 'main' || github.ref_name == 'dev'))
     runs-on: ubuntu-latest
     env:
       GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
