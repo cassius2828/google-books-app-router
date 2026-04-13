@@ -1,4 +1,4 @@
-import Image from "next/image";
+import BookCoverImage from "@/app/_components/BookCoverImage";
 import Link from "next/link";
 import { ReadingListDBRow, Book } from "../_lib/types";
 import { resolveCoverFromRecord } from "../_lib/coverImage";
@@ -67,7 +67,7 @@ const ReadingListCards = ({
                   href={`/books/${books.google_book_id}`}
                   className="flex-shrink-0"
                 >
-                  <Image
+                  <BookCoverImage
                     src={resolveCoverFromRecord(books?.cover_image, books?.thumbnail)}
                     alt={books?.title}
                     width={48}
@@ -128,7 +128,7 @@ const ReadingListCards = ({
                 href={`/books/${books.google_book_id}`}
                 className="flex-shrink-0"
               >
-                <Image
+                <BookCoverImage
                   src={resolveCoverFromRecord(books?.cover_image, books?.thumbnail)}
                   alt={books?.title}
                   width={80}

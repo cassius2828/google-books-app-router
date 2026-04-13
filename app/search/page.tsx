@@ -2,7 +2,7 @@ import BooksGallery from "@/app/_components/Books/BooksGallery";
 import SearchInput from "../_components/SearchInput";
 import { Suspense } from "react";
 import BooksGalleryProviderWrapper from "../_components/Books/BooksProviderWrapper";
-import Loader from "../loading";
+import SearchResultsSkeleton from "../_components/Books/SearchResultsSkeleton";
 import Link from "next/link";
 import { SlidersHorizontal } from "lucide-react";
 
@@ -50,7 +50,7 @@ export default function SearchPage() {
       </section>
 
       <BooksGalleryProviderWrapper>
-        <Suspense fallback={<Loader />}>
+        <Suspense fallback={<SearchResultsSkeleton />}>
           <BooksGallery />
         </Suspense>
       </BooksGalleryProviderWrapper>

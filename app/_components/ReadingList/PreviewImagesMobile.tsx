@@ -1,4 +1,6 @@
-import Image from "next/image";
+"use client";
+
+import RetryImage from "@/app/_components/RetryImage";
 
 const ASSET_BASE = "https://d2uth2nw0znbpc.cloudfront.net/google-books";
 
@@ -25,7 +27,7 @@ export default function PreviewImagesMobile() {
           key={src}
           className="w-full aspect-video rounded-lg overflow-hidden shadow-md bg-gray-100"
         >
-          <Image src={src} alt={alt} width={600} height={300} sizes="100vw" />
+          <RetryImage src={src} alt={alt} width={600} height={300} sizes="100vw" />
         </div>
       ))}
     </div>

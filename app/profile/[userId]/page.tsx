@@ -1,4 +1,4 @@
-import Image from "next/image";
+import BookCoverImage from "@/app/_components/BookCoverImage";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { auth } from "@/app/_lib/auth";
@@ -181,7 +181,7 @@ export default async function ProfilePage({ params }: UserPageParams) {
                       >
                         <div className="aspect-[2/3] relative bg-secondary">
                           {book.thumbnail ? (
-                            <Image
+                            <BookCoverImage
                               src={book.thumbnail}
                               alt={book.title}
                               fill
