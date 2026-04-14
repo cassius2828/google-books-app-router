@@ -100,7 +100,6 @@ export default function MobileNav({ publicUserID, session }: MobileNavProps) {
                     variant="ghost"
                     size="sm"
                     className="w-full justify-start text-muted-foreground"
-                    onClick={() => setOpen(false)}
                   >
                     Sign Out
                   </Button>
@@ -112,7 +111,6 @@ export default function MobileNav({ publicUserID, session }: MobileNavProps) {
                   type="submit"
                   size="sm"
                   className="w-full"
-                  onClick={() => setOpen(false)}
                 >
                   Sign In
                 </Button>
